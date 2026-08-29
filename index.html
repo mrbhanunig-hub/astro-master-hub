@@ -215,13 +215,24 @@
     Astrologer Vivek Nigam &bull; All Rights Reserved
   </footer>
 
-  <script>
-    // Service Worker Registration
+ <script>
+    // ऑटो-अपडेट और तुरंत एक्टिवेशन
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('SW Registered:', reg.scope))
-          .catch(err => console.log('SW Registration Failed:', err));
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          // नया अपडेट मिलने पर तुरंत चेक करें
+          reg.onupdatefound = () => {
+            const installingWorker = reg.installing;
+            installingWorker.onstatechange = () => {
+              if (installingWorker.state === 'installed') {
+                if (navigator.serviceWorker.controller) {
+                  // नया अपडेट लोड हो गया, ऑटो रीलोड करें
+                  window.location.reload();
+                }
+              }
+            };
+          };
+        });
       });
     }
 
@@ -250,10 +261,6 @@
     window.addEventListener('appinstalled', () => {
       installContainer.style.display = 'none';
     });
-
-    function openApp(name) {
-      console.log(name + ' खोला जा रहा है...');
-    }
   </script>
 </body>
 </html>
