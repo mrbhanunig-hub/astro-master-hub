@@ -6,8 +6,10 @@
   <title>The Cosmic Counsellor - Master Hub</title>
   
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#111827">
+  <meta name="theme-color" content="#020617">
   <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="apple-touch-icon" href="./icon.svg">
   
   <style>
     * {
@@ -160,49 +162,56 @@
   </div>
 
   <main class="grid">
-    <!-- 1. BNN कुंडली कैलकुलेटर -->
+    <!-- 1. मुहूर्त विचार -->
+    <a href="./muhurat.html" class="card">
+      <div class="card-icon">⏳</div>
+      <div class="card-title">मुहूर्त विचार</div>
+      <div class="card-desc">पंचांग, लग्न-शुद्धि व शुभ समय गणना</div>
+    </a>
+
+    <!-- 2. BNN कुंडली कैलकुलेटर -->
     <a href="./BNN_Kundli_Calculator.html" class="card">
       <div class="card-icon">🔮</div>
       <div class="card-title">BNN कैलकुलेटर</div>
       <div class="card-desc">भृगु नंदी नाड़ी, ग्रह युति व फलादेश</div>
     </a>
 
-    <!-- 2. घात चक्र -->
+    <!-- 3. घात चक्र -->
     <a href="./ghat-chakra%20(1).html" class="card">
       <div class="card-icon">☸️</div>
       <div class="card-title">घात चक्र</div>
       <div class="card-desc">राशि घात, पंचांग मिलान व फलादेश</div>
     </a>
 
-    <!-- 3. कुंडली मिलान -->
+    <!-- 4. कुंडली मिलान -->
     <a href="./kundli-milan.html" class="card">
       <div class="card-icon">🪐</div>
       <div class="card-title">कुंडली मिलान</div>
       <div class="card-desc">वैदिक व केपी मिलान, मांगलिक परिहार</div>
     </a>
 
-    <!-- 4. मोबाइल न्यूमेरोलॉजी -->
+    <!-- 5. मोबाइल न्यूमेरोलॉजी -->
     <a href="https://mobile-number-numerology-calculator.vercel.app/" class="card" target="_blank" rel="noopener noreferrer">
       <div class="card-icon">📱</div>
       <div class="card-title">मोबाइल न्यूमेरोलॉजी</div>
       <div class="card-desc">मोबाइल नंबर व लकी नंबर विश्लेषण</div>
     </a>
 
-    <!-- 5. श्री राम शलाका प्रश्नावली -->
+    <!-- 6. श्री राम शलाका प्रश्नावली -->
     <a href="https://ram-shalaka.vercel.app/" class="card" target="_blank" rel="noopener noreferrer">
       <div class="card-icon">🏹</div>
       <div class="card-title">श्री राम शलाका</div>
       <div class="card-desc">रामचरितमानस चौपाई आधारित समाधान</div>
     </a>
 
-    <!-- 6. 81 पद वास्तु ग्रिड -->
+    <!-- 7. 81 पद वास्तु ग्रिड -->
     <a href="#" class="card" onclick="openApp('वास्तु ग्रिड')">
       <div class="card-icon">📐</div>
       <div class="card-title">81 पद वास्तु ग्रिड</div>
       <div class="card-desc">विश्वकर्मा प्रकाश आधारित 45 देवता</div>
     </a>
 
-    <!-- 7. KP ज्योतिष -->
+    <!-- 8. KP ज्योतिष -->
     <a href="#" class="card" onclick="openApp('केपी ज्योतिष')">
       <div class="card-icon">⭐</div>
       <div class="card-title">KP ज्योतिषी टूल</div>
@@ -215,7 +224,6 @@
   </footer>
 
   <script>
-    // Service Worker Registration
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
@@ -224,7 +232,6 @@
       });
     }
 
-    // PWA Install Prompt Logic
     let deferredPrompt;
     const installContainer = document.getElementById('installContainer');
     const installBtn = document.getElementById('installBtn');
@@ -256,4 +263,4 @@
   </script>
 </body>
 </html>
-<!-- v10 -->
+<!-- v11 -->
