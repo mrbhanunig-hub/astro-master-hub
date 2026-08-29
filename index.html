@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Cosmic Counsellor - Master Hub</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#111827">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1e293b, #0b0f19);
+      color: #f8fafc;
+      min-height: 100vh;
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 9999px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-top: 6px;
+    }
+
+    .install-bar {
+      display: none;
+      width: 100%;
+      max-width: 480px;
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: white;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 14px rgba(217, 119, 6, 0.3);
+    }
+
+    .install-bar p {
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .install-btn {
+      background: #ffffff;
+      color: #92400e;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 20px 14px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .card:active {
+      transform: scale(0.96);
+      background: rgba(51, 65, 85, 0.9);
+      border-color: #fbbf24;
+    }
+
+    .card-icon {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 4px;
+    }
+
+    .card-desc {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      line-height: 1.3;
+    }
+
+    footer {
+      margin-top: auto;
+      padding-top: 30px;
+      font-size: 0.75rem;
+      color: #64748b;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge">Master Portal</div>
+    <h1>The Cosmic Counsellor</h1>
+    <p class="subtitle">एस्ट्रोलॉजी एवं वास्तु टूल्स हब</p>
+  </header>
+
+  <div id="installContainer" class="install-bar">
+    <p>होम स्क्रीन पर ऐप जोड़ें</p>
+    <button id="installBtn" class="install-btn">Install App</button>
+  </div>
+
+  <main class="grid">
+    <a href="#" class="card" onclick="openApp('कुंडली मिलान')">
+      <div class="card-icon">🪐</div>
+      <div class="card-title">कुंडली मिलान</div>
+      <div class="card-desc">मांगलिक दोष परिहार व अष्टकूट गणना</div>
+    </a>
+
+    <a href="#" class="card" onclick="openApp('वास्तु ग्रिड')">
+      <div class="card-icon">📐</div>
+      <div class="card-title">81 पद वास्तु ग्रिड</div>
+      <div class="card-desc">विश्वकर्मा प्रकाश आधारित 45 देवता</div>
+    </a>
+
+    <a href="#" class="card" onclick="openApp('केपी ज्योतिष')">
+      <div class="card-icon">⭐</div>
+      <div class="card-title">KP ज्योतिषी टूल</div>
+      <div class="card-desc">गुलबर्ग थ्योरी व सब-लॉर्ड विश्लेषण</div>
+    </a>
+
+    <a href="#" class="card" onclick="openApp('जोडिएक बेल्ट')">
+      <div class="card-icon">☸️</div>
+      <div class="card-title">जोडिएक चक्र</div>
+      <div class="card-desc">27 नक्षत्र व 108 पाद डिग्री चार्ट</div>
+    </a>
+  </main>
+
+  <footer>
+    Astrologer Vivek Nigam &bull; All Rights Reserved
+  </footer>
+
+  <script>
+    // Service Worker Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW Registered:', reg.scope))
+          .catch(err => console.log('SW Registration Failed:', err));
+      });
+    }
+
+    // PWA Install Prompt Logic
+    let deferredPrompt;
+    const installContainer = document.getElementById('installContainer');
+    const installBtn = document.getElementById('installBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installContainer.style.display = 'flex';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          installContainer.style.display = 'none';
+        }
+        deferredPrompt = null;
+      }
+    });
+
+    window.addEventListener('appinstalled', () => {
+      installContainer.style.display = 'none';
+    });
+
+    function openApp(name) {
+      // जब आपकी ऐप्स लाइव हो जाएं, तब कार्ड के 'href' में सीधे लिंक डाल सकते हैं।
+      console.log(name + ' खोला जा रहा है...');
+    }
+  </script>
+</body>
+</html>
