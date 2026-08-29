@@ -7,8 +7,7 @@
   
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#111827">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
   
   <style>
     * {
@@ -169,7 +168,7 @@
     </a>
 
     <!-- 2. घात चक्र -->
-    <a href="./ghat-chakra (1).html" class="card">
+    <a href="./ghat-chakra%20(1).html" class="card">
       <div class="card-icon">☸️</div>
       <div class="card-title">घात चक्र</div>
       <div class="card-desc">राशि घात, पंचांग मिलान व फलादेश</div>
@@ -215,24 +214,13 @@
     Astrologer Vivek Nigam &bull; All Rights Reserved
   </footer>
 
- <script>
-    // ऑटो-अपडेट और तुरंत एक्टिवेशन
+  <script>
+    // Service Worker Registration
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').then((reg) => {
-          // नया अपडेट मिलने पर तुरंत चेक करें
-          reg.onupdatefound = () => {
-            const installingWorker = reg.installing;
-            installingWorker.onstatechange = () => {
-              if (installingWorker.state === 'installed') {
-                if (navigator.serviceWorker.controller) {
-                  // नया अपडेट लोड हो गया, ऑटो रीलोड करें
-                  window.location.reload();
-                }
-              }
-            };
-          };
-        });
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW Registered:', reg.scope))
+          .catch(err => console.log('SW Registration Failed:', err));
       });
     }
 
@@ -261,7 +249,11 @@
     window.addEventListener('appinstalled', () => {
       installContainer.style.display = 'none';
     });
+
+    function openApp(name) {
+      console.log(name + ' खोला जा रहा है...');
+    }
   </script>
 </body>
 </html>
-<!-- v8 -->
+<!-- v10 -->
