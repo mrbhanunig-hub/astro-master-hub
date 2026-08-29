@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kundli Milan - Astrologer Vivek Nigam</title>
+    <style>
+        :root {
+            --primary-color: #e65100;
+            --secondary-color: #ff9800;
+            --bg-color: #fff3e0;
+            --text-color: #3e2723;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ----- HEADER STYLES ----- */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            width: 100%;
+            padding: 12px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .cosmic-counsellor {
+            margin: 0;
+            font-size: 22px; 
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .astrologer-name {
+            margin: 2px 0 6px 0;
+            font-size: 14px; 
+            font-style: italic;
+            color: #ffe0b2;
+            font-weight: 500;
+        }
+
+        .kundli-milan-hindi {
+            margin: 0;
+            font-size: 20px; 
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .kundli-milan-english {
+            margin: 3px 0 0 0;
+            font-size: 12px; 
+            font-weight: 500;
+            background-color: rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            padding: 2px 14px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+        }
+
+        .tz-note {
+            margin: 6px auto 0 auto;
+            font-size: 11px;
+            color: #ffe0b2;
+            max-width: 700px;
+        }
+
+        /* ----- FORM LAYOUT ----- */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            width: 100%;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+            }
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            padding: 25px;
+            width: 100%;
+            max-width: 420px;
+            border-top: 5px solid var(--primary-color);
+        }
+
+        .card h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        .form-group { margin-bottom: 15px; }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            background: white;
+        }
+
+        .manual-latlon {
+            display: none;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .manual-latlon.show { display: flex; }
+        .manual-latlon .form-group { flex: 1; margin-bottom: 0; }
+
+        .field-hint {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        /* ----- BUTTONS ----- */
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin: 10px 0 30px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            color: white;
+            border: none;
+            padding: 12px 35px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .btn-match { background-color: var(--primary-color); }
+        .btn-match:hover { background-color: #bf360c; }
+
+        .btn-reset { background-color: #757575; }
+        .btn-reset:hover { background-color: #424242; }
+
+        .error-msg {
+            color: #c62828;
+            background: #ffebee;
+            border: 1px solid #ffcdd2;
+            padding: 10px 16px;
+            border-radius: 8px;
+            max-width: 700px;
+            width: 90%;
+            text-align: center;
+            display: none;
+            margin-bottom: 10px;
+        }
+
+        /* ----- RESULT SECTION ----- */
+        #result-section, #result-section-kp {
+            display: none;
+            width: 90%;
+            max-width: 800px;
+            background-color: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 5px solid #4caf50;
+        }
+        #result-section-kp h3 { text-align:left; color: var(--primary-color); margin-bottom:6px; }
+        .btn.mode-inactive { opacity: 0.55; }
+
+        .score {
+            font-size: 36px;
+            font-weight: bold;
+            color: #4caf50;
+            margin: 10px 0;
+        }
+
+        .chart-summary {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .chart-summary .person-chart {
+            flex: 1;
+            min-width: 260px;
+            background: var(--bg-color);
+            border-radius: 8px;
+            padding: 15px 18px;
+        }
+        .chart-summary h4 {
+            margin: 0 0 8px 0;
+            color: var(--primary-color);
+        }
+        .chart-summary p { margin: 4px 0; font-size: 14px; }
+
+        /* Guna Table */
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        tr:nth-child(even) { background-color: #fff3e0; }
+
+        .manglik-status {
+            font-size: 16px;
+            padding: 12px;
+            background-color: #ffe0b2;
+            border-radius: 8px;
+            margin-top: 25px;
+            display: inline-block;
+            color: var(--text-color);
+            width: 100%;
+            text-align: left;
+        }
+
+        .disclaimer {
+            font-size: 12px;
+            color: #8d6e63;
+            margin-top: 20px;
+            border-top: 1px dashed #ccc;
+            padding-top: 12px;
+            text-align: left;
+        }
+
+        /* ----- PRINT MODE (used by the PDF/print button) ----- */
+        @media print {
+            body.printing .container,
+            body.printing .button-group,
+            body.printing #error-msg,
+            body.printing .tz-note {
+                display: none !important;
+            }
+            body.printing #result-section,
+            body.printing #result-section-kp {
+                display: block !important;
+                box-shadow: none !important;
+                width: 100% !important;
+                max-width: none !important;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 class="cosmic-counsellor">The cosmic counsellor</h1>
+        <p class="astrologer-name">Astrologer Vivek Nigam</p>
+        <div class="kundli-milan-hindi">कुण्डली मिलान</div>
+        <div class="kundli-milan-english">Kundli Milan</div>
+        <p class="tz-note">Note: Saari ganana Indian Standard Time (IST, UTC+5:30) maan kar ki jaati hai.</p>
+    </header>
+
+    <div class="error-msg" id="error-msg"></div>
+
+    <div class="container">
+        <!-- Boy's Details -->
+        <div class="card">
+            <h2>Boy's Details</h2>
+            <div class="form-group"><label>Name</label><input type="text" id="boy-name" placeholder="Enter Name"></div>
+            <div class="form-group">
+                <label>Date of Birth (DD/MM/YYYY)</label>
+                <div style="display:flex; gap:8px;">
+                    <select id="boy-dob-day" style="flex:1;"></select>
+                    <select id="boy-dob-month" style="flex:1.3;"></select>
+                    <select id="boy-dob-year" style="flex:1;"></select>
+                </div>
+            </div>
+            <div class="form-group"><label>Time of Birth</label><input type="time" id="boy-time"></div>
+            <div class="form-group">
+                <label>State</label>
+                <select id="boy-state"></select>
+            </div>
+            <div class="form-group">
+                <label>City</label>
+                <select id="boy-city"></select>
+                <div class="manual-latlon" id="boy-manual">
+                    <div class="form-group"><label>Latitude</label><input type="number" step="0.0001" id="boy-lat" placeholder="e.g. 26.4499"></div>
+                    <div class="form-group"><label>Longitude</label><input type="number" step="0.0001" id="boy-lon" placeholder="e.g. 80.3319"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Girl's Details -->
+        <div class="card">
+            <h2>Girl's Details</h2>
+            <div class="form-group"><label>Name</label><input type="text" id="girl-name" placeholder="Enter Name"></div>
+            <div class="form-group">
+                <label>Date of Birth (DD/MM/YYYY)</label>
+                <div style="display:flex; gap:8px;">
+                    <select id="girl-dob-day" style="flex:1;"></select>
+                    <select id="girl-dob-month" style="flex:1.3;"></select>
+                    <select id="girl-dob-year" style="flex:1;"></select>
+                </div>
+            </div>
+            <div class="form-group"><label>Time of Birth</label><input type="time" id="girl-time"></div>
+            <div class="form-group">
+                <label>State</label>
+                <select id="girl-state"></select>
+            </div>
+            <div class="form-group">
+                <label>City</label>
+                <select id="girl-city"></select>
+                <div class="manual-latlon" id="girl-manual">
+                    <div class="form-group"><label>Latitude</label><input type="number" step="0.0001" id="girl-lat" placeholder="e.g. 26.4499"></div>
+                    <div class="form-group"><label>Longitude</label><input type="number" step="0.0001" id="girl-lon" placeholder="e.g. 80.3319"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mode Toggle -->
+    <div class="button-group" style="margin-bottom:0;">
+        <button class="btn btn-match" id="mode-vedic-btn">Vedic Kundli Milan</button>
+        <button class="btn btn-reset" id="mode-kp-btn">KP Kundli Milan</button>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="button-group">
+        <button class="btn btn-match" id="match-kundli-btn">Match Kundli</button>
+        <button class="btn btn-reset" id="reset-form-btn">Reset Forms</button>
+        <button class="btn" style="background-color:#2e7d32;" id="pdf-download-btn">Complete Report Print / Save as PDF</button>
+    </div>
+
+    <!-- Result Area : VEDIC -->
+    <div id="result-section">
+        <h2>Match Result (Vedic — Ashtakoot Guna Milan)</h2>
+
+        <div class="chart-summary" id="chart-summary"></div>
+
+        <p>Total Ashtakoot Guna Milan Score:</p>
+        <div class="score" id="score-display">0 / 36</div>
+        <p><strong>Conclusion:</strong> <span id="conclusion-text"></span></p>
+
+        <!-- Detailed Gunas Table -->
+        <h3>Detailed Ashtakoot Breakdown</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Koota (गुण)</th>
+                <th>Max Points</th>
+                <th>Obtained</th>
+            </tr>
+            </thead>
+            <tbody id="guna-table-body"></tbody>
+        </table>
+
+        <div class="manglik-status" id="manglik-status"></div>
+
+        <div class="disclaimer">
+            Disclaimer: Yeh ganana standard Vedic astrology reference tables aur khagoliya (astronomical) formulon par aadharit hai. Nadi/Bhakoot dosh cancellation ke kuch vishesh apwaad (exceptions) is calculator mein include nahi hain. Antim salaah ke liye kripaya Astrologer Vivek Nigam se sampark karein.
+        </div>
+    </div>
+
+    <!-- Result Area : KP -->
+    <div id="result-section-kp">
+        <h2>Match Result (KP — Krishnamurti Paddhati)</h2>
+
+        <div class="chart-summary" id="kp-chart-summary"></div>
+
+        <h3>1. Aayu (Longevity) Vichar</h3>
+        <div id="kp-age-box" class="manglik-status"></div>
+
+        <h3>2. Finance (Ladke ki Kundli)</h3>
+        <div id="kp-finance-box" class="manglik-status"></div>
+
+        <h3>3. Vivah (Marriage) — 7th CSL, dono ki Kundli</h3>
+        <div id="kp-marriage-box" class="manglik-status"></div>
+
+        <h3>4. Santan (Children) — Ladki ki Kundli</h3>
+        <div id="kp-children-box" class="manglik-status"></div>
+
+        <h3>5. Chandra (Moon) Check</h3>
+        <div id="kp-moon-box" class="manglik-status"></div>
+    </div>
+
+    <script>
+    let currentMode = 'vedic';
+    /* ======================================================================
+       ASTRONOMY ENGINE
+       Geocentric ecliptic longitudes for Sun, Moon, Mars using standard
+       low-precision Keplerian elements (Paul Schlyter method), converted
+       to the Sidereal (Nirayana) zodiac using the Lahiri Ayanamsa.
+       Accurate to within a fraction of a degree - suitable for Nakshatra /
+       Rashi / Lagna determination.
+    ====================================================================== */
+
+    function toRad(d){ return d*Math.PI/180; }
+    function toDeg(r){ return r*180/Math.PI; }
+    function norm360(x){ x = x % 360; if(x<0) x += 360; return x; }
+
+    function julianDay(y,m,day,hourUT){
+        if(m<=2){ y-=1; m+=12; }
+        const A = Math.floor(y/100);
+        const B = 2 - A + Math.floor(A/4);
+        return Math.floor(365.25*(y+4716)) + Math.floor(30.6001*(m+1)) + day + hourUT/24 + B - 1524.5;
+    }
+
+    function solveKepler(M_deg, e, iterations){
+        let M = toRad(M_deg);
+        let E = M + e*Math.sin(M)*(1+e*Math.cos(M));
+        for(let i=0;i<iterations;i++){
+            E = E - (E - e*Math.sin(E) - M)/(1 - e*Math.cos(E));
+        }
+        return E;
+    }
+
+    function sunPosition(d){
+        const w = norm360(282.9404 + 4.70935e-5*d);
+        const e = 0.016709 - 1.151e-9*d;
+        const M = norm360(356.0470 + 0.9856002585*d);
+        const E = solveKepler(M, e, 3);
+        const xv = Math.cos(E) - e;
+        const yv = Math.sqrt(1-e*e)*Math.sin(E);
+        const v = toDeg(Math.atan2(yv,xv));
+        const r = Math.sqrt(xv*xv+yv*yv);
+        return { lon: norm360(v+w), r: r };
+    }
+
+    function moonPosition(d, sun){
+        const N = norm360(125.1228 - 0.0529538083*d);
+        const i = 5.1454;
+        const w = norm360(318.0634 + 0.1643573223*d);
+        const a = 60.2666;
+        const e = 0.054900;
+        const M = norm360(115.3654 + 13.0649929509*d);
+        const E = solveKepler(M, e, 4);
+        const xv = a*(Math.cos(E)-e);
+        const yv = a*Math.sqrt(1-e*e)*Math.sin(E);
+        const v = toDeg(Math.atan2(yv,xv));
+        const r = Math.sqrt(xv*xv+yv*yv);
+        const vw = toRad(v+w);
+        const Nr = toRad(N), ir = toRad(i);
+        const xh = r*(Math.cos(Nr)*Math.cos(vw) - Math.sin(Nr)*Math.sin(vw)*Math.cos(ir));
+        const yh = r*(Math.sin(Nr)*Math.cos(vw) + Math.cos(Nr)*Math.sin(vw)*Math.cos(ir));
+        const zh = r*(Math.sin(vw)*Math.sin(ir));
+        let lonecl = norm360(toDeg(Math.atan2(yh,xh)));
+        let latecl = toDeg(Math.atan2(zh, Math.sqrt(xh*xh+yh*yh)));
+
+        const Ms = toRad(norm360(356.0470 + 0.9856002585*d));
+        const Mm = toRad(M);
+        const Lm = norm360(N + w + M);
+        const Ls = norm360(sun.lon);
+        const D = toRad(norm360(Lm - Ls));
+        const F = toRad(norm360(Lm - N));
+
+        let dLon = 0;
+        dLon += -1.274*Math.sin(Mm - 2*D);
+        dLon +=  0.658*Math.sin(2*D);
+        dLon += -0.186*Math.sin(Ms);
+        dLon += -0.059*Math.sin(2*Mm - 2*D);
+        dLon += -0.057*Math.sin(Mm - 2*D + Ms);
+        dLon +=  0.053*Math.sin(Mm + 2*D);
+        dLon +=  0.046*Math.sin(2*D - Ms);
+        dLon +=  0.041*Math.sin(Mm - Ms);
+        dLon += -0.035*Math.sin(D);
+        dLon += -0.031*Math.sin(Mm + Ms);
+        dLon += -0.015*Math.sin(2*F - 2*D);
+        dLon +=  0.011*Math.sin(Mm - 4*D);
+
+        let dLat = 0;
+        dLat += -0.173*Math.sin(F - 2*D);
+        dLat += -0.055*Math.sin(Mm - F - 2*D);
+        dLat += -0.046*Math.sin(Mm + F - 2*D);
+        dLat +=  0.033*Math.sin(F + 2*D);
+        dLat +=  0.017*Math.sin(2*Mm + F);
+
+        lonecl = norm360(lonecl + dLon);
+        latecl = latecl + dLat;
+        return { lon: lonecl, lat: latecl };
+    }
+
+    function marsPosition(d, sun){
+        const N = norm360(49.5574 + 2.11081e-5*d);
+        const i = 1.8497 - 1.78e-8*d;
+        const w = norm360(286.5016 + 2.92961e-5*d);
+        const a = 1.523688;
+        const e = 0.093405 + 2.516e-9*d;
+        const M = norm360(18.6021 + 0.5240207766*d);
+        const E = solveKepler(M, e, 5);
+        const xv = a*(Math.cos(E)-e);
+        const yv = a*Math.sqrt(1-e*e)*Math.sin(E);
+        const v = toDeg(Math.atan2(yv,xv));
+        const r = Math.sqrt(xv*xv+yv*yv);
+        const vw = toRad(v+w);
+        const Nr = toRad(N), ir = toRad(i);
+        const xh = r*(Math.cos(Nr)*Math.cos(vw) - Math.sin(Nr)*Math.sin(vw)*Math.cos(ir));
+        const yh = r*(Math.sin(Nr)*Math.cos(vw) + Math.cos(Nr)*Math.sin(vw)*Math.cos(ir));
+        const zh = r*(Math.sin(vw)*Math.sin(ir));
+
+        const xs = sun.r*Math.cos(toRad(sun.lon));
+        const ys = sun.r*Math.sin(toRad(sun.lon));
+
+        const xg = xh + xs;
+        const yg = yh + ys;
+        const zg = zh;
+
+        return {
+            lon: norm360(toDeg(Math.atan2(yg,xg))),
+            lat: toDeg(Math.atan2(zg, Math.sqrt(xg*xg+yg*yg)))
+        };
+    }
+
+    function ascendantLongitude(d, latDeg, lonEastDeg){
+        const GMST = norm360(280.46061837 + 360.98564736629*(d - (2451545.0 - 2451543.5)));
+        const LST = norm360(GMST + lonEastDeg);
+        const RAMC = toRad(LST);
+        const eps = toRad(23.4393);
+        const latr = toRad(latDeg);
+        let asc = toDeg(Math.atan2(-Math.cos(RAMC), Math.sin(RAMC)*Math.cos(eps) + Math.tan(latr)*Math.sin(eps)));
+        return norm360(asc + 180); // the raw atan2 solution is the Descendant; Ascendant is always +180 from it
+    }
+
+    function lahiriAyanamsa(yearDecimal){
+        return 23.85667 + (yearDecimal - 2000) * 0.013972;
+    }
+
+    /* ======================================================================
+       VEDIC ASTROLOGY REFERENCE DATA
+    ====================================================================== */
+
+    const RASHI = [
+        {name:'Mesh (Aries)', hindi:'मेष', lord:'Mars', varna:3, vashya:'Chatushpada'},
+        {name:'Vrishabh (Taurus)', hindi:'वृषभ', lord:'Venus', varna:2, vashya:'Chatushpada'},
+        {name:'Mithun (Gemini)', hindi:'मिथुन', lord:'Mercury', varna:1, vashya:'Manav'},
+        {name:'Kark (Cancer)', hindi:'कर्क', lord:'Moon', varna:4, vashya:'Jalachar'},
+        {name:'Simha (Leo)', hindi:'सिंह', lord:'Sun', varna:3, vashya:'Vanachar'},
+        {name:'Kanya (Virgo)', hindi:'कन्या', lord:'Mercury', varna:2, vashya:'Manav'},
+        {name:'Tula (Libra)', hindi:'तुला', lord:'Venus', varna:1, vashya:'Manav'},
+        {name:'Vrishchik (Scorpio)', hindi:'वृश्चिक', lord:'Mars', varna:4, vashya:'Keeta'},
+        {name:'Dhanu (Sagittarius)', hindi:'धनु', lord:'Jupiter', varna:3, vashya:'Chatushpada'},
+        {name:'Makar (Capricorn)', hindi:'मकर', lord:'Saturn', varna:2, vashya:'Jalachar'},
+        {name:'Kumbh (Aquarius)', hindi:'कुम्भ', lord:'Saturn', varna:1, vashya:'Manav'},
+        {name:'Meen (Pisces)', hindi:'मीन', lord:'Jupiter', varna:4, vashya:'Jalachar'}
+    ];
+
+    const NAKSHATRA = [
+        {name:'Ashwini', yoni:'Horse', gender:'M', gana:'Deva', nadi:'Aadi'},
+        {name:'Bharani', yoni:'Elephant', gender:'M', gana:'Manushya', nadi:'Madhya'},
+        {name:'Krittika', yoni:'Sheep', gender:'F', gana:'Rakshasa', nadi:'Antya'},
+        {name:'Rohini', yoni:'Serpent', gender:'M', gana:'Manushya', nadi:'Antya'},
+        {name:'Mrigashira', yoni:'Serpent', gender:'F', gana:'Deva', nadi:'Madhya'},
+        {name:'Ardra', yoni:'Dog', gender:'F', gana:'Manushya', nadi:'Aadi'},
+        {name:'Punarvasu', yoni:'Cat', gender:'F', gana:'Deva', nadi:'Aadi'},
+        {name:'Pushya', yoni:'Sheep', gender:'M', gana:'Deva', nadi:'Madhya'},
+        {name:'Ashlesha', yoni:'Cat', gender:'M', gana:'Rakshasa', nadi:'Antya'},
+        {name:'Magha', yoni:'Rat', gender:'M', gana:'Rakshasa', nadi:'Antya'},
+        {name:'Purva Phalguni', yoni:'Rat', gender:'F', gana:'Manushya', nadi:'Madhya'},
+        {name:'Uttara Phalguni', yoni:'Cow', gender:'M', gana:'Manushya', nadi:'Aadi'},
+        {name:'Hasta', yoni:'Buffalo', gender:'F', gana:'Deva', nadi:'Aadi'},
+        {name:'Chitra', yoni:'Tiger', gender:'F', gana:'Rakshasa', nadi:'Madhya'},
+        {name:'Swati', yoni:'Buffalo', gender:'M', gana:'Deva', nadi:'Antya'},
+        {name:'Vishakha', yoni:'Tiger', gender:'M', gana:'Rakshasa', nadi:'Antya'},
+        {name:'Anuradha', yoni:'Deer', gender:'F', gana:'Deva', nadi:'Madhya'},
+        {name:'Jyeshtha', yoni:'Deer', gender:'M', gana:'Rakshasa', nadi:'Aadi'},
+        {name:'Mula', yoni:'Dog', gender:'M', gana:'Rakshasa', nadi:'Aadi'},
+        {name:'Purva Ashadha', yoni:'Monkey', gender:'M', gana:'Manushya', nadi:'Madhya'},
+        {name:'Uttara Ashadha', yoni:'Mongoose', gender:'M', gana:'Manushya', nadi:'Antya'},
+        {name:'Shravana', yoni:'Monkey', gender:'F', gana:'Deva', nadi:'Antya'},
+        {name:'Dhanishta', yoni:'Lion', gender:'F', gana:'Rakshasa', nadi:'Madhya'},
+        {name:'Shatabhisha', yoni:'Horse', gender:'F', gana:'Rakshasa', nadi:'Aadi'},
+        {name:'Purva Bhadrapada', yoni:'Lion', gender:'M', gana:'Manushya', nadi:'Aadi'},
+        {name:'Uttara Bhadrapada', yoni:'Cow', gender:'F', gana:'Manushya', nadi:'Madhya'},
+        {name:'Revati', yoni:'Elephant', gender:'F', gana:'Deva', nadi:'Antya'}
+    ];
+
+    // Exact Yoni Guna-Bodhak Chakra (14x14 published table), order:
+    // Horse, Elephant, Sheep, Serpent, Dog, Cat, Rat, Cow, Buffalo, Tiger, Deer, Monkey, Mongoose, Lion
+    const YONI_ORDER = ['Horse','Elephant','Sheep','Serpent','Dog','Cat','Rat','Cow','Buffalo','Tiger','Deer','Monkey','Mongoose','Lion'];
+    const YONI_MATRIX = [
+        [4,2,3,2,2,3,3,3,0,1,3,2,2,1],
+        [2,4,3,2,2,3,3,3,3,1,3,2,2,0],
+        [3,3,4,2,2,3,3,3,0,1,3,0,2,1],
+        [2,2,2,4,2,1,1,2,2,2,2,1,0,2],
+        [2,2,2,2,4,1,2,2,2,2,0,2,2,2],
+        [3,3,3,1,1,4,0,3,3,2,3,2,2,2],
+        [3,3,3,1,2,0,4,3,3,2,3,2,1,1],
+        [3,3,3,2,2,3,3,4,3,0,3,2,2,1],
+        [0,3,3,2,2,3,3,3,4,1,1,2,2,1],
+        [1,1,1,2,2,2,2,1,1,4,1,2,2,1],
+        [3,3,3,2,0,3,2,3,3,1,4,2,2,3],
+        [2,2,0,1,2,2,2,2,2,2,2,4,2,2],
+        [2,2,1,0,2,2,1,2,2,2,2,2,4,2],
+        [1,0,1,2,2,2,1,1,1,2,1,2,2,4]
+    ];
+
+    const PLANET_FRIENDSHIP = {
+        Sun:     { friends:['Moon','Mars','Jupiter'], enemies:['Venus','Saturn'] },
+        Moon:    { friends:['Sun','Mercury'], enemies:[] },
+        Mars:    { friends:['Sun','Moon','Jupiter'], enemies:['Mercury'] },
+        Mercury: { friends:['Sun','Venus'], enemies:['Moon'] },
+        Jupiter: { friends:['Sun','Moon','Mars'], enemies:['Mercury','Venus'] },
+        Venus:   { friends:['Mercury','Saturn'], enemies:['Sun','Moon'] },
+        Saturn:  { friends:['Mercury','Venus'], enemies:['Sun','Moon','Mars'] }
+    };
+
+    const STATE_CITIES = {
+        'Uttar Pradesh': [
+            {name:'Lucknow', lat:26.8467, lon:80.9462}, {name:'Kanpur', lat:26.4499, lon:80.3319},
+            {name:'Agra', lat:27.1767, lon:78.0081}, {name:'Varanasi', lat:25.3176, lon:82.9739},
+            {name:'Prayagraj (Allahabad)', lat:25.4358, lon:81.8463}, {name:'Meerut', lat:28.9845, lon:77.7064},
+            {name:'Ghaziabad', lat:28.6692, lon:77.4538}, {name:'Noida', lat:28.5355, lon:77.3910},
+            {name:'Bareilly', lat:28.3670, lon:79.4304}, {name:'Aligarh', lat:27.8974, lon:78.0880},
+            {name:'Moradabad', lat:28.8386, lon:78.7733}, {name:'Saharanpur', lat:29.9680, lon:77.5460},
+            {name:'Gorakhpur', lat:26.7606, lon:83.3732}, {name:'Faizabad (Ayodhya)', lat:26.7788, lon:82.1494},
+            {name:'Jhansi', lat:25.4484, lon:78.5685}, {name:'Muzaffarnagar', lat:29.4727, lon:77.7085},
+            {name:'Mathura', lat:27.4924, lon:77.6737}, {name:'Rampur', lat:28.8152, lon:79.0250},
+            {name:'Shahjahanpur', lat:27.8814, lon:79.9110}, {name:'Farrukhabad', lat:27.3927, lon:79.5803},
+            {name:'Mau', lat:25.9417, lon:83.5611}, {name:'Hapur', lat:28.7300, lon:77.7800},
+            {name:'Etawah', lat:26.7855, lon:79.0154}, {name:'Mirzapur', lat:25.1460, lon:82.5690},
+            {name:'Bulandshahr', lat:28.4041, lon:77.8498}, {name:'Sitapur', lat:27.5666, lon:80.6820},
+            {name:'Bahraich', lat:27.5742, lon:81.5949}, {name:'Unnao', lat:26.5464, lon:80.4879},
+            {name:'Jaunpur', lat:25.7479, lon:82.6837}, {name:'Ghazipur', lat:25.5833, lon:83.5833},
+            {name:'Basti', lat:26.8148, lon:82.7332}, {name:'Sultanpur', lat:26.2647, lon:82.0716},
+            {name:'Azamgarh', lat:26.0685, lon:83.1836}, {name:'Deoria', lat:26.5024, lon:83.7791},
+            {name:'Fatehpur', lat:25.9308, lon:80.8134}, {name:'Pratapgarh', lat:25.8969, lon:81.9457},
+            {name:'Kannauj', lat:27.0553, lon:79.9153}, {name:'Firozabad', lat:27.1592, lon:78.3957},
+            {name:'Orai', lat:25.9891, lon:79.4507}, {name:'Rae Bareli', lat:26.2309, lon:81.2337},
+            {name:'Lakhimpur Kheri', lat:27.9475, lon:80.7826}, {name:'Hardoi', lat:27.3966, lon:80.1308},
+            {name:'Ballia', lat:25.7600, lon:84.1500}, {name:'Banda', lat:25.4762, lon:80.3355}
+        ],
+        'Bihar': [
+            {name:'Patna', lat:25.5941, lon:85.1376}, {name:'Gaya', lat:24.7955, lon:85.0002},
+            {name:'Bhagalpur', lat:25.2445, lon:87.0108}, {name:'Muzaffarpur', lat:26.1225, lon:85.3906},
+            {name:'Darbhanga', lat:26.1542, lon:85.8918}, {name:'Purnia', lat:25.7771, lon:87.4753},
+            {name:'Arrah', lat:25.5541, lon:84.6636}, {name:'Begusarai', lat:25.4182, lon:86.1272},
+            {name:'Katihar', lat:25.5394, lon:87.5716}, {name:'Munger', lat:25.3747, lon:86.4735},
+            {name:'Chapra', lat:25.7810, lon:84.7470}, {name:'Motihari', lat:26.6485, lon:84.9161},
+            {name:'Bettiah', lat:26.8020, lon:84.5052}, {name:'Saharsa', lat:25.8804, lon:86.6008},
+            {name:'Siwan', lat:26.2183, lon:84.3542}, {name:'Sasaram', lat:24.9500, lon:84.0333},
+            {name:'Hajipur', lat:25.6862, lon:85.2094}, {name:'Bihar Sharif', lat:25.1988, lon:85.5236}
+        ],
+        'Madhya Pradesh': [
+            {name:'Bhopal', lat:23.2599, lon:77.4126}, {name:'Indore', lat:22.7196, lon:75.8577},
+            {name:'Jabalpur', lat:23.1815, lon:79.9864}, {name:'Gwalior', lat:26.2183, lon:78.1828},
+            {name:'Ujjain', lat:23.1765, lon:75.7885}, {name:'Sagar', lat:23.8388, lon:78.7378},
+            {name:'Rewa', lat:24.5364, lon:81.3037}, {name:'Satna', lat:24.6005, lon:80.8322},
+            {name:'Ratlam', lat:23.3315, lon:75.0367}, {name:'Dewas', lat:22.9676, lon:76.0534},
+            {name:'Murwara (Katni)', lat:23.8339, lon:80.3936}, {name:'Chhindwara', lat:22.0574, lon:78.9382},
+            {name:'Vidisha', lat:23.5251, lon:77.8080}, {name:'Shivpuri', lat:25.4231, lon:77.6592},
+            {name:'Singrauli', lat:24.1997, lon:82.6747}, {name:'Guna', lat:24.6470, lon:77.3110}
+        ],
+        'Rajasthan': [
+            {name:'Jaipur', lat:26.9124, lon:75.7873}, {name:'Jodhpur', lat:26.2389, lon:73.0243},
+            {name:'Kota', lat:25.2138, lon:75.8648}, {name:'Bikaner', lat:28.0229, lon:73.3119},
+            {name:'Ajmer', lat:26.4499, lon:74.6399}, {name:'Udaipur', lat:24.5854, lon:73.7125},
+            {name:'Bhilwara', lat:25.3407, lon:74.6313}, {name:'Alwar', lat:27.5530, lon:76.6346},
+            {name:'Bharatpur', lat:27.2173, lon:77.4901}, {name:'Sikar', lat:27.6094, lon:75.1399},
+            {name:'Pali', lat:25.7711, lon:73.3234}, {name:'Sri Ganganagar', lat:29.9094, lon:73.8800},
+            {name:'Kishangarh', lat:26.5833, lon:74.8500}, {name:'Churu', lat:28.3006, lon:74.9634},
+            {name:'Jhunjhunu', lat:28.1300, lon:75.4000}, {name:'Nagaur', lat:27.2000, lon:73.7333}
+        ],
+        'Maharashtra': [
+            {name:'Mumbai', lat:19.0760, lon:72.8777}, {name:'Pune', lat:18.5204, lon:73.8567},
+            {name:'Nagpur', lat:21.1458, lon:79.0882}, {name:'Nashik', lat:19.9975, lon:73.7898},
+            {name:'Aurangabad', lat:19.8762, lon:75.3433}, {name:'Solapur', lat:17.6599, lon:75.9064},
+            {name:'Kolhapur', lat:16.7050, lon:74.2433}, {name:'Amravati', lat:20.9374, lon:77.7796},
+            {name:'Nanded', lat:19.1383, lon:77.3210}, {name:'Sangli', lat:16.8524, lon:74.5815},
+            {name:'Akola', lat:20.7002, lon:77.0082}, {name:'Latur', lat:18.4088, lon:76.5604},
+            {name:'Dhule', lat:20.9042, lon:74.7749}, {name:'Ahmednagar', lat:19.0952, lon:74.7496},
+            {name:'Jalgaon', lat:21.0077, lon:75.5626}, {name:'Thane', lat:19.2183, lon:72.9781}
+        ],
+        'Gujarat': [
+            {name:'Ahmedabad', lat:23.0225, lon:72.5714}, {name:'Surat', lat:21.1702, lon:72.8311},
+            {name:'Vadodara', lat:22.3072, lon:73.1812}, {name:'Rajkot', lat:22.3039, lon:70.8022},
+            {name:'Bhavnagar', lat:21.7645, lon:72.1519}, {name:'Jamnagar', lat:22.4707, lon:70.0577},
+            {name:'Junagadh', lat:21.5222, lon:70.4579}, {name:'Gandhinagar', lat:23.2156, lon:72.6369},
+            {name:'Anand', lat:22.5645, lon:72.9289}, {name:'Bharuch', lat:21.7051, lon:72.9959}
+        ],
+        'West Bengal': [
+            {name:'Kolkata', lat:22.5726, lon:88.3639}, {name:'Asansol', lat:23.6739, lon:86.9524},
+            {name:'Siliguri', lat:26.7271, lon:88.3953}, {name:'Durgapur', lat:23.5204, lon:87.3119},
+            {name:'Howrah', lat:22.5958, lon:88.2636}, {name:'Bardhaman', lat:23.2324, lon:87.8615},
+            {name:'Malda', lat:25.0108, lon:88.1411}, {name:'Kharagpur', lat:22.3460, lon:87.2320}
+        ],
+        'Tamil Nadu': [
+            {name:'Chennai', lat:13.0827, lon:80.2707}, {name:'Coimbatore', lat:11.0168, lon:76.9558},
+            {name:'Madurai', lat:9.9252, lon:78.1198}, {name:'Tiruchirappalli', lat:10.7905, lon:78.7047},
+            {name:'Salem', lat:11.6643, lon:78.1460}, {name:'Tirunelveli', lat:8.7139, lon:77.7567},
+            {name:'Erode', lat:11.3410, lon:77.7172}, {name:'Vellore', lat:12.9165, lon:79.1325}
+        ],
+        'Karnataka': [
+            {name:'Bengaluru', lat:12.9716, lon:77.5946}, {name:'Mysuru', lat:12.2958, lon:76.6394},
+            {name:'Hubballi', lat:15.3647, lon:75.1240}, {name:'Mangaluru', lat:12.9141, lon:74.8560},
+            {name:'Belagavi', lat:15.8497, lon:74.4977}, {name:'Kalaburagi', lat:17.3297, lon:76.8343},
+            {name:'Davanagere', lat:14.4644, lon:75.9218}, {name:'Ballari', lat:15.1394, lon:76.9214}
+        ],
+        'Andhra Pradesh': [
+            {name:'Visakhapatnam', lat:17.6868, lon:83.2185}, {name:'Vijayawada', lat:16.5062, lon:80.6480},
+            {name:'Guntur', lat:16.3067, lon:80.4365}, {name:'Nellore', lat:14.4426, lon:79.9865},
+            {name:'Kurnool', lat:15.8281, lon:78.0373}, {name:'Tirupati', lat:13.6288, lon:79.4192},
+            {name:'Kadapa', lat:14.4673, lon:78.8242}, {name:'Rajahmundry', lat:17.0005, lon:81.8040}
+        ],
+        'Telangana': [
+            {name:'Hyderabad', lat:17.3850, lon:78.4867}, {name:'Warangal', lat:17.9689, lon:79.5941},
+            {name:'Nizamabad', lat:18.6725, lon:78.0941}, {name:'Karimnagar', lat:18.4386, lon:79.1288},
+            {name:'Khammam', lat:17.2473, lon:80.1514}
+        ],
+        'Kerala': [
+            {name:'Thiruvananthapuram', lat:8.5241, lon:76.9366}, {name:'Kochi', lat:9.9312, lon:76.2673},
+            {name:'Kozhikode', lat:11.2588, lon:75.7804}, {name:'Thrissur', lat:10.5276, lon:76.2144},
+            {name:'Kollam', lat:8.8932, lon:76.6141}, {name:'Kannur', lat:11.8745, lon:75.3704}
+        ],
+        'Punjab': [
+            {name:'Amritsar', lat:31.6340, lon:74.8723}, {name:'Ludhiana', lat:30.9010, lon:75.8573},
+            {name:'Jalandhar', lat:31.3260, lon:75.5762}, {name:'Patiala', lat:30.3398, lon:76.3869},
+            {name:'Bathinda', lat:30.2110, lon:74.9455}, {name:'Mohali', lat:30.7046, lon:76.7179},
+            {name:'Pathankot', lat:32.2643, lon:75.6421}
+        ],
+        'Haryana': [
+            {name:'Gurugram', lat:28.4595, lon:77.0266}, {name:'Faridabad', lat:28.4089, lon:77.3178},
+            {name:'Panipat', lat:29.3909, lon:76.9635}, {name:'Ambala', lat:30.3782, lon:76.7767},
+            {name:'Karnal', lat:29.6857, lon:76.9905}, {name:'Hisar', lat:29.1492, lon:75.7217},
+            {name:'Rohtak', lat:28.8955, lon:76.6066}, {name:'Panchkula', lat:30.6942, lon:76.8606}
+        ],
+        'Delhi': [
+            {name:'New Delhi', lat:28.6139, lon:77.2090}, {name:'North Delhi', lat:28.7041, lon:77.1025},
+            {name:'South Delhi', lat:28.5245, lon:77.1855}, {name:'East Delhi', lat:28.6279, lon:77.2951}
+        ],
+        'Uttarakhand': [
+            {name:'Dehradun', lat:30.3165, lon:78.0322}, {name:'Haridwar', lat:29.9457, lon:78.1642},
+            {name:'Haldwani', lat:29.2183, lon:79.5130}, {name:'Rudrapur', lat:28.9800, lon:79.4000},
+            {name:'Roorkee', lat:29.8543, lon:77.8880}, {name:'Nainital', lat:29.3803, lon:79.4636}
+        ],
+        'Himachal Pradesh': [
+            {name:'Shimla', lat:31.1048, lon:77.1734}, {name:'Dharamshala', lat:32.2190, lon:76.3234},
+            {name:'Mandi', lat:31.7080, lon:76.9319}, {name:'Solan', lat:30.9045, lon:77.0967}
+        ],
+        'Jammu & Kashmir': [
+            {name:'Srinagar', lat:34.0837, lon:74.7973}, {name:'Jammu', lat:32.7266, lon:74.8570}
+        ],
+        'Odisha': [
+            {name:'Bhubaneswar', lat:20.2961, lon:85.8245}, {name:'Cuttack', lat:20.4625, lon:85.8828},
+            {name:'Rourkela', lat:22.2604, lon:84.8536}, {name:'Berhampur', lat:19.3149, lon:84.7941},
+            {name:'Sambalpur', lat:21.4669, lon:83.9756}
+        ],
+        'Jharkhand': [
+            {name:'Ranchi', lat:23.3441, lon:85.3096}, {name:'Jamshedpur', lat:22.8046, lon:86.2029},
+            {name:'Dhanbad', lat:23.7957, lon:86.4304}, {name:'Bokaro', lat:23.6693, lon:86.1511},
+            {name:'Deoghar', lat:24.4823, lon:86.6961}
+        ],
+        'Chhattisgarh': [
+            {name:'Raipur', lat:21.2514, lon:81.6296}, {name:'Bhilai', lat:21.1938, lon:81.3509},
+            {name:'Bilaspur', lat:22.0797, lon:82.1409}, {name:'Durg', lat:21.1904, lon:81.2849},
+            {name:'Korba', lat:22.3595, lon:82.7501}
+        ],
+        'Assam': [
+            {name:'Guwahati', lat:26.1445, lon:91.7362}, {name:'Silchar', lat:24.8333, lon:92.7789},
+            {name:'Dibrugarh', lat:27.4728, lon:94.9120}, {name:'Jorhat', lat:26.7509, lon:94.2037}
+        ],
+        'Chandigarh': [
+            {name:'Chandigarh', lat:30.7333, lon:76.7794}
+        ],
+        'Goa': [
+            {name:'Panaji', lat:15.4909, lon:73.8278}, {name:'Margao', lat:15.2832, lon:73.9862}
+        ],
+        'Other Northeast (Manipur/Meghalaya/Mizoram/Nagaland/Tripura/Arunachal/Sikkim)': [
+            {name:'Imphal', lat:24.8170, lon:93.9368}, {name:'Shillong', lat:25.5788, lon:91.8933},
+            {name:'Aizawl', lat:23.7271, lon:92.7176}, {name:'Kohima', lat:25.6751, lon:94.1086},
+            {name:'Agartala', lat:23.8315, lon:91.2868}, {name:'Itanagar', lat:27.0844, lon:93.6053},
+            {name:'Gangtok', lat:27.3389, lon:88.6065}
+        ]
+    };
+
+    /* ======================================================================
+       KP (KRISHNAMURTI PADDHATI) ENGINE
+       Adds: Mercury/Venus/Jupiter/Saturn positions, Rahu/Ketu, Placidus
+       house cusps (1-12), KP Sub Lord (249-division) table, Star Lord,
+       and the significator + rule logic as specified by the astrologer.
+    ====================================================================== */
+
+    function planetPositionGeneric(el, d, sun, iterations){
+        const N = norm360(el.N0 + el.Nd*d);
+        const i = el.i0 + el.id*d;
+        const w = norm360(el.w0 + el.wd*d);
+        const a = el.a0;
+        const e = el.e0 + el.ed*d;
+        const M = norm360(el.M0 + el.Md*d);
+        const E = solveKepler(M, e, iterations);
+        const xv = a*(Math.cos(E)-e), yv = a*Math.sqrt(1-e*e)*Math.sin(E);
+        const v = toDeg(Math.atan2(yv,xv)), r = Math.sqrt(xv*xv+yv*yv);
+        const vw = toRad(v+w), Nr = toRad(N), ir = toRad(i);
+        const xh = r*(Math.cos(Nr)*Math.cos(vw) - Math.sin(Nr)*Math.sin(vw)*Math.cos(ir));
+        const yh = r*(Math.sin(Nr)*Math.cos(vw) + Math.cos(Nr)*Math.sin(vw)*Math.cos(ir));
+        const zh = r*(Math.sin(vw)*Math.sin(ir));
+        const xs = sun.r*Math.cos(toRad(sun.lon)), ys = sun.r*Math.sin(toRad(sun.lon));
+        const xg = xh+xs, yg = yh+ys, zg = zh;
+        return { lon: norm360(toDeg(Math.atan2(yg,xg))), lat: toDeg(Math.atan2(zg, Math.sqrt(xg*xg+yg*yg))) };
+    }
+    const MERCURY_EL = {N0:48.3313,Nd:3.24587e-5, i0:7.0047,id:5.00e-8, w0:29.1241,wd:1.01444e-5, a0:0.387098, e0:0.205635,ed:5.59e-10, M0:168.6562,Md:4.0923344368};
+    const VENUS_EL   = {N0:76.6799,Nd:2.46590e-5, i0:3.3946,id:2.75e-8, w0:54.8910,wd:1.38374e-5, a0:0.723330, e0:0.006773,ed:-1.302e-9, M0:48.0052,Md:1.6021302244};
+    const JUPITER_EL = {N0:100.4542,Nd:2.76854e-5, i0:1.3030,id:-1.557e-7, w0:273.8777,wd:1.64505e-5, a0:5.20256, e0:0.048498,ed:4.469e-9, M0:19.8950,Md:0.0830853001};
+    const SATURN_EL  = {N0:113.6634,Nd:2.38980e-5, i0:2.4886,id:-1.081e-7, w0:339.3939,wd:2.97661e-5, a0:9.55475, e0:0.055546,ed:-9.499e-9, M0:316.9670,Md:0.0334442282};
+
+    function ascendantLongitudeRAMC(RAMCdeg, latDeg, epsDeg){
+        const RAMCr = toRad(RAMCdeg), eps = toRad(epsDeg), latr = toRad(latDeg);
+        let asc = toDeg(Math.atan2(-Math.cos(RAMCr), Math.sin(RAMCr)*Math.cos(eps) + Math.tan(latr)*Math.sin(eps)));
+        return norm360(asc + 180);
+    }
+    function mcLongitude(RAMCdeg, epsDeg){
+        const RAMCr = toRad(RAMCdeg), eps = toRad(epsDeg);
+        return norm360(toDeg(Math.atan2(Math.sin(RAMCr)/Math.cos(eps), Math.cos(RAMCr))));
+    }
+    function eclToRA(lambdaDeg, epsDeg){
+        const lam = toRad(lambdaDeg), eps = toRad(epsDeg);
+        const delta = Math.asin(Math.max(-1,Math.min(1, Math.sin(eps)*Math.sin(lam))));
+        const alpha = toDeg(Math.atan2(Math.cos(eps)*Math.sin(lam), Math.cos(lam)));
+        return { alpha: norm360(alpha), delta: toDeg(delta) };
+    }
+    function semiDiurnalArc(deltaDeg, latDeg){
+        const t = Math.max(-1,Math.min(1, -Math.tan(toRad(latDeg))*Math.tan(toRad(deltaDeg))));
+        return toDeg(Math.acos(t));
+    }
+    function hourAngle(RAMCdeg, alphaDeg){ let H=RAMCdeg-alphaDeg; return ((H+180)%360+360)%360-180; }
+    function solveCusp(RAMCdeg, epsDeg, latDeg, targetSign, frac, guess){
+        let lambda = guess;
+        for(let i=0;i<100;i++){
+            const {alpha, delta} = eclToRA(lambda, epsDeg);
+            const H = hourAngle(RAMCdeg, alpha), sda = semiDiurnalArc(delta, latDeg);
+            const f = H - targetSign*frac*sda;
+            const dlam = 0.001;
+            const p2 = eclToRA(lambda+dlam, epsDeg);
+            const f2 = hourAngle(RAMCdeg, p2.alpha) - targetSign*frac*semiDiurnalArc(p2.delta, latDeg);
+            const deriv = (f2-f)/dlam;
+            if(Math.abs(deriv) < 1e-9) break;
+            let step = f/deriv;
+            step = Math.max(-5, Math.min(5, step));
+            lambda = norm360(lambda - step);
+            if(Math.abs(step) < 1e-9) break;
+        }
+        return norm360(lambda);
+    }
+    function placidusCusps(RAMCdeg, latDeg, epsDeg){
+        const MC = mcLongitude(RAMCdeg, epsDeg);
+        const ASC = ascendantLongitudeRAMC(RAMCdeg, latDeg, epsDeg);
+        const IC = norm360(MC+180), DESC = norm360(ASC+180);
+        const gapMC_ASC = norm360(ASC-MC);
+        const cusp11 = solveCusp(RAMCdeg, epsDeg, latDeg, -1, 1/3, norm360(MC+gapMC_ASC/3));
+        const cusp12 = solveCusp(RAMCdeg, epsDeg, latDeg, -1, 2/3, norm360(MC+gapMC_ASC*2/3));
+        const gapDESC_MC = norm360(MC-DESC);
+        const cusp9 = solveCusp(RAMCdeg, epsDeg, latDeg, 1, 1/3, norm360(DESC+gapDESC_MC*2/3));
+        const cusp8 = solveCusp(RAMCdeg, epsDeg, latDeg, 1, 2/3, norm360(DESC+gapDESC_MC*1/3));
+        // index0..11 = house1..house12 cusp longitudes (tropical)
+        return [ASC, norm360(cusp8-180), norm360(cusp9-180), IC, norm360(cusp11+180), norm360(cusp12+180),
+                DESC, cusp8, cusp9, MC, cusp11, cusp12];
+    }
+
+    const KP_LORD_ORDER = ['Ketu','Venus','Sun','Moon','Mars','Rahu','Jupiter','Saturn','Mercury'];
+    const KP_LORD_YEARS = {Ketu:7,Venus:20,Sun:6,Moon:10,Mars:7,Rahu:18,Jupiter:16,Saturn:19,Mercury:17};
+    function nakshatraLordOf(nakIdx){ return KP_LORD_ORDER[nakIdx % 9]; }
+    function kpSubLord(siderealLon){
+        const nakSpan = 360/27;
+        const nakIdx = Math.floor(siderealLon/nakSpan);
+        const offsetArcmin = (siderealLon - nakIdx*nakSpan) * 60;
+        const starLord = nakshatraLordOf(nakIdx);
+        const startIdx = KP_LORD_ORDER.indexOf(starLord);
+        let cum = 0, subLord = starLord;
+        for(let k=0;k<9;k++){
+            const lordK = KP_LORD_ORDER[(startIdx+k)%9];
+            const width = (KP_LORD_YEARS[lordK]/120)*800;
+            if(offsetArcmin < cum+width || k===8){ subLord = lordK; break; }
+            cum += width;
+        }
+        return { nakIdx, starLord, subLord };
+    }
+    function houseOfLongitude(cusps, lon){
+        for(let h=0; h<12; h++){
+            const start = cusps[h], end = cusps[(h+1)%12];
+            const span = norm360(end-start), pos = norm360(lon-start);
+            if(pos < span || span===0) return h+1;
+        }
+        return 12;
+    }
+
+    function computeKPChart(y,m,day,hh,mm,lat,lon){
+        const hourUT = (hh+mm/60) - 5.5;
+        const jd = julianDay(y,m,day,hourUT);
+        const d = jd - 2451543.5;
+
+        const sun = sunPosition(d);
+        const moon = moonPosition(d, sun);
+        const mercury = planetPositionGeneric(MERCURY_EL, d, sun, 5);
+        const venus = planetPositionGeneric(VENUS_EL, d, sun, 5);
+        const mars = marsPosition(d, sun);
+        const jupiter = planetPositionGeneric(JUPITER_EL, d, sun, 6);
+        const saturn = planetPositionGeneric(SATURN_EL, d, sun, 6);
+
+        // RAMC: Greenwich sidereal time (deg) + east longitude
+        const GMST = norm360(280.46061837 + 360.98564736629*(d - (2451545.0 - 2451543.5)));
+        const RAMC = norm360(GMST + lon);
+        const eps = 23.4393;
+        const cuspsTropical = placidusCusps(RAMC, lat, eps);
+
+        const yearDecimal = y + (m-1)/12 + day/365.25;
+        const ay = lahiriAyanamsa(yearDecimal);
+
+        const planetsTropical = {
+            Sun: sun.lon, Moon: moon.lon, Mars: mars.lon, Mercury: mercury.lon,
+            Jupiter: jupiter.lon, Venus: venus.lon, Saturn: saturn.lon
+        };
+        // Rahu = Moon's mean ascending node longitude (recompute directly, same formula used inside moonPosition)
+        const rahuTropical = norm360(125.1228 - 0.0529538083*d);
+        planetsTropical.Rahu = rahuTropical;
+        planetsTropical.Ketu = norm360(rahuTropical + 180);
+
+        const planetsSidereal = {};
+        Object.keys(planetsTropical).forEach(k => { planetsSidereal[k] = norm360(planetsTropical[k]-ay); });
+
+        const cuspsSidereal = cuspsTropical.map(c => norm360(c-ay));
+
+        const houses = {};
+        Object.keys(planetsSidereal).forEach(k => { houses[k] = houseOfLongitude(cuspsSidereal, planetsSidereal[k]); });
+
+        const signOf = lon => Math.floor(lon/30);
+        const signs = {};
+        Object.keys(planetsSidereal).forEach(k => { signs[k] = signOf(planetsSidereal[k]); });
+
+        const houseCuspSign = h => signOf(cuspsSidereal[h-1]); // h = 1..12
+        function housesOwnedBy(lordName){
+            const result = [];
+            for(let h=1; h<=12; h++){ if(RASHI[houseCuspSign(h)].lord === lordName) result.push(h); }
+            return result;
+        }
+
+        function signification(planetName){
+            const set = new Set();
+            set.add(houses[planetName]); // house the planet itself occupies
+
+            if(planetName === 'Rahu' || planetName === 'Ketu'){
+                // Rahu/Ketu own no sign themselves, so they borrow their dispositor (sign lord)
+                const signLord = RASHI[signs[planetName]].lord;
+                set.add(houses[signLord]);                      // house the dispositor occupies
+                housesOwnedBy(signLord).forEach(h => set.add(h)); // houses owned by the dispositor
+            } else {
+                // Regular planet: add every house whose cusp-sign is owned by this planet
+                housesOwnedBy(planetName).forEach(h => set.add(h));
+            }
+            return set;
+        }
+        function planetNLSL(planetName){
+            const info = kpSubLord(planetsSidereal[planetName]);
+            return { NL: info.starLord, SL: info.subLord };
+        }
+        function cuspSubLord(idx){ return kpSubLord(cuspsSidereal[idx]).subLord; }
+
+        const CSL = { h1: cuspSubLord(0), h2: cuspSubLord(1), h5: cuspSubLord(4), h7: cuspSubLord(6) };
+
+        const lagnaSign = signOf(cuspsSidereal[0]);
+        const signType = [0,3,6,9].includes(lagnaSign) ? 'movable' : ([1,4,7,10].includes(lagnaSign) ? 'fixed' : 'dual');
+        const badhakHouse = signType==='movable' ? 11 : (signType==='fixed' ? 9 : 7);
+        const marakHouses = signType==='dual' ? [2] : [2,7];
+
+        return { planetsSidereal, houses, signs, cuspsSidereal, CSL, lagnaSign, signType, badhakHouse, marakHouses, signification, planetNLSL };
+    }
+
+    function combinedSignification(chart, planetName){
+        const {NL, SL} = chart.planetNLSL(planetName);
+        const ownNums = chart.signification(planetName);
+        const nlNums = chart.signification(NL);
+        const slNums = chart.signification(SL);
+        return {
+            NL, SL,
+            ownNums: [...ownNums].sort((a,b)=>a-b),
+            nlNums: [...nlNums].sort((a,b)=>a-b),
+            slNums: [...slNums].sort((a,b)=>a-b)
+        };
+    }
+
+    function kpAgeCheck(chart){
+        const r = combinedSignification(chart, chart.CSL.h1);
+        function evalLevel(nums){
+            const hasMarak = chart.marakHouses.some(h=>nums.includes(h));
+            const hasBadhak = nums.includes(chart.badhakHouse);
+            const has12 = nums.includes(12);
+            return { hasMarak, hasBadhak, has12, concern: hasMarak&&hasBadhak&&has12 };
+        }
+        return { ...r, NLresult: evalLevel(r.nlNums), SLresult: evalLevel(r.slNums) };
+    }
+    function kpFinanceCheck(chart){
+        const r = combinedSignification(chart, chart.CSL.h2);
+        const positive=[2,6,7,10,11], negative=[5,8,12];
+        function evalLevel(nums){
+            const posCount = nums.filter(h=>positive.includes(h)).length;
+            const negCount = nums.filter(h=>negative.includes(h)).length;
+            return { posCount, negCount, result: posCount>negCount?'good':(negCount>posCount?'bad':'neutral') };
+        }
+        return { ...r, NLresult: evalLevel(r.nlNums), SLresult: evalLevel(r.slNums) };
+    }
+    function kpMarriageCheck(chart){
+        const r = combinedSignification(chart, chart.CSL.h7);
+        const good=[2,5,7,9,11], notgood=[6,8,10,12];
+        function evalLevel(nums){
+            const goodCount = nums.filter(h=>good.includes(h)).length;
+            const badCount = nums.filter(h=>notgood.includes(h)).length;
+            return { goodCount, badCount, result: goodCount>badCount?'good':(badCount>goodCount?'bad':'neutral') };
+        }
+        return { ...r, NLresult: evalLevel(r.nlNums), SLresult: evalLevel(r.slNums) };
+    }
+    function kpChildrenCheck(chart){
+        const r = combinedSignification(chart, chart.CSL.h5);
+        const positive=[2,5,11], negative=[4,8,10,12];
+        function evalLevel(nums){
+            const posCount = nums.filter(h=>positive.includes(h)).length;
+            const negCount = nums.filter(h=>negative.includes(h)).length;
+            return { posCount, negCount, result: posCount>negCount?'good':(negCount>posCount?'bad':'neutral') };
+        }
+
+        // Extra rule: 5th CSL or its NL placed in absolute Rashi 1,3,5,6 (Mesh, Mithun, Simha, Kanya) -> problem
+        const targetRashi = [0,2,4,5];
+        const cslRashi = chart.signs[chart.CSL.h5];
+        const nlRashi = chart.signs[r.NL];
+        const rashiRuleHit = targetRashi.includes(cslRashi) || targetRashi.includes(nlRashi);
+
+        return {
+            ...r, NLresult: evalLevel(r.nlNums), SLresult: evalLevel(r.slNums),
+            rashiRuleHit,
+            cslRashiName: RASHI[cslRashi].name,
+            nlRashiName: RASHI[nlRashi].name
+        };
+    }
+    function kpMoonCheck(chart){
+        const {NL,SL} = chart.planetNLSL('Moon');
+        const ownNums = [...chart.signification('Moon')].sort((a,b)=>a-b);
+        const nlNums = [...chart.signification(NL)].sort((a,b)=>a-b);
+        const slNums = [...chart.signification(SL)].sort((a,b)=>a-b);
+        function hits(nums){ return [6,8,12].every(h=>nums.includes(h)); }
+        return {
+            NL, SL, ownNums, nlNums, slNums,
+            ownProblem: hits(ownNums), NLproblem: hits(nlNums), SLproblem: hits(slNums),
+            problem: hits(ownNums) || hits(nlNums) || hits(slNums)
+        };
+    }
+
+    /* ======================================================================
+       UI SETUP
+    ====================================================================== */
+
+    function populateStateDropdown(prefix){
+        const sel = document.getElementById(prefix+'-state');
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = '-- State chunein --';
+        sel.appendChild(placeholder);
+        Object.keys(STATE_CITIES).forEach(stateName => {
+            const opt = document.createElement('option');
+            opt.value = stateName;
+            opt.textContent = stateName;
+            sel.appendChild(opt);
+        });
+        const otherOpt = document.createElement('option');
+        otherOpt.value = '__other__';
+        otherOpt.textContent = 'Other / Outside India (Lat-Long manually)';
+        sel.appendChild(otherOpt);
+
+        sel.addEventListener('change', function(){
+            populateCityForState(prefix, sel.value);
+        });
+    }
+
+    function populateCityForState(prefix, stateName){
+        const citySel = document.getElementById(prefix+'-city');
+        const manualBox = document.getElementById(prefix+'-manual');
+        citySel.innerHTML = '';
+
+        if(!stateName){
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = '-- Pehle State chunein --';
+            citySel.appendChild(placeholder);
+            manualBox.classList.remove('show');
+            return;
+        }
+
+        if(stateName === '__other__'){
+            const placeholder = document.createElement('option');
+            placeholder.value = '__other__';
+            placeholder.textContent = 'Manual Lat/Long neeche bharein';
+            citySel.appendChild(placeholder);
+            manualBox.classList.add('show');
+            return;
+        }
+
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = '-- City chunein --';
+        citySel.appendChild(placeholder);
+
+        (STATE_CITIES[stateName] || []).forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.name;
+            opt.dataset.lat = c.lat;
+            opt.dataset.lon = c.lon;
+            opt.textContent = c.name;
+            citySel.appendChild(opt);
+        });
+
+        const otherOpt = document.createElement('option');
+        otherOpt.value = '__other__';
+        otherOpt.textContent = 'Other (Lat/Long manually enter karein)';
+        citySel.appendChild(otherOpt);
+
+        manualBox.classList.remove('show');
+        citySel.addEventListener('change', function(){
+            if(citySel.value === '__other__'){
+                manualBox.classList.add('show');
+            } else {
+                manualBox.classList.remove('show');
+            }
+        });
+    }
+
+    const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    function populateDobDropdowns(prefix){
+        const daySel = document.getElementById(prefix+'-dob-day');
+        const monthSel = document.getElementById(prefix+'-dob-month');
+        const yearSel = document.getElementById(prefix+'-dob-year');
+
+        const dayPh = document.createElement('option'); dayPh.value=''; dayPh.textContent='Day'; daySel.appendChild(dayPh);
+        for(let d=1; d<=31; d++){
+            const opt = document.createElement('option');
+            opt.value = String(d);
+            opt.textContent = String(d).padStart(2,'0');
+            daySel.appendChild(opt);
+        }
+
+        const monthPh = document.createElement('option'); monthPh.value=''; monthPh.textContent='Month'; monthSel.appendChild(monthPh);
+        MONTH_NAMES.forEach((name, idx) => {
+            const opt = document.createElement('option');
+            opt.value = String(idx+1);
+            opt.textContent = `${String(idx+1).padStart(2,'0')} - ${name}`;
+            monthSel.appendChild(opt);
+        });
+
+        const yearPh = document.createElement('option'); yearPh.value=''; yearPh.textContent='Year'; yearSel.appendChild(yearPh);
+        const currentYear = new Date().getFullYear();
+        for(let y=currentYear; y>=1930; y--){
+            const opt = document.createElement('option');
+            opt.value = String(y);
+            opt.textContent = String(y);
+            yearSel.appendChild(opt);
+        }
+    }
+
+    populateStateDropdown('boy');
+    populateStateDropdown('girl');
+    populateCityForState('boy', '');
+    populateCityForState('girl', '');
+    populateDobDropdowns('boy');
+    populateDobDropdowns('girl');
+    setMode('vedic');
+
+    // Event listeners (attached via JS instead of inline onclick, so this works
+    // even under strict Content-Security-Policy environments that block inline handlers)
+    document.getElementById('mode-vedic-btn').addEventListener('click', () => setMode('vedic'));
+    document.getElementById('mode-kp-btn').addEventListener('click', () => setMode('kp'));
+    document.getElementById('match-kundli-btn').addEventListener('click', generateMatch);
+    document.getElementById('reset-form-btn').addEventListener('click', resetForm);
+    document.getElementById('pdf-download-btn').addEventListener('click', printReport);
+
+    /* ======================================================================
+       CHART COMPUTATION
+    ====================================================================== */
+
+    /* ----------------------------------------------------------------------
+       Manglik Dosh Parihar (cancellation) - as per Brihad Jyotish Shastra:
+       1) Mars in 1st house in Mesh, OR 4th house in Vrishchik, OR 7th house
+          in Makar -> parihar.
+       2) If Saturn sits in house 1, 4, 7, 9, or 12 (from Lagna) -> parihar,
+          regardless of which house triggered the Manglik dosh.
+    ---------------------------------------------------------------------- */
+    function marsParihar(marsRashiIdx, house, saturnHouseFromAsc){
+        if (house === 1 && marsRashiIdx === 0) {
+            return { cancelled:true, reason:'Mars 1st ghar mein Mesh rashi mein hai (Brihad Jyotish Shastra ke anusaar parihar).' };
+        }
+        if (house === 4 && marsRashiIdx === 7) {
+            return { cancelled:true, reason:'Mars 4th ghar mein Vrishchik rashi mein hai (Brihad Jyotish Shastra ke anusaar parihar).' };
+        }
+        if (house === 7 && marsRashiIdx === 9) {
+            return { cancelled:true, reason:'Mars 7th ghar mein Makar rashi mein hai (Brihad Jyotish Shastra ke anusaar parihar).' };
+        }
+        if ([1,4,7,9,12].includes(saturnHouseFromAsc)) {
+            return { cancelled:true, reason:`Shani ${saturnHouseFromAsc}th ghar mein sthit hai (Brihad Jyotish Shastra ke anusaar Shani ke 1,4,7,9,12 bhaav mein hone se parihar).` };
+        }
+        return { cancelled:false, reason:'' };
+    }
+
+    function computeChart(y, m, day, hh, mm, lat, lon){
+        const hourLocal = hh + mm/60;
+        const hourUT = hourLocal - 5.5; // IST assumption
+        const jd = julianDay(y, m, day, hourUT);
+        const d = jd - 2451543.5;
+
+        const sun = sunPosition(d);
+        const moon = moonPosition(d, sun);
+        const mars = marsPosition(d, sun);
+        const saturn = planetPositionGeneric(SATURN_EL, d, sun, 6);
+        const asc = ascendantLongitude(d, lat, lon);
+
+        const yearDecimal = y + (m-1)/12 + day/365.25;
+        const ay = lahiriAyanamsa(yearDecimal);
+
+        const moonSid = norm360(moon.lon - ay);
+        const marsSid = norm360(mars.lon - ay);
+        const saturnSid = norm360(saturn.lon - ay);
+        const ascSid = norm360(asc - ay);
+
+        const nakSpan = 360/27;
+        const nakIdx = Math.floor(moonSid / nakSpan);
+        const pada = Math.floor((moonSid % nakSpan) / (nakSpan/4)) + 1;
+        const rashiIdx = Math.floor(moonSid / 30);
+        const ascRashiIdx = Math.floor(ascSid / 30);
+        const marsRashiIdx = Math.floor(marsSid / 30);
+        const saturnRashiIdx = Math.floor(saturnSid / 30);
+
+        const houseFromAsc = ((marsRashiIdx - ascRashiIdx + 12) % 12) + 1;
+        const saturnHouseFromAsc = ((saturnRashiIdx - ascRashiIdx + 12) % 12) + 1;
+        const manglik = [1,4,7,8,12].includes(houseFromAsc);
+        const parihar = manglik ? marsParihar(marsRashiIdx, houseFromAsc, saturnHouseFromAsc) : { cancelled:false, reason:'' };
+        const effectiveManglik = manglik && !parihar.cancelled;
+
+        return {
+            moonSid, nakIdx, pada, rashiIdx, ascRashiIdx, marsRashiIdx, saturnRashiIdx,
+            houseFromAsc, saturnHouseFromAsc, manglik, parihar, effectiveManglik
+        };
+    }
+
+    function getPersonInput(prefix){
+        const name = document.getElementById(prefix+'-name').value.trim();
+        const dobDay = document.getElementById(prefix+'-dob-day').value;
+        const dobMonth = document.getElementById(prefix+'-dob-month').value;
+        const dobYear = document.getElementById(prefix+'-dob-year').value;
+        const tob = document.getElementById(prefix+'-time').value;
+        const stateSel = document.getElementById(prefix+'-state');
+        const citySel = document.getElementById(prefix+'-city');
+
+        if(!name || !dobDay || !dobMonth || !dobYear || !tob || !stateSel.value || !citySel.value){
+            return null;
+        }
+
+        let lat, lon;
+        if(stateSel.value === '__other__' || citySel.value === '__other__'){
+            lat = parseFloat(document.getElementById(prefix+'-lat').value);
+            lon = parseFloat(document.getElementById(prefix+'-lon').value);
+            if(isNaN(lat) || isNaN(lon)) return null;
+        } else {
+            const opt = citySel.options[citySel.selectedIndex];
+            lat = parseFloat(opt.dataset.lat);
+            lon = parseFloat(opt.dataset.lon);
+            if(isNaN(lat) || isNaN(lon)) return null;
+        }
+
+        const day = Number(dobDay);
+        const m = Number(dobMonth);
+        const y = Number(dobYear);
+        const [hh, mm] = tob.split(':').map(Number);
+
+        return { name, y, m, day, hh, mm, lat, lon };
+    }
+
+    /* ======================================================================
+       ASHTAKOOT GUNA MILAN
+    ====================================================================== */
+
+    function varnaKoota(boy, girl){
+        const bV = RASHI[boy.rashiIdx].varna;
+        const gV = RASHI[girl.rashiIdx].varna;
+        return { max:1, score: bV >= gV ? 1 : 0 };
+    }
+
+    // Exact Vashya Guna-Bodhak Chakra (5x5, directional: row=Var/boy, col=Kanya/girl)
+    const VASHYA_ORDER = ['Chatushpad','Sarpa','Dwipad','Keeta','Jalachar'];
+    const VASHYA_MATRIX = [
+        [2,   1, 1.5, 1, 2],
+        [1,   2, 0,   1, 1],
+        [0,   0, 2,   0, 1],
+        [1,   1, 0,   2, 1],
+        [1,   1, 1,   1, 2]
+    ];
+    // Rashi -> Vashya group. Dhanu and Makar are split signs (handled by degree in vashyaOf()).
+    function vashyaOf(rashiIdx, degInSign){
+        if(rashiIdx === 8) return degInSign < 15 ? 'Dwipad' : 'Chatushpad';   // Dhanu (Sagittarius)
+        if(rashiIdx === 9) return degInSign < 15 ? 'Chatushpad' : 'Jalachar'; // Makar (Capricorn)
+        const map = ['Chatushpad','Chatushpad','Dwipad','Keeta','Chatushpad','Dwipad','Dwipad','Sarpa',null,null,'Jalachar','Jalachar'];
+        return map[rashiIdx];
+    }
+
+    function vashyaKoota(boy, girl){
+        const bDeg = boy.moonSid % 30;
+        const gDeg = girl.moonSid % 30;
+        const bG = vashyaOf(boy.rashiIdx, bDeg);
+        const gG = vashyaOf(girl.rashiIdx, gDeg);
+        const bi = VASHYA_ORDER.indexOf(bG);
+        const gi = VASHYA_ORDER.indexOf(gG);
+        return { max:2, score: VASHYA_MATRIX[bi][gi] };
+    }
+
+    function taraKoota(boy, girl){
+        const c1 = ((girl.nakIdx - boy.nakIdx + 27) % 27) + 1;
+        const c2 = ((boy.nakIdx - girl.nakIdx + 27) % 27) + 1;
+        const t1 = ((c1-1)%9)+1;
+        const t2 = ((c2-1)%9)+1;
+        const good = [1,2,4,6,8,9];
+        let score = 0;
+        score += good.includes(t1) ? 1.5 : 0;
+        score += good.includes(t2) ? 1.5 : 0;
+        return { max:3, score };
+    }
+
+    function yoniScore(y1, g1, y2, g2){
+        const i1 = YONI_ORDER.indexOf(y1);
+        const i2 = YONI_ORDER.indexOf(y2);
+        return YONI_MATRIX[i1][i2];
+    }
+
+    function yoniKoota(boy, girl){
+        const bN = NAKSHATRA[boy.nakIdx];
+        const gN = NAKSHATRA[girl.nakIdx];
+        const score = yoniScore(bN.yoni, bN.gender, gN.yoni, gN.gender);
+        return { max:4, score };
+    }
+
+    function planetRelation(a, b){
+        if(a === b) return 'F';
+        if(PLANET_FRIENDSHIP[a].friends.includes(b)) return 'F';
+        if(PLANET_FRIENDSHIP[a].enemies.includes(b)) return 'E';
+        return 'N';
+    }
+
+    function grahaMaitriKoota(boy, girl){
+        const bL = RASHI[boy.rashiIdx].lord;
+        const gL = RASHI[girl.rashiIdx].lord;
+        if(bL === gL) return { max:5, score:5 };
+        const r1 = planetRelation(bL, gL);
+        const r2 = planetRelation(gL, bL);
+        const map = {
+            'F,F':5, 'F,N':4, 'N,F':4, 'N,N':3,
+            'F,E':1, 'E,F':1, 'N,E':0.5, 'E,N':0.5, 'E,E':0
+        };
+        const score = map[r1+','+r2];
+        return { max:5, score };
+    }
+
+    function ganaKoota(boy, girl){
+        const bG = NAKSHATRA[boy.nakIdx].gana;
+        const gG = NAKSHATRA[girl.nakIdx].gana;
+        const table = {
+            Deva:     { Deva:6, Manushya:5, Rakshasa:1 },
+            Manushya: { Deva:6, Manushya:6, Rakshasa:0 },
+            Rakshasa: { Deva:1, Manushya:0, Rakshasa:6 }
+        };
+        return { max:6, score: table[bG][gG] };
+    }
+
+    function bhakootKoota(boy, girl){
+        if(boy.rashiIdx === girl.rashiIdx) return { max:7, score:7 };
+        const c1 = ((girl.rashiIdx - boy.rashiIdx + 12) % 12) + 1;
+        const c2 = ((boy.rashiIdx - girl.rashiIdx + 12) % 12) + 1;
+        const pair = [c1,c2].sort((a,b)=>a-b).join(',');
+        const badPairs = ['6,8', '2,12', '5,9'];
+        let dosha = badPairs.includes(pair);
+        if(dosha && RASHI[boy.rashiIdx].lord === RASHI[girl.rashiIdx].lord){
+            dosha = false; // same-lord cancellation
+        }
+        return { max:7, score: dosha ? 0 : 7 };
+    }
+
+    function nadiKoota(boy, girl){
+        const bN = NAKSHATRA[boy.nakIdx].nadi;
+        const gN = NAKSHATRA[girl.nakIdx].nadi;
+        return { max:8, score: bN === gN ? 0 : 8 };
+    }
+
+    function calculateAshtakoot(boy, girl){
+        return {
+            Varna: varnaKoota(boy, girl),
+            Vashya: vashyaKoota(boy, girl),
+            Tara: taraKoota(boy, girl),
+            Yoni: yoniKoota(boy, girl),
+            'Graha Maitri': grahaMaitriKoota(boy, girl),
+            Gana: ganaKoota(boy, girl),
+            Bhakoot: bhakootKoota(boy, girl),
+            Nadi: nadiKoota(boy, girl)
+        };
+    }
+
+    function conclusionFor(total){
+        if(total >= 32) return 'Uttam Match (Excellent) — Highly Recommended.';
+        if(total >= 24) return 'Achha Match (Good) — Recommended.';
+        if(total >= 18) return 'Madhyam Match (Average) — Vichar kiya ja sakta hai, astrologer se salaah lein.';
+        return 'Score kam hai — is match ki vistrit samiksha (detailed review) astrologer se avashya karayein.';
+    }
+
+    /* ======================================================================
+       MAIN ACTIONS
+    ====================================================================== */
+
+    function showError(msg){
+        const el = document.getElementById('error-msg');
+        el.textContent = msg;
+        el.style.display = 'block';
+    }
+    function hideError(){
+        document.getElementById('error-msg').style.display = 'none';
+    }
+
+    function setMode(mode){
+        currentMode = mode;
+        document.getElementById('mode-vedic-btn').classList.toggle('mode-inactive', mode!=='vedic');
+        document.getElementById('mode-kp-btn').classList.toggle('mode-inactive', mode!=='kp');
+        document.getElementById('result-section').style.display = 'none';
+        document.getElementById('result-section-kp').style.display = 'none';
+    }
+
+    function generateMatch(){
+        hideError();
+        const boyInput = getPersonInput('boy');
+        const girlInput = getPersonInput('girl');
+
+        if(!boyInput || !girlInput){
+            showError('Kripaya dono ka naam, janm tithi, samay aur sthaan (ya lat/long) bharein!');
+            return;
+        }
+
+        if(currentMode === 'kp'){
+            generateKPMatch(boyInput, girlInput);
+        } else {
+            generateVedicMatch(boyInput, girlInput);
+        }
+    }
+
+    function generateVedicMatch(boyInput, girlInput){
+        const boyChart = computeChart(boyInput.y, boyInput.m, boyInput.day, boyInput.hh, boyInput.mm, boyInput.lat, boyInput.lon);
+        const girlChart = computeChart(girlInput.y, girlInput.m, girlInput.day, girlInput.hh, girlInput.mm, girlInput.lat, girlInput.lon);
+
+        const gunas = calculateAshtakoot(boyChart, girlChart);
+        let total = 0;
+        Object.values(gunas).forEach(g => total += g.score);
+        total = Math.round(total*100)/100;
+
+        // ---- chart summary ----
+        const chartSummary = document.getElementById('chart-summary');
+        function chartHtml(label, personInput, chart){
+            const nak = NAKSHATRA[chart.nakIdx];
+            const rashi = RASHI[chart.rashiIdx];
+            const ascRashi = RASHI[chart.ascRashiIdx];
+            return `<div class="person-chart">
+                <h4>${personInput.name} (${label})</h4>
+                <p><strong>Rashi (Moon Sign):</strong> ${rashi.name}</p>
+                <p><strong>Nakshatra:</strong> ${nak.name} — Pada ${chart.pada}</p>
+                <p><strong>Lagna (Ascendant):</strong> ${ascRashi.name}</p>
+                <p><strong>Manglik:</strong> ${
+                    !chart.manglik ? 'Nahi (No)' :
+                    chart.parihar.cancelled ? 'Haan, lekin Parihar (Cancelled)' :
+                    'Haan (Yes)'
+                }</p>
+            </div>`;
+        }
+        chartSummary.innerHTML =
+            chartHtml('Boy', boyInput, boyChart) +
+            chartHtml('Girl', girlInput, girlChart);
+
+        // ---- score ----
+        document.getElementById('score-display').textContent = total + ' / 36';
+        document.getElementById('conclusion-text').textContent = conclusionFor(total);
+
+        // ---- table ----
+        const tbody = document.getElementById('guna-table-body');
+        tbody.innerHTML = '';
+        Object.entries(gunas).forEach(([name, g]) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${name}</td><td>${g.max}</td><td>${g.score}</td>`;
+            tbody.appendChild(tr);
+        });
+
+        // ---- manglik status ----
+        const manglikEl = document.getElementById('manglik-status');
+
+        function personManglikLine(name, chart){
+            const shaniInfo = `(Lagna se Shani: ${chart.saturnHouseFromAsc}. ghar mein)`;
+            if(!chart.manglik){
+                return `${name}: Lagna se Mars <strong>${chart.houseFromAsc}. ghar</strong> mein hai — <strong>Non-Manglik</strong>`;
+            }
+            if(chart.parihar.cancelled){
+                return `${name}: Lagna se Mars <strong>${chart.houseFromAsc}. ghar</strong> mein hai ${shaniInfo} — Manglik hai, <strong>lekin Parihar (dosh cancelled)</strong>. ${chart.parihar.reason}`;
+            }
+            return `${name}: Lagna se Mars <strong>${chart.houseFromAsc}. ghar</strong> mein hai ${shaniInfo} — <strong>Manglik</strong> (koi parihar lagu nahi hota)`;
+        }
+
+        let manglikMsg;
+        if(boyChart.effectiveManglik === girlChart.effectiveManglik){
+            manglikMsg = boyChart.effectiveManglik
+                ? 'Dono hi (bina parihar ke) Manglik hain — is sthiti mein dosh ek doosre ko sanshamit (mutually cancel) kar deta hai, isliye samanya taur par baadhak nahi maana jaata.'
+                : 'Dono ka effective Manglik status same hai, isliye Manglik Dosh yahan baadhak nahi maana jaata.';
+        } else {
+            manglikMsg = 'Ek vyakti effectively Manglik hai aur doosra nahi — Manglik Dosh vichaarniya hai. Kripaya remedies/dosh-parihar ki poori pushti ke liye Astrologer Vivek Nigam se sampark karein.';
+        }
+
+        manglikEl.innerHTML = `<strong>Manglik Dosh Check:</strong><br>
+            ${personManglikLine(boyInput.name, boyChart)}<br>
+            ${personManglikLine(girlInput.name, girlChart)}<br><br>
+            ${manglikMsg}
+            <br><span style="font-size:12px;color:#8d6e63;">(Note: Parihar rules texts ke hisaab se kam-zyada ho sakte hain — Jupiter ki drishti aur umar-aadharit parihar is calculator mein shaamil nahi hain.)</span>`;
+
+        const resultSection = document.getElementById('result-section');
+        resultSection.style.display = 'block';
+        resultSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function generateKPMatch(boyInput, girlInput){
+        const boyChart = computeKPChart(boyInput.y, boyInput.m, boyInput.day, boyInput.hh, boyInput.mm, boyInput.lat, boyInput.lon);
+        const girlChart = computeKPChart(girlInput.y, girlInput.m, girlInput.day, girlInput.hh, girlInput.mm, girlInput.lat, girlInput.lon);
+
+        // ---- chart summary ----
+        function kpChartHtml(label, personInput, chart){
+            return `<div class="person-chart">
+                <h4>${personInput.name} (${label})</h4>
+                <p><strong>Lagna Rashi:</strong> ${RASHI[chart.lagnaSign].name} (${chart.signType})</p>
+                <p><strong>1st CSL:</strong> ${chart.CSL.h1} &nbsp; <strong>2nd CSL:</strong> ${chart.CSL.h2}</p>
+                <p><strong>5th CSL:</strong> ${chart.CSL.h5} &nbsp; <strong>7th CSL:</strong> ${chart.CSL.h7}</p>
+                <p><strong>Badhak Ghar:</strong> ${chart.badhakHouse} &nbsp; <strong>Marak Ghar:</strong> ${chart.marakHouses.join(', ')}</p>
+            </div>`;
+        }
+        document.getElementById('kp-chart-summary').innerHTML =
+            kpChartHtml('Boy', boyInput, boyChart) + kpChartHtml('Girl', girlInput, girlChart);
+
+        // ---- 1. Age ----
+        const boyAge = kpAgeCheck(boyChart), girlAge = kpAgeCheck(girlChart);
+        function ageLine(name, chart, a){
+            const concern = a.NLresult.concern || a.SLresult.concern;
+            return `${name}: 1st CSL <strong>${chart.CSL.h1}</strong> [${a.ownNums.join(', ')}] &nbsp; NL=${a.NL} [${a.nlNums.join(', ')}] &nbsp; SL=${a.SL} [${a.slNums.join(', ')}]<br>
+                    ${concern
+                        ? '<strong style="color:#c62828;">Kripaya ek baar Astrologer se salah avashya le lein</strong>'
+                        : '<strong style="color:#2e7d32;">Aayu theek hai</strong>'}`;
+        }
+        document.getElementById('kp-age-box').innerHTML = `${ageLine(boyInput.name, boyChart, boyAge)}<br><br>${ageLine(girlInput.name, girlChart, girlAge)}`;
+
+        // ---- 2. Finance (boy only) ----
+        const boyFin = kpFinanceCheck(boyChart);
+        function financeVerdict(res){
+            const pos = res.NLresult.posCount + res.SLresult.posCount;
+            const neg = res.NLresult.negCount + res.SLresult.negCount;
+            if(pos > neg) return { text: 'Good', color: '#2e7d32' };
+            if(neg > pos) return { text: 'Problem ho sakti hai', color: '#c62828' };
+            return { text: 'Mixed', color: '#8d6e63' };
+        }
+        const finV = financeVerdict(boyFin);
+        document.getElementById('kp-finance-box').innerHTML =
+            `${boyInput.name}: 2nd CSL <strong>${boyChart.CSL.h2}</strong> [${boyFin.ownNums.join(', ')}] &nbsp; NL=${boyFin.NL} [${boyFin.nlNums.join(', ')}] &nbsp; SL=${boyFin.SL} [${boyFin.slNums.join(', ')}]<br>
+             <strong style="color:${finV.color};">${finV.text}</strong>`;
+
+        // ---- 3. Marriage (7th CSL, both) ----
+        const boyMar = kpMarriageCheck(boyChart), girlMar = kpMarriageCheck(girlChart);
+        function marriageVerdict(res){
+            const good = res.NLresult.goodCount + res.SLresult.goodCount;
+            const bad = res.NLresult.badCount + res.SLresult.badCount;
+            if(good > bad) return { text: 'Good', color: '#2e7d32' };
+            if(bad > good) return { text: 'Problem ho sakti hai', color: '#c62828' };
+            return { text: 'Mixed', color: '#8d6e63' };
+        }
+        function marLine(name, chart, mres){
+            const v = marriageVerdict(mres);
+            return `${name}: 7th CSL <strong>${chart.CSL.h7}</strong> [${mres.ownNums.join(', ')}] &nbsp; NL=${mres.NL} [${mres.nlNums.join(', ')}] &nbsp; SL=${mres.SL} [${mres.slNums.join(', ')}]<br>
+                    <strong style="color:${v.color};">${v.text}</strong>`;
+        }
+        document.getElementById('kp-marriage-box').innerHTML = `${marLine(boyInput.name, boyChart, boyMar)}<br><br>${marLine(girlInput.name, girlChart, girlMar)}`;
+
+        // ---- 4. Children (girl only) ----
+        const girlChild = kpChildrenCheck(girlChart);
+        function childrenVerdict(res){
+            const pos = res.NLresult.posCount + res.SLresult.posCount;
+            const neg = res.NLresult.negCount + res.SLresult.negCount;
+            if(pos > neg) return { text: 'Good', color: '#2e7d32' };
+            if(neg > pos) return { text: 'Problem ho sakti hai', color: '#c62828' };
+            return { text: 'Mixed', color: '#8d6e63' };
+        }
+        const childV = childrenVerdict(girlChild);
+        document.getElementById('kp-children-box').innerHTML =
+            `${girlInput.name}: 5th CSL <strong>${girlChart.CSL.h5}</strong> [${girlChild.ownNums.join(', ')}] &nbsp; NL=${girlChild.NL} [${girlChild.nlNums.join(', ')}] &nbsp; SL=${girlChild.SL} [${girlChild.slNums.join(', ')}]<br>
+             <strong style="color:${childV.color};">${childV.text}</strong><br>
+             5th CSL Rashi: ${girlChild.cslRashiName} &nbsp; NL Rashi: ${girlChild.nlRashiName}
+             ${girlChild.rashiRuleHit ? '<strong style="color:#c62828;">— Mesh/Mithun/Simha/Kanya rashi mein hai: Child birth mein samasya aa sakti hai</strong>' : '— is niyam se koi samasya nahi'}`;
+
+        // ---- 5. Moon check (both) ----
+        const boyMoon = kpMoonCheck(boyChart), girlMoon = kpMoonCheck(girlChart);
+        function moonLine(name, mres){
+            return `${name}: Moon [${mres.ownNums.join(', ')}] &nbsp; NL=${mres.NL} [${mres.nlNums.join(', ')}] &nbsp; SL=${mres.SL} [${mres.slNums.join(', ')}]<br>
+                    ${mres.problem
+                        ? '<strong style="color:#c62828;">Chandra samasya de sakta hai</strong>'
+                        : '<strong style="color:#2e7d32;">Chandra theek hai</strong>'}`;
+        }
+        document.getElementById('kp-moon-box').innerHTML = `${moonLine(boyInput.name, boyMoon)}<br><br>${moonLine(girlInput.name, girlMoon)}`;
+
+        const resultSectionKP = document.getElementById('result-section-kp');
+        resultSectionKP.style.display = 'block';
+        resultSectionKP.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetForm(){
+        ['boy','girl'].forEach(prefix => {
+            document.getElementById(prefix+'-name').value = '';
+            document.getElementById(prefix+'-dob-day').value = '';
+            document.getElementById(prefix+'-dob-month').value = '';
+            document.getElementById(prefix+'-dob-year').value = '';
+            document.getElementById(prefix+'-time').value = '';
+            document.getElementById(prefix+'-state').value = '';
+            populateCityForState(prefix, '');
+            document.getElementById(prefix+'-lat').value = '';
+            document.getElementById(prefix+'-lon').value = '';
+            document.getElementById(prefix+'-manual').classList.remove('show');
+        });
+        document.getElementById('result-section').style.display = 'none';
+        document.getElementById('result-section-kp').style.display = 'none';
+        hideError();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function printReport(){
+        hideError();
+        const boyInput = getPersonInput('boy');
+        const girlInput = getPersonInput('girl');
+        if(!boyInput || !girlInput){
+            showError('Kripaya dono ka naam, janm tithi, samay aur sthaan (ya lat/long) bharein!');
+            return;
+        }
+
+        // Compute BOTH Vedic and KP results regardless of which mode is currently showing
+        generateVedicMatch(boyInput, girlInput);
+        generateKPMatch(boyInput, girlInput);
+
+        document.title = `KundliMilan_${boyInput.name}_${girlInput.name}`;
+        document.body.classList.add('printing');
+        window.print();
+        document.body.classList.remove('printing');
+    }
+    </script>
+
+    <footer style="background-color: var(--primary-color); color: white; width: 100%; padding: 25px 20px; text-align: center; margin-top: 10px;">
+        <p style="margin: 0 0 8px 0; font-size: 16px;">सटीक कुण्डली मिलान एवं सम्पूर्ण कुण्डली विश्लेषण के लिये संपर्क करें</p>
+        <p style="margin: 0; font-size: 20px; font-weight: bold;">Astrologer Vivek Nigam</p>
+        <p style="margin: 4px 0; font-size: 14px; color: #ffe0b2;">(Astrologer, Numerologist &amp; Vastu Expert)</p>
+        <p style="margin: 4px 0 0 0; font-size: 16px;">Mob: +91 9450122288</p>
+    </footer>
+
+</body>
+</html>
