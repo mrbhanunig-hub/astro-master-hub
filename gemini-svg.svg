@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- गहरा कॉस्मिक बैकग्राउंड ग्रेडिएंट -->
+    <radialGradient id="bgGrad" cx="50%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="60%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </radialGradient>
+
+    <!-- रॉयल गोल्ड ग्रेडिएंट -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="40%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+
+    <!-- ग्लो इफ़ेक्ट -->
+    <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- बैकग्राउंड बेस (राउंडेड ऐप आइकन) -->
+  <rect width="512" height="512" rx="115" fill="url(#bgGrad)"/>
+
+  <!-- बाहरी गोल्डन एस्ट्रोलॉजिकल रिंग -->
+  <circle cx="256" cy="256" r="215" fill="none" stroke="url(#goldGrad)" stroke-width="3" stroke-dasharray="8 6" opacity="0.6"/>
+  <circle cx="256" cy="256" r="200" fill="none" stroke="url(#goldGrad)" stroke-width="4" opacity="0.8"/>
+
+  <!-- कॉस्मिक प्लैनेट ऑर्बिट (घूमती हुई रिंग) -->
+  <ellipse cx="256" cy="256" rx="200" ry="70" fill="none" stroke="url(#goldGrad)" stroke-width="3.5" transform="rotate(-30 256 256)" opacity="0.7"/>
+
+  <!-- 4 दिशाओं के एस्ट्रो स्टार्स (4-Point Stars) -->
+  <!-- Top Star -->
+  <path d="M 256 24 L 260 46 L 282 50 L 260 54 L 256 76 L 252 54 L 230 50 L 252 46 Z" fill="url(#goldGrad)" filter="url(#goldGlow)"/>
+  <!-- Bottom Star -->
+  <path d="M 256 436 L 260 458 L 282 462 L 260 466 L 256 488 L 252 466 L 230 462 L 252 458 Z" fill="url(#goldGrad)"/>
+  <!-- Left Star -->
+  <path d="M 50 256 L 72 252 L 76 230 L 80 252 L 102 256 L 80 260 L 76 282 L 72 260 Z" fill="url(#goldGrad)"/>
+  <!-- Right Star -->
+  <path d="M 410 256 L 432 252 L 436 230 L 440 252 L 462 256 L 440 260 L 436 282 L 432 260 Z" fill="url(#goldGrad)"/>
+
+  <!-- ऑर्बिट पर छोटा चमकता हुआ ग्रह -->
+  <circle cx="410" cy="168" r="9" fill="url(#goldGrad)" filter="url(#goldGlow)"/>
+
+  <!-- केंद्र में इंटरलॉक्ड 'CC' (The Cosmic Counsellor) सिग्नेचर लोगो -->
+  <g font-family="'Cinzel', 'Trajan Pro', 'Georgia', 'Times New Roman', serif" font-weight="bold" font-size="190" fill="url(#goldGrad)" filter="url(#goldGlow)" text-anchor="middle" dominant-baseline="central">
+    <!-- पहला 'C' (Cosmic) -->
+    <text x="215" y="248">C</text>
+    <!-- दूसरा इंटरलॉक्ड 'C' (Counsellor) -->
+    <text x="295" y="260" opacity="0.95">C</text>
+  </g>
+
+  <!-- नीचे छोटा सब-टाइटल -->
+  <text x="256" y="380" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="21" font-weight="700" letter-spacing="7" fill="#fbbf24" text-anchor="middle">COSMIC HUB</text>
+</svg>
