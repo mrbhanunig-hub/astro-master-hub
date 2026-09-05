@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>नवतारा चक्र</title>
+<style>
+  :root{
+    --bg-deep:#10142B;
+    --bg-panel:#1B2044;
+    --bg-panel-2:#232A54;
+    --gold:#CBA135;
+    --gold-dim:#8C7327;
+    --good:#3FA34D;
+    --good-bg:rgba(63,163,77,0.15);
+    --bad:#D14343;
+    --bad-bg:rgba(209,67,67,0.15);
+    --neutral:#9CA0BE;
+    --neutral-bg:rgba(156,160,190,0.15);
+    --text:#EDE8DA;
+    --text-muted:#9CA0BE;
+    --rule:rgba(203,161,53,0.25);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(203,161,53,0.10), transparent 55%),
+      radial-gradient(ellipse at 85% 100%, rgba(120,90,180,0.10), transparent 50%),
+      var(--bg-deep);
+    color:var(--text);
+    font-family:'Noto Sans Devanagari','Nirmala UI','Mangal','Noto Sans',sans-serif;
+    min-height:100vh;
+    padding:32px 16px 80px;
+  }
+  .stars{
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, rgba(237,232,218,0.35), transparent),
+      radial-gradient(1px 1px at 80% 8%, rgba(237,232,218,0.3), transparent),
+      radial-gradient(1.5px 1.5px at 60% 25%, rgba(203,161,53,0.4), transparent),
+      radial-gradient(1px 1px at 30% 60%, rgba(237,232,218,0.25), transparent),
+      radial-gradient(1px 1px at 92% 70%, rgba(237,232,218,0.3), transparent),
+      radial-gradient(1.5px 1.5px at 15% 85%, rgba(203,161,53,0.35), transparent),
+      radial-gradient(1px 1px at 70% 92%, rgba(237,232,218,0.2), transparent);
+    background-repeat:no-repeat;
+  }
+  .wrap{max-width:640px; margin:0 auto; position:relative; z-index:1;}
+  header{text-align:center; margin-bottom:36px;}
+  header .eyebrow{font-size:13px; color:var(--gold); letter-spacing:0.02em; margin-bottom:6px;}
+  h1{font-family:'Noto Serif Devanagari','Nirmala UI','Kohinoor Devanagari',serif; font-size:38px; font-weight:700; margin:0 0 10px; color:var(--text);}
+  header p{color:var(--text-muted); font-size:15px; margin:0; line-height:1.6;}
+
+  .panel{background:var(--bg-panel); border:1px solid var(--rule); border-radius:4px; padding:24px; margin-bottom:20px;}
+  .panel h2{font-family:'Noto Serif Devanagari','Nirmala UI','Kohinoor Devanagari',serif; font-size:19px; font-weight:600; margin:0 0 16px; color:var(--gold);}
+
+  label{display:block; font-size:14px; color:var(--text-muted); margin-bottom:6px;}
+  select, input[type="date"], input[type="time"], input[type="text"], input[type="number"]{
+    width:100%; background:var(--bg-panel-2); border:1px solid var(--rule);
+    color:var(--text); padding:11px 12px; border-radius:4px; font-size:15px; font-family:inherit;
+  }
+  select:focus, input:focus{outline:1.5px solid var(--gold);}
+  .row{display:flex; gap:12px; margin-bottom:14px;}
+  .row > div{flex:1;}
+  .field{margin-bottom:14px;}
+
+  .toggle-link{background:none; border:none; color:var(--gold); font-size:13.5px; cursor:pointer; padding:0; text-decoration:underline; text-underline-offset:3px; font-family:inherit;}
+  .sub-block{margin-top:14px; padding-top:14px; border-top:1px dashed var(--rule); display:none;}
+  .sub-block.open{display:block;}
+  .divider{border-top:1px dashed var(--rule); margin:18px 0;}
+
+  .btn-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:4px;}
+  button.btn{background:var(--gold); color:#1A1508; border:none; padding:11px 20px; border-radius:4px; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit;}
+  button.btn.secondary{background:transparent; color:var(--gold); border:1px solid var(--gold-dim);}
+  button.btn:active{transform:translateY(1px);}
+
+  .action-list{display:flex; flex-direction:column; gap:10px;}
+  button.action-btn{
+    width:100%; text-align:left; background:var(--bg-panel-2); color:var(--gold);
+    border:1px solid var(--rule); padding:13px 16px; border-radius:4px; font-size:14.5px;
+    font-weight:600; cursor:pointer; font-family:inherit; display:flex; justify-content:space-between; align-items:center;
+  }
+  button.action-btn .arrow{color:var(--gold-dim); font-size:13px;}
+
+  .result-card{text-align:center; padding:32px 24px;}
+  .result-card .date-label{color:var(--text-muted); font-size:14px; margin-bottom:14px;}
+  .result-card .nak-name{font-family:'Noto Serif Devanagari','Nirmala UI','Kohinoor Devanagari',serif; font-size:22px; color:var(--text); margin-bottom:4px;}
+  .result-card .tara-name{font-family:'Noto Serif Devanagari','Nirmala UI','Kohinoor Devanagari',serif; font-size:34px; font-weight:700; margin:6px 0 12px; color:var(--gold);}
+  .badge{display:inline-block; padding:6px 18px; border-radius:20px; font-size:15px; font-weight:600;}
+  .badge.good{background:var(--good-bg); color:var(--good);}
+  .badge.bad{background:var(--bad-bg); color:var(--bad);}
+  .badge.neutral{background:var(--neutral-bg); color:var(--neutral);}
+  .result-card .meaning{color:var(--text-muted); font-size:14.5px; margin-top:16px; line-height:1.7; max-width:440px; margin-left:auto; margin-right:auto;}
+
+  .section-block{display:none; margin-top:20px;}
+  .section-block.open{display:block;}
+
+  .cal-list{list-style:none; margin:0; padding:0;}
+  .cal-list li{display:flex; align-items:center; justify-content:space-between; padding:11px 4px; border-bottom:1px solid var(--rule); font-size:14.5px;}
+  .cal-list li:last-child{border-bottom:none;}
+  .cal-list .d{color:var(--text); min-width:92px;}
+  .cal-list .n{color:var(--text-muted); flex:1; text-align:left; padding-left:10px;}
+  .cal-list .t{font-weight:600; margin-right:10px;}
+  .cal-list li.today{background:rgba(203,161,53,0.08); border-radius:4px; padding-left:8px; padding-right:8px;}
+  .dot{width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:8px;}
+  .dot.good{background:var(--good);}
+  .dot.bad{background:var(--bad);}
+  .dot.neutral{background:var(--neutral);}
+
+  .tara-ref .item{padding:10px 0; border-bottom:1px solid var(--rule); font-size:14px;}
+  .tara-ref .item:last-child{border-bottom:none;}
+  .tara-ref .item b{color:var(--text);}
+  .tara-ref .item .q{font-size:12.5px; padding:2px 9px; border-radius:12px; margin-left:8px;}
+  .tara-ref .item .q.good{background:var(--good-bg); color:var(--good);}
+  .tara-ref .item .q.bad{background:var(--bad-bg); color:var(--bad);}
+  .tara-ref .item .q.neutral{background:var(--neutral-bg); color:var(--neutral);}
+
+  .navtara-table .grp{padding:12px 0; border-bottom:1px solid var(--rule);}
+  .navtara-table .grp:last-child{border-bottom:none;}
+  .navtara-table .grp-head{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
+  .navtara-table .grp-head b{font-family:'Noto Serif Devanagari','Nirmala UI','Kohinoor Devanagari',serif; font-size:16px; color:var(--text);}
+  .navtara-table .grp-naks{color:var(--text-muted); font-size:13.5px; padding-left:18px;}
+
+  .jatak-detail{font-size:14.5px; line-height:1.8; color:var(--text);}
+  .jatak-detail .lord{color:var(--gold); font-size:13.5px; margin-bottom:10px;}
+
+  footer{text-align:center; color:var(--text-muted); font-size:12.5px; margin-top:28px;}
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">✦ ✦ ✦</div>
+    <h1>नवतारा चक्र</h1>
+    <p>अपने जन्म नक्षत्र से किसी भी दिन का तारा जानें — शुभ या अशुभ</p>
+  </header>
+
+  <div class="panel">
+    <h2>जन्म नक्षत्र व तारीख</h2>
+    <div class="field">
+      <label for="janmaNak">आपका जन्म नक्षत्र चुनें</label>
+      <select id="janmaNak"></select>
+    </div>
+    <button class="toggle-link" id="toggleBirthCalc">— या जन्म तारीख/समय से पता करें</button>
+    <div class="sub-block" id="birthCalcBlock">
+      <div class="row">
+        <div><label for="bDate">जन्म तारीख (dd/mm/yyyy)</label><input type="text" id="bDate" placeholder="dd/mm/yyyy" maxlength="10" inputmode="numeric"></div>
+        <div><label for="bTime">जन्म समय</label><input type="time" id="bTime"></div>
+      </div>
+      <div class="row">
+        <div><label for="bLat">Latitude</label><input type="number" id="bLat" step="0.0001" value="26.4667"></div>
+        <div><label for="bLon">Longitude</label><input type="number" id="bLon" step="0.0001" value="80.6833"></div>
+      </div>
+      <div style="font-size:12.5px;color:var(--text-muted);">डिफ़ॉल्ट स्थान: कानपुर — ज़रूरत हो तो बदल दें। तारीख भरते ही जन्म नक्षत्र ऊपर अपने आप चुन जाएगा।</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="field">
+      <label for="targetDate">किस दिन का तारा जानना है</label>
+      <input type="date" id="targetDate">
+    </div>
+    <div class="btn-row">
+      <button class="btn" id="showTara" type="button">तारा दिखाएं</button>
+      <button class="btn secondary" id="useToday" type="button">आज</button>
+    </div>
+  </div>
+
+  <div id="resultPanel" class="panel result-card" style="display:none;">
+    <div class="date-label" id="resDate"></div>
+    <div class="nak-name" id="resNak"></div>
+    <div class="tara-name" id="resTara"></div>
+    <div id="resBadge"></div>
+    <div class="meaning" id="resMeaning"></div>
+  </div>
+
+  <div class="panel">
+    <h2>विस्तार से देखें</h2>
+    <div class="action-list">
+      <button class="action-btn" id="btnNavtaraTable" type="button"><span>नवतारा विभाजन देखें</span><span class="arrow">▾</span></button>
+      <div class="section-block" id="secNavtaraTable">
+        <div class="navtara-table" id="navtaraTableContent"></div>
+      </div>
+
+      <button class="action-btn" id="btnJatak" type="button"><span>जातक विवरण देखें</span><span class="arrow">▾</span></button>
+      <div class="section-block" id="secJatak">
+        <div class="jatak-detail" id="jatakContent"></div>
+      </div>
+
+      <button class="action-btn" id="btnCal" type="button"><span>अगले 14 दिनों का कैलेंडर देखें</span><span class="arrow">▾</span></button>
+      <div class="section-block" id="secCal">
+        <ul class="cal-list" id="calList"></ul>
+      </div>
+
+      <button class="action-btn" id="btnTaraRef" type="button"><span>नौ तारा के बारे में जानें</span><span class="arrow">▾</span></button>
+      <div class="section-block" id="secTaraRef">
+        <div class="tara-ref" id="taraRef"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>नवतारा चक्र · जन्म नक्षत्र से गिनकर तारा निकाला जाता है</footer>
+</div>
+
+<script>
+// ---------- Nakshatra data ----------
+const NAKSHATRAS = ["अश्विनी","भरणी","कृत्तिका","रोहिणी","मृगशिरा","आर्द्रा","पुनर्वसु","पुष्य","आश्लेषा",
+"मघा","पूर्वा फाल्गुनी","उत्तरा फाल्गुनी","हस्त","चित्रा","स्वाति","विशाखा","अनुराधा","ज्येष्ठा",
+"मूल","पूर्वाषाढ़ा","उत्तराषाढ़ा","श्रवण","धनिष्ठा","शतभिषा","पूर्वाभाद्रपद","उत्तराभाद्रपद","रेवती"];
+
+const NAK_LORD = ["केतु","शुक्र","सूर्य","चंद्र","मंगल","राहु","गुरु","शनि","बुध",
+"केतु","शुक्र","सूर्य","चंद्र","मंगल","राहु","गुरु","शनि","बुध",
+"केतु","शुक्र","सूर्य","चंद्र","मंगल","राहु","गुरु","शनि","बुध"];
+
+const JATAK_DETAIL = [
+"तेज़, ऊर्जावान और साहसी स्वभाव। नई शुरुआत करने में माहिर, तेज़ी और वेग से जुड़े कार्यों में रुचि रखते हैं।",
+"दृढ़ निश्चयी, अनुशासनप्रिय और कड़ी मेहनत करने वाले। जिम्मेदारी अच्छे से निभाते हैं, कभी-कभी थोड़े जिद्दी हो सकते हैं।",
+"तीक्ष्ण बुद्धि, नेतृत्व क्षमता और स्पष्टवादी स्वभाव। आलोचनात्मक सोच रखते हैं, कठिन परिस्थितियों में भी डटे रहते हैं।",
+"सौम्य, आकर्षक व्यक्तित्व और कला-सौंदर्य में रुचि। भौतिक सुख-समृद्धि चाहने वाले, स्थिरता पसंद करते हैं।",
+"जिज्ञासु स्वभाव, घुमक्कड़ प्रवृत्ति और खोजी मन। नई जानकारी व अनुभव इकट्ठा करने के शौकीन होते हैं।",
+"भावुक, तीव्र बुद्धि और परिवर्तनशील स्वभाव। संघर्षों से सीखकर निखरने वाले, गहरी सोच रखते हैं।",
+"उदार, आशावादी और पुनः आरंभ करने की क्षमता रखने वाले। परिवार व घर से लगाव, शिक्षा में रुचि रहती है।",
+"पोषण करने वाला स्वभाव, धार्मिक प्रवृत्ति और जिम्मेदार व्यक्तित्व। दूसरों की देखभाल व मार्गदर्शन में कुशल।",
+"रहस्यमयी, गहरी अंतर्दृष्टि और चतुर स्वभाव। मनोविज्ञान व गूढ़ विषयों में रुचि, आत्मरक्षा में सजग रहते हैं।",
+"गौरवशाली, परंपरा व वंश का सम्मान करने वाले, नेतृत्व क्षमता रखने वाले। सम्मान व अधिकार की चाह रहती है।",
+"रचनात्मक, आनंदप्रिय और सामाजिक स्वभाव। प्रेम व मनोरंजन में रुचि, उदार हृदय के होते हैं।",
+"सहयोगी, वचन के पक्के और उदार स्वभाव। मित्रता निभाने में विश्वसनीय, सामाजिक कार्यों में सक्रिय रहते हैं।",
+"कुशल हस्तकला, चतुर व व्यावहारिक बुद्धि। हास्यप्रिय स्वभाव, काम को व्यवस्थित ढंग से करने वाले होते हैं।",
+"कलात्मक दृष्टि, आकर्षक व्यक्तित्व और डिज़ाइन-सृजन में रुचि। चमक-दमक व सुंदरता की चाह रहती है।",
+"स्वतंत्र स्वभाव, संतुलन बनाए रखने वाले और व्यापार में कुशल। लचीलापन व अनुकूलन क्षमता अधिक होती है।",
+"लक्ष्य-केंद्रित, महत्वाकांक्षी और दृढ़ता से मंज़िल तक पहुंचने वाले। प्रतिस्पर्धा में आगे रहने की चाह रखते हैं।",
+"मित्रता निभाने वाले, संगठन क्षमता और भक्ति भाव रखने वाले। सहयोग व टीम भावना में विश्वास रखते हैं।",
+"जिम्मेदार, सुरक्षा देने वाला स्वभाव और नेतृत्व क्षमता। बड़ों जैसी भूमिका निभाने में सहज रहते हैं।",
+"गहराई तक जाने वाले, अनुसंधान प्रिय और सत्य की खोज करने वाले। जड़ों तक पहुंचकर समझने की प्रवृत्ति रखते हैं।",
+"अजेय इच्छाशक्ति, उत्साही और प्रभावशाली वाणी के धनी। लक्ष्य के प्रति अटूट समर्पण रखते हैं।",
+"धैर्यवान, विजयी स्वभाव और दीर्घकालीन सफलता चाहने वाले। कर्तव्यनिष्ठ व भरोसेमंद होते हैं।",
+"श्रवणशील, ज्ञान अर्जित करने वाले और अच्छे श्रोता-संचारक। सीखने व सिखाने दोनों में रुचि रखते हैं।",
+"ऊर्जावान, संगीत व लय में रुचि रखने वाले, समृद्धि की चाह रखते हैं। सामाजिक प्रतिष्ठा व सम्मान पाने वाले होते हैं।",
+"गूढ़ रहस्यों में रुचि, चिकित्सा व उपचार क्षमता और एकांतप्रिय स्वभाव। स्वतंत्र चिंतन करने वाले होते हैं।",
+"तीव्र बुद्धि, आध्यात्मिक झुकाव और जोखिम लेने की क्षमता। गहन विषयों में रुचि रखते हैं।",
+"गहन व शांत स्वभाव, आध्यात्मिक व दार्शनिक सोच रखने वाले। धैर्यपूर्वक कठिन कार्य पूरा करते हैं।",
+"करुणामयी, पालन-पोषण करने वाले और यात्रा-मार्गदर्शन में रुचि रखने वाले। सबका भला चाहने वाला कोमल स्वभाव।"
+];
+
+const TARA_NAMES = ["जन्म","सम्पत","विपत","क्षेम","प्रत्यरि","साधक","वध","मित्र","परम मित्र"];
+// 'neutral' | 'good' | 'bad'
+const TARA_STATUS = ["neutral","good","bad","good","bad","good","bad","good","good"];
+const TARA_MEANING = [
+  "स्वयं की स्थिति — यह तारा शुभ या अशुभ नहीं, सामान्य माना जाता है।",
+  "धन-लाभ व समृद्धि का तारा — नया काम शुरू करने के लिए उत्तम।",
+  "विपत्ति/बाधा का तारा — महत्वपूर्ण काम इस दिन न करें।",
+  "सुख-शांति का तारा — यात्रा व शुभ कार्यों के लिए अच्छा।",
+  "शत्रु-बाधा का तारा — जोखिम भरे निर्णय टालें।",
+  "कार्य-सिद्धि का तारा — इच्छापूर्ति व साधना के लिए शुभ।",
+  "हानि/वध का तारा — सबसे अधिक टाला जाने वाला तारा।",
+  "मित्रता व सहयोग का तारा — साझेदारी और समझौतों के लिए अच्छा।",
+  "सर्वोत्तम शुभ तारा — हर तरह के शुभ कार्य के लिए उत्तम।"
+];
+const STATUS_LABEL = {good:"शुभ", bad:"अशुभ", neutral:"सामान्य"};
+
+function fillNakDropdown(){
+  const sel = document.getElementById('janmaNak');
+  sel.innerHTML = '<option value="">-- चुनें --</option>' +
+    NAKSHATRAS.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+}
+function fillTaraRef(){
+  const el = document.getElementById('taraRef');
+  el.innerHTML = TARA_NAMES.map((n,i)=>
+    `<div class="item"><b>${i+1}. ${n}</b><span class="q ${TARA_STATUS[i]}">${STATUS_LABEL[TARA_STATUS[i]]}</span><div style="margin-top:4px;color:var(--text-muted);">${TARA_MEANING[i]}</div></div>`
+  ).join('');
+}
+
+// ---------- Simplified lunar longitude (Meeus low-precision periodic series) ----------
+function normDeg(d){ d = d % 360; if(d<0) d+=360; return d; }
+
+function moonEclipticLongitude(date){
+  const JD = date.getTime()/86400000 + 2440587.5;
+  const T = (JD - 2451545.0) / 36525;
+
+  const Lp = normDeg(218.3164477 + 481267.88123421*T - 0.0015786*T*T + T*T*T/538841);
+  const D  = normDeg(297.8501921 + 445267.1114034*T - 0.0018819*T*T + T*T*T/545868);
+  const M  = normDeg(357.5291092 + 35999.0502909*T - 0.0001536*T*T + T*T*T/24490000);
+  const Mp = normDeg(134.9633964 + 477198.8675055*T + 0.0087414*T*T + T*T*T/69699);
+  const F  = normDeg(93.2720950 + 483202.0175233*T - 0.0036539*T*T - T*T*T/3526000);
+
+  const r = Math.PI/180;
+  const d=D*r, m=M*r, mp=Mp*r, f=F*r;
+
+  const T4 = [
+    [0,0,1,0, 6288774],[2,0,-1,0, 1274027],[2,0,0,0, 658314],[0,0,2,0, 213618],
+    [0,1,0,0, -185116],[0,0,0,2, -114332],[2,0,-2,0, 58793],[2,-1,-1,0, 57066],
+    [2,0,1,0, 53322],[2,-1,0,0, 45758],[0,1,-1,0, -40923],[1,0,0,0, -34720],
+    [0,1,1,0, -30383],[2,0,-3,0, 15327],[0,0,1,2, -12528],[0,0,1,-2, 10980],
+    [4,0,-1,0, 10675],[0,0,3,0, 10034],[4,0,-2,0, 8548],[2,1,-1,0, -7888],
+    [2,1,0,0, -6766],[1,0,-1,0, -5163],[1,1,0,0, 4987],[2,-1,1,0, 4036],
+    [2,0,2,0, 3994],[4,0,0,0, 3861],[2,0,-3,0, 3665],[2,1,1,0, -2689],
+    [2,0,-1,2, -2602],[2,-1,-2,0, 2390],[1,-1,0,0, -2348],[2,-2,0,0, 2236],
+    [0,1,-2,0, -2120],[0,2,0,0, -2069],[2,-2,-1,0, 2048],[2,0,1,-2, -1773],
+    [2,0,0,2, -1595],[4,-1,-1,0, 1215],[0,0,2,2, -1110],[3,0,0,0, -892],
+    [2,1,-2,0, -810],[4,-1,-2,0, 759],[0,2,-1,0, -713],[2,2,-1,0, -700],
+    [2,1,0,-2, 691],[2,-1,-1,2, 596],[4,0,1,0, 549],[0,0,4,0, 537],
+    [4,-1,0,0, 520],[1,0,-2,0, -487]
+  ];
+
+  let sumL = 0;
+  for(const [cd,cm,cmp,cf,coef] of T4){
+    let arg = cd*d + cm*m + cmp*mp + cf*f;
+    sumL += coef * Math.sin(arg);
+  }
+  const lonTropical = normDeg(Lp + sumL/1000000);
+
+  const yearsSince2000 = (JD - 2451545.0)/365.25;
+  const ayanamsa = 23.853 + yearsSince2000*0.013972;
+
+  return normDeg(lonTropical - ayanamsa);
+}
+
+function nakshatraIndexFromLongitude(siderealLon){
+  const span = 360/27;
+  let idx = Math.floor((siderealLon + 1e-7)/span);
+  if(idx>=27) idx=0;
+  if(idx<0) idx=26;
+  return idx;
+}
+function nakshatraIndexForDate(date){
+  return nakshatraIndexFromLongitude(moonEclipticLongitude(date));
+}
+
+function taraNumberFromIndices(janmaIdx, targetIdx){
+  const count = ((targetIdx - janmaIdx + 27) % 27) + 1;
+  let tara = count % 9;
+  if(tara===0) tara = 9;
+  return tara;
+}
+
+function fmtDateHi(date){
+  const days = ["रविवार","सोमवार","मंगलवार","बुधवार","गुरुवार","शुक्रवार","शनिवार"];
+  const dd = String(date.getDate()).padStart(2,'0');
+  const mm = String(date.getMonth()+1).padStart(2,'0');
+  const yyyy = date.getFullYear();
+  return `${days[date.getDay()]}, ${dd}/${mm}/${yyyy}`;
+}
+function isoToLocalNoonDate(iso){
+  const [y,m,d] = iso.split('-').map(Number);
+  return new Date(y, m-1, d, 12, 0, 0);
+}
+function getJanmaIdxOrAlert(){
+  let jSel = document.getElementById('janmaNak').value;
+  if(jSel===''){
+    // fall back: try deriving it from DOB right now, in case the earlier auto-fill didn't fire
+    autoCalcJanmaNak();
+    jSel = document.getElementById('janmaNak').value;
+  }
+  if(jSel===''){ alert('पहले जन्म नक्षत्र चुनें या जन्म तारीख भरें'); return null; }
+  return parseInt(jSel,10);
+}
+function toggleSection(sec, btn, computeFn){
+  const isOpening = !sec.classList.contains('open');
+  if(isOpening){
+    if(computeFn){ const ok = computeFn(); if(ok===false) return; }
+    sec.classList.add('open');
+    btn.querySelector('.arrow').textContent = '▴';
+  } else {
+    sec.classList.remove('open');
+    btn.querySelector('.arrow').textContent = '▾';
+  }
+}
+
+// ---------- UI wiring ----------
+fillNakDropdown();
+fillTaraRef();
+
+const today = new Date();
+document.getElementById('targetDate').value =
+  today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+document.getElementById('bDate').value =
+  String(today.getDate()).padStart(2,'0')+'/'+String(today.getMonth()+1).padStart(2,'0')+'/'+today.getFullYear();
+document.getElementById('bTime').value = '12:00';
+
+document.getElementById('toggleBirthCalc').addEventListener('click', ()=>{
+  document.getElementById('birthCalcBlock').classList.toggle('open');
+});
+
+// dd/mm/yyyy auto-slash formatting
+function formatDDMMYYYY(el){
+  let digits = el.value.replace(/\D/g,'').slice(0,8);
+  let out = digits;
+  if(digits.length>4) out = digits.slice(0,2)+'/'+digits.slice(2,4)+'/'+digits.slice(4);
+  else if(digits.length>2) out = digits.slice(0,2)+'/'+digits.slice(2);
+  el.value = out;
+}
+function parseDDMMYYYY(str){
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(str||'');
+  if(!m) return null;
+  const dd = parseInt(m[1],10), mm = parseInt(m[2],10), yyyy = parseInt(m[3],10);
+  if(mm<1||mm>12||dd<1||dd>31) return null;
+  return {dd, mm, yyyy};
+}
+
+function autoCalcJanmaNak(){
+  const bd = document.getElementById('bDate').value;
+  const parsed = parseDDMMYYYY(bd);
+  if(!parsed) return; // wait till a full valid date is typed
+  const bt = document.getElementById('bTime').value || '12:00';
+  const [hh,mm] = bt.split(':').map(Number);
+  const localDate = new Date(Date.UTC(parsed.yyyy, parsed.mm-1, parsed.dd, hh, mm, 0));
+  const utcDate = new Date(localDate.getTime() - 5.5*3600*1000);
+  const idx = nakshatraIndexForDate(utcDate);
+  document.getElementById('janmaNak').value = idx;
+}
+
+const bDateEl = document.getElementById('bDate');
+bDateEl.addEventListener('input', ()=>{ formatDDMMYYYY(bDateEl); autoCalcJanmaNak(); });
+bDateEl.addEventListener('change', autoCalcJanmaNak);
+bDateEl.addEventListener('keyup', autoCalcJanmaNak);
+document.getElementById('bTime').addEventListener('change', autoCalcJanmaNak);
+document.getElementById('bLat').addEventListener('change', autoCalcJanmaNak);
+document.getElementById('bLon').addEventListener('change', autoCalcJanmaNak);
+
+// pre-filled default DOB should also auto-fill Janma Nakshatra right away
+autoCalcJanmaNak();
+
+document.getElementById('useToday').addEventListener('click', ()=>{
+  const t = new Date();
+  document.getElementById('targetDate').value =
+    t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+});
+
+function computeResult(){
+  const janmaIdx = getJanmaIdxOrAlert();
+  if(janmaIdx===null) return;
+  const targetIso = document.getElementById('targetDate').value;
+  if(!targetIso){ alert('तारीख चुनें'); return; }
+
+  const baseDate = isoToLocalNoonDate(targetIso);
+  const utcDate = new Date(baseDate.getTime() - 5.5*3600*1000);
+  const targetIdx = nakshatraIndexForDate(utcDate);
+  const taraNum = taraNumberFromIndices(janmaIdx, targetIdx);
+  const status = TARA_STATUS[taraNum-1];
+
+  document.getElementById('resultPanel').style.display = 'block';
+  document.getElementById('resDate').textContent = fmtDateHi(baseDate);
+  document.getElementById('resNak').textContent = 'नक्षत्र: ' + NAKSHATRAS[targetIdx];
+  document.getElementById('resTara').textContent = TARA_NAMES[taraNum-1] + ' तारा';
+  document.getElementById('resBadge').innerHTML = `<span class="badge ${status}">${STATUS_LABEL[status]}</span>`;
+  document.getElementById('resMeaning').textContent = TARA_MEANING[taraNum-1];
+}
+document.getElementById('showTara').addEventListener('click', computeResult);
+
+function refreshNavtaraTable(){
+  const janmaIdx = getJanmaIdxOrAlert();
+  if(janmaIdx===null) return false;
+  const groups = Array.from({length:9}, ()=>[]);
+  for(let i=0;i<27;i++){
+    const tara = taraNumberFromIndices(janmaIdx, i);
+    groups[tara-1].push(NAKSHATRAS[i]);
+  }
+  const html = groups.map((naks,i)=>
+    `<div class="grp"><div class="grp-head"><span class="dot ${TARA_STATUS[i]}"></span><b>${i+1}. ${TARA_NAMES[i]}</b><span class="badge ${TARA_STATUS[i]}" style="padding:3px 12px;font-size:12.5px;">${STATUS_LABEL[TARA_STATUS[i]]}</span></div><div class="grp-naks">${naks.join(', ')}</div></div>`
+  ).join('');
+  document.getElementById('navtaraTableContent').innerHTML = html;
+}
+document.getElementById('btnNavtaraTable').addEventListener('click', function(){
+  toggleSection(document.getElementById('secNavtaraTable'), this, refreshNavtaraTable);
+});
+
+function refreshJatak(){
+  const janmaIdx = getJanmaIdxOrAlert();
+  if(janmaIdx===null) return false;
+  document.getElementById('jatakContent').innerHTML =
+    `<div class="lord">जन्म नक्षत्र: ${NAKSHATRAS[janmaIdx]} · स्वामी ग्रह: ${NAK_LORD[janmaIdx]}</div>` +
+    `<div>${JATAK_DETAIL[janmaIdx]}</div>`;
+}
+document.getElementById('btnJatak').addEventListener('click', function(){
+  toggleSection(document.getElementById('secJatak'), this, refreshJatak);
+});
+
+function refreshCal(){
+  const janmaIdx = getJanmaIdxOrAlert();
+  if(janmaIdx===null) return false;
+  const now = new Date();
+  const baseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
+
+  const calList = document.getElementById('calList');
+  calList.innerHTML = '';
+  for(let i=0;i<14;i++){
+    const dt = new Date(baseDate.getTime());
+    dt.setDate(dt.getDate()+i);
+    const utc = new Date(dt.getTime() - 5.5*3600*1000);
+    const nidx = nakshatraIndexForDate(utc);
+    const tn = taraNumberFromIndices(janmaIdx, nidx);
+    const status = TARA_STATUS[tn-1];
+    const isToday = i===0;
+    const li = document.createElement('li');
+    if(isToday) li.classList.add('today');
+    const dd = String(dt.getDate()).padStart(2,'0');
+    const mm = String(dt.getMonth()+1).padStart(2,'0');
+    const color = status==='good' ? 'var(--good)' : status==='bad' ? 'var(--bad)' : 'var(--neutral)';
+    li.innerHTML = `<span class="d"><span class="dot ${status}"></span>${dd}/${mm}${isToday?' (चयनित)':''}</span>
+      <span class="n">${NAKSHATRAS[nidx]}</span>
+      <span class="t" style="color:${color}">${TARA_NAMES[tn-1]}</span>`;
+    calList.appendChild(li);
+  }
+}
+document.getElementById('btnCal').addEventListener('click', function(){
+  toggleSection(document.getElementById('secCal'), this, refreshCal);
+});
+
+// Tara reference
+document.getElementById('btnTaraRef').addEventListener('click', function(){
+  toggleSection(document.getElementById('secTaraRef'), this, null);
+});
+
+// Keep already-open sections (and the main result, if shown) live-synced
+// whenever the Janma Nakshatra or target date changes.
+document.getElementById('janmaNak').addEventListener('change', ()=>{
+  if(document.getElementById('resultPanel').style.display==='block') computeResult();
+  if(document.getElementById('secNavtaraTable').classList.contains('open')) refreshNavtaraTable();
+  if(document.getElementById('secJatak').classList.contains('open')) refreshJatak();
+  if(document.getElementById('secCal').classList.contains('open')) refreshCal();
+});
+document.getElementById('targetDate').addEventListener('change', ()=>{
+  if(document.getElementById('resultPanel').style.display==='block') computeResult();
+});
+</script>
+</body>
+</html>

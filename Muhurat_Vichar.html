@@ -215,6 +215,10 @@ select:focus, input:focus{ outline: 2px solid var(--marigold); outline-offset: 1
   font-size:0.8rem; color:#8a5a3f; line-height:1.7;
 }
 .panchang-caution b{ color: var(--paap); }
+.vedh-warning{ color: var(--paap); font-weight:600; }
+.quality-badge{ font-size:0.75rem; padding:3px 10px; border-radius:12px; font-weight:600; vertical-align:middle; }
+.quality-uttam{ background: var(--ok-bg); color: var(--shubh); border:1px solid var(--shubh); }
+.quality-madhyam{ background: var(--warn-bg); color: var(--marigold-deep); border:1px solid var(--marigold-deep); }
 
 footer.note{
   margin-top:34px; font-size:0.8rem; color:#8a7357; border-top:1px dashed var(--gold-line); padding-top:14px;
@@ -944,6 +948,30 @@ function getShivvaas(tithiAbsoluteIndex) {
   const rem = (2 * tithiAbsoluteIndex + 5) % 7;
   return SHIVVAAS_BY_REM[rem];
 }
+
+/* ---------------- वेध दोष (पंचशलाका चक्र) ---------------- */
+const VEDH_PAIRS = {
+  4:28, 28:4, 2:17, 17:2, 21:5, 5:21, 22:10, 10:22, 13:26, 26:13,
+  15:24, 24:15, 19:7, 7:19, 27:12, 12:27, 14:25, 25:14, 18:8, 8:18,
+  20:6, 6:20, 23:9, 9:23, 1:11, 11:1, 16:3, 3:16
+};
+
+function checkVedhDosha(muhuratNakIdx, grahaPos) {
+  const pairedNak = VEDH_PAIRS[muhuratNakIdx];
+  if (!pairedNak) return { dosha: false };
+  const malefics = ["Sun", "Mars", "Saturn", "Rahu", "Ketu"];
+  for (const g of malefics) {
+    let gNak;
+    if (pairedNak === 28) {
+      gNak = (grahaPos[g].lon >= ABHIJIT_START && grahaPos[g].lon < ABHIJIT_END) ? 28 : nakshatraOf(grahaPos[g].lon) + 1;
+    } else {
+      gNak = nakshatraOf(grahaPos[g].lon) + 1;
+    }
+    if (gNak === pairedNak) return { dosha: true, graha: g, pairedNakIdx: pairedNak };
+  }
+  return { dosha: false };
+}
+
 const ABUJ_MUHURAT_DEFS = [
   { name: "वसंत पंचमी", maas: "माघ", shukla: true, tithi: 5 },
   { name: "फुलेरा दूज", maas: "फाल्गुन", shukla: true, tithi: 2 },
@@ -1277,11 +1305,52 @@ const MUHURAT_DATA = {
     source: "वसंत पंचमी, फुलेरा दूज, अक्षय तृतीया, विजयादशमी, देवउठनी एकादशी",
     ruleText: "",
     abujMuhuratOnly: true
+  },
+
+  vivah_muhurat: {
+    key: "vivah_muhurat",
+    name: "विवाह मुहूर्त",
+    source: "विवाह मुहूर्त",
+    ruleText: "",
+    vaar: [0,1,2,3,4,5,6], // वार नहीं दिया गया — सभी मानें
+    tithiNums: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], // तिथि नहीं दी गई — सभी मानें
+    // मूल,अनुराधा,मृगशिरा,रेवती,हस्त,उत्तराफाल्गुनी,उत्तराषाढ़ा,उत्तराभाद्रपद,स्वाति,मघा,रोहिणी
+    nakshatra: [19, 17, 5, 27, 13, 12, 21, 26, 15, 10, 4],
+    // ज्येष्ठ,माघ,फाल्गुन,वैशाख,मार्गशीर्ष,आषाढ़
+    maas: ["ज्येष्ठ", "माघ", "फाल्गुन", "वैशाख", "मार्गशीर्ष", "आषाढ़"],
+    lagnaAllowedRashis: [1,2,3,4,5,6,7,8,9,10,11,12],
+    housesRequireShubh: [],
+    housesRequirePaap: [],
+    housesNoGraha: [],
+    moonForbiddenHouses: [],
+    skipLagnaWindow: true,   // इस मुहूर्त में लग्न-समय की गणना नहीं दिखानी (कोई वास्तविक लग्न-डेटा नहीं दिया गया था)
+    qualityFromVedh: true    // वेध दोष न हो तो "उत्तम", हो तो "मध्यम" दिखाएं
+  },
+
+  sarvartha_siddhi_yoga: {
+    key: "sarvartha_siddhi_yoga", name: "सर्वार्थ सिद्धि योग", source: "वार+नक्षत्र आधारित",
+    ruleText: "", specialYogaOnly: true, yogaFilter: "सर्वार्थ सिद्धि योग"
+  },
+  amrit_siddhi_yoga: {
+    key: "amrit_siddhi_yoga", name: "अमृत सिद्धि योग", source: "वार+नक्षत्र आधारित",
+    ruleText: "", specialYogaOnly: true, yogaFilter: "अमृत सिद्धि योग"
+  },
+  siddha_yoga: {
+    key: "siddha_yoga", name: "सिद्ध योग", source: "तिथि-समूह+वार आधारित",
+    ruleText: "", specialYogaOnly: true, yogaFilter: "सिद्ध योग"
+  },
+  dwipushkar_yoga: {
+    key: "dwipushkar_yoga", name: "द्विपुष्कर योग", source: "वार+तिथि+नक्षत्र आधारित",
+    ruleText: "", specialYogaOnly: true, yogaFilter: "द्विपुष्कर योग"
+  },
+  tripushkar_yoga: {
+    key: "tripushkar_yoga", name: "त्रिपुष्कर योग", source: "वार+तिथि+नक्षत्र आधारित",
+    ruleText: "", specialYogaOnly: true, yogaFilter: "त्रिपुष्कर योग"
   }
 
 };
 
-const MUHURAT_ORDER = ["annaprashan", "karnavedh", "mundan", "vidyarambha", "griharambha", "yatra", "nutan_griha_pravesh", "jeern_griha_pravesh", "dukan_arambh", "bade_vyapar", "mukadma_dayar", "mandir_nirman", "sutika_snan", "panchang_yoga", "abuj_muhurat"]; // dropdown में क्रम
+const MUHURAT_ORDER = ["annaprashan", "karnavedh", "mundan", "vidyarambha", "griharambha", "yatra", "nutan_griha_pravesh", "jeern_griha_pravesh", "dukan_arambh", "bade_vyapar", "mukadma_dayar", "mandir_nirman", "sutika_snan", "panchang_yoga", "sarvartha_siddhi_yoga", "amrit_siddhi_yoga", "siddha_yoga", "dwipushkar_yoga", "tripushkar_yoga", "abuj_muhurat", "vivah_muhurat"]; // dropdown में क्रम
 </script>
 <script>/* ==========================================================================
    मुहूर्त खोज लॉजिक + UI वायरिंग
@@ -1343,7 +1412,8 @@ function scanDay(year, month, day, observer, utcOffsetHours, rule, stepMin, maas
   if (rule.specialYogaOnly) {
     const tithi = getTithi(sunrise.date);
     const nak = getNakshatra(sunrise.date);
-    const yogas = getSpecialYogas(vaar.index, tithi, nak.index);
+    let yogas = getSpecialYogas(vaar.index, tithi, nak.index);
+    if (rule.yogaFilter) yogas = yogas.filter(y => y === rule.yogaFilter);
     return {
       year, month, day, vaar, tithi, nak, yogas, match: yogas.length > 0,
       windows: [], abhijit: null
@@ -1404,6 +1474,16 @@ function scanDay(year, month, day, observer, utcOffsetHours, rule, stepMin, maas
 
   result.agnivas = getAgnivas(tithi.num, vaar.index);
   result.shivvaas = getShivvaas(tithi.absoluteIndex);
+
+  const grahaPosAtSunrise = getAllGrahaPositions(sunrise.date);
+  result.vedhDosha = checkVedhDosha(nak.index, grahaPosAtSunrise);
+
+  if (rule.skipLagnaWindow) {
+    if (rule.qualityFromVedh) {
+      result.quality = result.vedhDosha.dosha ? "मध्यम" : "उत्तम";
+    }
+    return result;
+  }
 
   const localMidnightUTC = Date.UTC(year, month - 1, day, 0, 0, 0) - utcOffsetHours * 3600 * 1000;
   const totalSteps = Math.floor(24 * 60 / stepMin);
@@ -1588,6 +1668,7 @@ const HI_EN = {
   "नई दुकान आरम्भ":"New Shop Opening","बड़े व्यापार आरम्भ":"Large Business Launch",
   "मुकदमा दायर करना":"Filing a Court Case","मन्दिर निर्माण":"Mandir Nirman (Temple Construction)",
   "सूतिका स्नान":"Sutika Snan","पंचांग विशेष योग":"Special Panchang Yogas","5 अबूझ मुहूर्त":"5 Abuj Muhurats",
+  "विवाह मुहूर्त":"Vivah Muhurat (Wedding)",
 
   // त्योहार
   "वसंत पंचमी":"Vasant Panchami","रथ सप्तमी":"Ratha Saptami","माघी पूर्णिमा":"Maghi Purnima",
@@ -1640,6 +1721,8 @@ const HI_EN = {
   "इस वर्ष के लिए तारीख़ें नहीं मिलीं।":"No dates found for this year.",
   "इस महीने कोई विशेष योग नहीं मिला।":"No special yoga found this month.",
   "राहुकाल:":"Rahu Kaal:","(वर्जित)":"(avoid)",
+  "वेध दोष — इस नक्षत्र में":"Vedh Dosha — this nakshatra has",
+  "स्थित है":"positioned in it",
   "भद्रा:":"Bhadra:","पंचक सक्रिय —":"Panchak active —",
   "अग्निवास:":"Agnivas:","शिववास:":"Shivvaas:",
   "कृपया स्थान की जानकारी सही से भरें (Latitude/Longitude/UTC Offset)।":
@@ -1651,6 +1734,13 @@ const HI_EN = {
 function tr(s) {
   if (LANG === "hi" || s == null) return s;
   return HI_EN[s] || s;
+}
+
+// ग्रह नाम अलग शब्दकोश में (वार के लघु नामों से टकराव से बचने हेतु — जैसे "मंगल"/"बुध"/"शुक्र" दोनों जगह प्रयुक्त हैं)
+const GRAHA_NAME_EN = { "सूर्य":"Sun", "चन्द्र":"Moon", "बुध":"Mercury", "शुक्र":"Venus", "मंगल":"Mars", "गुरु":"Jupiter", "शनि":"Saturn", "राहु":"Rahu", "केतु":"Ketu" };
+function trGraha(s) {
+  if (LANG === "hi" || s == null) return s;
+  return GRAHA_NAME_EN[s] || s;
 }
 </script>
 <script>/* ==========================================================================
@@ -1934,30 +2024,35 @@ function renderResults(results, year, month, rule, observer) {
     const card = document.createElement("div");
     card.className = "date-card";
     card.id = "card-" + r.day;
-    card.innerHTML = `<h3>${r.day} ${tr(MONTH_NAMES[month - 1])} ${year} — ${tr(r.vaar.name)}</h3>
+    const qualityBadge = rule.qualityFromVedh
+      ? ` &nbsp;·&nbsp; <span class="quality-badge ${r.quality === 'मध्यम' ? 'quality-madhyam' : 'quality-uttam'}">${tr(r.quality)}</span>`
+      : "";
+    card.innerHTML = `<h3>${r.day} ${tr(MONTH_NAMES[month - 1])} ${year} — ${tr(r.vaar.name)}${qualityBadge}</h3>
       <div class="meta">${tr("तिथि:")} <b>${tr(r.tithi.name)}</b> (${tr(r.tithi.paksha)}) &nbsp;·&nbsp; ${tr("नक्षत्र:")} <b>${tr(r.nak.name)}</b>${r.maasName ? ` &nbsp;·&nbsp; ${tr("मास:")} <b>${tr(r.maasName)}</b>` : ""}</div>`;
-    const winWrap = document.createElement("div");
-    if (r.windows.length === 0) {
-      winWrap.className = "no-window";
-      winWrap.innerHTML = tr("इस दिन लग्न-शुद्धि अनुसार कोई शुभ समय-खंड नहीं मिला (5 मिनट रिज़ॉल्यूशन पर जाँचा गया)।");
-    } else {
-      winWrap.className = "window-list";
-      r.windows.forEach(w => {
-        const chip = document.createElement("span");
-        chip.className = "window-chip" + (w.tier === "मध्यम" ? " window-chip-madhyam" : "");
-        const tierLabel = w.tier ? ` (${tr(w.tier)})` : "";
-        chip.textContent = `${w.special ? "★ " : ""}${fmtTime(w.start, currentUtcOffset)} – ${fmtTime(w.end, currentUtcOffset)}${tierLabel}`;
-        winWrap.appendChild(chip);
-      });
+
+    if (!rule.skipLagnaWindow) {
+      const winWrap = document.createElement("div");
+      if (r.windows.length === 0) {
+        winWrap.className = "no-window";
+        winWrap.innerHTML = tr("इस दिन लग्न-शुद्धि अनुसार कोई शुभ समय-खंड नहीं मिला (5 मिनट रिज़ॉल्यूशन पर जाँचा गया)।");
+      } else {
+        winWrap.className = "window-list";
+        r.windows.forEach(w => {
+          const chip = document.createElement("span");
+          chip.className = "window-chip";
+          chip.textContent = `${w.special ? "★ " : ""}${fmtTime(w.start, currentUtcOffset)} – ${fmtTime(w.end, currentUtcOffset)}`;
+          winWrap.appendChild(chip);
+        });
+      }
+      card.appendChild(winWrap);
     }
-    card.appendChild(winWrap);
 
     if (r.abhijit) {
       const abhi = document.createElement("div");
       abhi.className = "abhijit-line";
       abhi.innerHTML = `${tr("समय:")} ${fmtTime(r.abhijit.start, currentUtcOffset)} – ${fmtTime(r.abhijit.end, currentUtcOffset)} (${tr("अभिजीत मुहूर्त")})`;
       card.appendChild(abhi);
-      if (r.windows.length === 0) {
+      if (r.windows.length === 0 && !rule.skipLagnaWindow) {
         const fallback = document.createElement("div");
         fallback.className = "abhijit-fallback-note";
         fallback.textContent = tr("यदि कोई शुद्ध लग्न नहीं मिलता तो अभिजीत मुहूर्त को भी लिया जा सकता है।");
@@ -1975,6 +2070,9 @@ function renderResults(results, year, month, rule, observer) {
       });
     }
     if (r.panchakActive) cautionHtml += `<div>${tr("पंचक सक्रिय —")} <b>${tr(r.panchakType)}</b></div>`;
+    if (r.vedhDosha && r.vedhDosha.dosha) {
+      cautionHtml += `<div class="vedh-warning">⚠ ${tr("वेध दोष — इस नक्षत्र में")} <b>${trGraha(GRAHA_HINDI[r.vedhDosha.graha])}</b> ${tr("स्थित है")}</div>`;
+    }
     cautionHtml += `<div>${tr("अग्निवास:")} <b>${tr(r.agnivas)}</b> &nbsp;·&nbsp; ${tr("शिववास:")} <b>${tr(r.shivvaas)}</b></div>`;
     panchangInfo.innerHTML = cautionHtml;
     card.appendChild(panchangInfo);

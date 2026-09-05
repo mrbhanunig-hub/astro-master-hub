@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Time of Event — Ruling Planets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; background: #0F1224; }
+  #root { min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const { useState, useMemo } = React;
+
+// ============================= ICONS (self-contained, no external deps) =============================
+function Icon({ size = 16, style, children }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={style}>
+      {children}
+    </svg>
+  );
+}
+function Moon(props) {
+  return <Icon {...props}><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></Icon>;
+}
+function MapPin(props) {
+  return <Icon {...props}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z" /><circle cx="12" cy="10" r="3" /></Icon>;
+}
+function CalendarDays(props) {
+  return <Icon {...props}><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></Icon>;
+}
+function Clock(props) {
+  return <Icon {...props}><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></Icon>;
+}
+function Sparkles(props) {
+  return <Icon {...props}><path d="M12 3l1.6 4.6L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.4L12 3z" />
+    <path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z" /></Icon>;
+}
+function ChevronDown(props) {
+  return <Icon {...props}><path d="M6 9l6 6 6-6" /></Icon>;
+}
+function Compass(props) {
+  return <Icon {...props}><circle cx="12" cy="12" r="10" /><path d="M16.24 7.76l-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12z" /></Icon>;
+}
+function RotateCcw(props) {
+  return <Icon {...props}><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></Icon>;
+}
+
+// ---------------------------------------------------------------------------
+// Fully self-contained astronomy engine below (Meeus "Astronomical
+// Algorithms" formulas for the Moon's longitude and sidereal time) — no
+// external ephemeris package needed, so this runs anywhere plain React runs.
+// ---------------------------------------------------------------------------
+
+// ============================= GEO + PLACE DATA =============================
+
+const COUNTRIES = [
+  "India", "United States", "United Kingdom", "Canada", "Australia", "United Arab Emirates",
+  "Singapore", "Nepal", "Sri Lanka", "Bangladesh", "Pakistan", "Malaysia", "New Zealand",
+  "South Africa", "Germany", "France", "Netherlands", "Saudi Arabia", "Qatar", "Kuwait",
+  "Bahrain", "Oman", "Mauritius", "Fiji", "Trinidad and Tobago", "Kenya", "Other",
+];
+
+const INDIA_STATES = {
+  "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Tirupati", "Nellore", "Kurnool", "Rajahmundry", "Kakinada", "Kadapa", "Anantapur", "Chittoor", "Eluru", "Ongole", "Srikakulam", "Vizianagaram", "Machilipatnam", "Tenali", "Proddatur", "Adoni", "Madanapalle"],
+  "Arunachal Pradesh": ["Itanagar", "Naharlagun", "Pasighat", "Tawang", "Ziro", "Bomdila", "Along", "Tezu"],
+  "Assam": ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Tezpur", "Nagaon", "Tinsukia", "Bongaigaon", "Karimganj", "Sivasagar", "Goalpara", "Barpeta", "Diphu", "North Lakhimpur"],
+  "Bihar": ["Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Darbhanga", "Purnia", "Arrah", "Begusarai", "Katihar", "Munger", "Chhapra", "Bettiah", "Saharsa", "Sasaram", "Hajipur", "Siwan", "Motihari", "Nawada", "Bihar Sharif", "Buxar"],
+  "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur", "Durg", "Korba", "Rajnandgaon", "Jagdalpur", "Raigarh", "Ambikapur", "Dhamtari", "Mahasamund", "Chirmiri"],
+  "Goa": ["Panaji", "Margao", "Vasco da Gama", "Mapusa", "Ponda", "Bicholim", "Curchorem", "Cuncolim"],
+  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Junagadh", "Gandhinagar", "Anand", "Nadiad", "Morbi", "Mehsana", "Bharuch", "Navsari", "Porbandar", "Surendranagar", "Valsad", "Vapi", "Godhra", "Palanpur"],
+  "Haryana": ["Gurugram", "Faridabad", "Panipat", "Ambala", "Karnal", "Hisar", "Rohtak", "Sonipat", "Yamunanagar", "Panchkula", "Bhiwani", "Sirsa", "Rewari", "Kaithal", "Kurukshetra", "Jhajjar", "Palwal"],
+  "Himachal Pradesh": ["Shimla", "Dharamshala", "Solan", "Mandi", "Kullu", "Hamirpur", "Una", "Bilaspur", "Chamba", "Nahan", "Manali"],
+  "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro", "Deoghar", "Hazaribagh", "Giridih", "Ramgarh", "Medininagar", "Chaibasa", "Dumka", "Phusro"],
+  "Karnataka": ["Bengaluru", "Mysuru", "Hubballi", "Mangaluru", "Belagavi", "Kalaburagi", "Davanagere", "Ballari", "Shivamogga", "Tumakuru", "Udupi", "Bidar", "Hassan", "Gadag", "Chikkamagaluru", "Bagalkot", "Raichur", "Vijayapura", "Mandya", "Hospet"],
+  "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Thrissur", "Kollam", "Alappuzha", "Kannur", "Kottayam", "Palakkad", "Malappuram", "Kasaragod", "Pathanamthitta", "Idukki", "Wayanad", "Ernakulam", "Muvattupuzha"],
+  "Madhya Pradesh": ["Bhopal", "Indore", "Gwalior", "Jabalpur", "Ujjain", "Sagar", "Dewas", "Satna", "Ratlam", "Rewa", "Katni", "Singrauli", "Burhanpur", "Khandwa", "Bhind", "Chhindwara", "Guna", "Shivpuri", "Vidisha", "Damoh"],
+  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad", "Thane", "Solapur", "Kolhapur", "Amravati", "Nanded", "Sangli", "Jalgaon", "Akola", "Latur", "Ahmednagar", "Chandrapur", "Parbhani", "Ichalkaranji", "Panvel", "Satara"],
+  "Manipur": ["Imphal", "Thoubal", "Bishnupur", "Churachandpur", "Kakching"],
+  "Meghalaya": ["Shillong", "Tura", "Jowai", "Nongstoin", "Baghmara"],
+  "Mizoram": ["Aizawl", "Lunglei", "Champhai", "Serchhip", "Kolasib"],
+  "Nagaland": ["Kohima", "Dimapur", "Mokokchung", "Tuensang", "Wokha", "Zunheboto"],
+  "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Puri", "Sambalpur", "Berhampur", "Balasore", "Baripada", "Bhadrak", "Jharsuguda", "Angul", "Jeypore", "Bargarh"],
+  "Punjab": ["Amritsar", "Ludhiana", "Jalandhar", "Patiala", "Mohali", "Bathinda", "Hoshiarpur", "Batala", "Moga", "Pathankot", "Firozpur", "Kapurthala", "Sangrur", "Faridkot", "Rajpura", "Barnala"],
+  "Rajasthan": ["Jaipur", "Jodhpur", "Udaipur", "Kota", "Ajmer", "Bikaner", "Bhilwara", "Alwar", "Sikar", "Bharatpur", "Pali", "Sri Ganganagar", "Kishangarh", "Baran", "Dhaulpur", "Tonk", "Beawar", "Hanumangarh", "Churu", "Jhunjhunu"],
+  "Sikkim": ["Gangtok", "Namchi", "Gyalshing", "Mangan", "Rangpo"],
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli", "Erode", "Vellore", "Thoothukudi", "Dindigul", "Thanjavur", "Ranipet", "Nagercoil", "Kanchipuram", "Karur", "Cuddalore", "Kumbakonam", "Hosur", "Nagapattinam", "Sivakasi"],
+  "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Khammam", "Ramagundam", "Mahbubnagar", "Nalgonda", "Adilabad", "Suryapet", "Siddipet", "Miryalaguda"],
+  "Tripura": ["Agartala", "Udaipur", "Dharmanagar", "Kailashahar", "Belonia"],
+  "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Agra", "Prayagraj", "Ghaziabad", "Noida", "Meerut", "Bareilly", "Aligarh", "Moradabad", "Saharanpur", "Gorakhpur", "Firozabad", "Jhansi", "Muzaffarnagar", "Mathura", "Rampur", "Shahjahanpur", "Faizabad", "Sitapur", "Etawah", "Mirzapur", "Bulandshahr", "Hapur", "Ballia", "Gonda", "Jaunpur", "Azamgarh", "Basti"],
+  "Uttarakhand": ["Dehradun", "Haridwar", "Nainital", "Rishikesh", "Haldwani", "Roorkee", "Rudrapur", "Kashipur", "Kotdwar", "Ramnagar", "Pithoragarh", "Almora", "Mussoorie"],
+  "West Bengal": ["Kolkata", "Howrah", "Durgapur", "Siliguri", "Asansol", "Bardhaman", "Malda", "Baharampur", "Habra", "Kharagpur", "Shantipur", "Krishnanagar", "Ranaghat", "Haldia", "Raiganj", "Jalpaiguri", "Cooch Behar", "Darjeeling", "Bankura", "Purulia"],
+  "Andaman and Nicobar Islands": ["Port Blair", "Diglipur", "Mayabunder", "Rangat", "Car Nicobar"],
+  "Chandigarh": ["Chandigarh"],
+  "Dadra and Nagar Haveli and Daman and Diu": ["Daman", "Silvassa", "Diu"],
+  "Delhi": ["New Delhi", "Dwarka", "Rohini", "Karol Bagh", "Saket", "Pitampura", "Janakpuri", "Vasant Kunj", "Lajpat Nagar", "Mayur Vihar", "Shahdara", "Narela", "Najafgarh", "Preet Vihar"],
+  "Jammu and Kashmir": ["Srinagar", "Jammu", "Anantnag", "Baramulla", "Sopore", "Udhampur", "Kathua", "Rajouri", "Pulwama", "Kupwara"],
+  "Ladakh": ["Leh", "Kargil"],
+  "Lakshadweep": ["Kavaratti", "Agatti", "Minicoy", "Amini"],
+  "Puducherry": ["Puducherry", "Karaikal", "Yanam", "Mahe"],
+};
+
+const INDIA_STATE_NAMES = Object.keys(INDIA_STATES).sort();
+
+// Approximate coordinates: each state's capital (used as the fallback for any
+// city in that state we don't have a precise entry for below — always shown
+// editable so the user can correct it for real precision).
+const STATE_CAPITAL_COORDS = {
+  "Andhra Pradesh": [16.5410, 80.5150], "Arunachal Pradesh": [27.0844, 93.6053],
+  "Assam": [26.1445, 91.7362], "Bihar": [25.5941, 85.1376], "Chhattisgarh": [21.2514, 81.6296],
+  "Goa": [15.4909, 73.8278], "Gujarat": [23.2156, 72.6369], "Haryana": [30.7333, 76.7794],
+  "Himachal Pradesh": [31.1048, 77.1734], "Jharkhand": [23.3441, 85.3096], "Karnataka": [12.9716, 77.5946],
+  "Kerala": [8.5241, 76.9366], "Madhya Pradesh": [23.2599, 77.4126], "Maharashtra": [19.0760, 72.8777],
+  "Manipur": [24.8170, 93.9368], "Meghalaya": [25.5788, 91.8933], "Mizoram": [23.7271, 92.7176],
+  "Nagaland": [25.6751, 94.1086], "Odisha": [20.2961, 85.8245], "Punjab": [30.7333, 76.7794],
+  "Rajasthan": [26.9124, 75.7873], "Sikkim": [27.3389, 88.6065], "Tamil Nadu": [13.0827, 80.2707],
+  "Telangana": [17.3850, 78.4867], "Tripura": [23.8315, 91.2868], "Uttar Pradesh": [26.8467, 80.9462],
+  "Uttarakhand": [30.3165, 78.0322], "West Bengal": [22.5726, 88.3639],
+  "Andaman and Nicobar Islands": [11.6234, 92.7265], "Chandigarh": [30.7333, 76.7794],
+  "Dadra and Nagar Haveli and Daman and Diu": [20.3974, 72.8328], "Delhi": [28.6139, 77.2090],
+  "Jammu and Kashmir": [34.0837, 74.7973], "Ladakh": [34.1526, 77.5771],
+  "Lakshadweep": [10.5669, 72.6420], "Puducherry": [11.9416, 79.8083],
+};
+
+// A curated set of precise city coordinates (overrides the state-capital
+// fallback above). Keyed "State|City". Not exhaustive — extend freely.
+const CITY_COORDS = {
+  "Andhra Pradesh|Visakhapatnam": [17.6868, 83.2185], "Andhra Pradesh|Vijayawada": [16.5062, 80.6480],
+  "Andhra Pradesh|Guntur": [16.3067, 80.4365], "Andhra Pradesh|Tirupati": [13.6288, 79.4192],
+  "Assam|Guwahati": [26.1445, 91.7362], "Assam|Dibrugarh": [27.4728, 94.9120],
+  "Bihar|Patna": [25.5941, 85.1376], "Bihar|Gaya": [24.7955, 84.9994],
+  "Chhattisgarh|Raipur": [21.2514, 81.6296], "Chhattisgarh|Bhilai": [21.1938, 81.3509],
+  "Goa|Panaji": [15.4909, 73.8278], "Goa|Margao": [15.2832, 73.9862],
+  "Gujarat|Ahmedabad": [23.0225, 72.5714], "Gujarat|Surat": [21.1702, 72.8311],
+  "Gujarat|Vadodara": [22.3072, 73.1812], "Gujarat|Rajkot": [22.3039, 70.8022],
+  "Haryana|Gurugram": [28.4595, 77.0266], "Haryana|Faridabad": [28.4089, 77.3178],
+  "Haryana|Panipat": [29.3909, 76.9635], "Haryana|Karnal": [29.6857, 76.9905],
+  "Himachal Pradesh|Shimla": [31.1048, 77.1734], "Himachal Pradesh|Dharamshala": [32.2190, 76.3234],
+  "Jharkhand|Ranchi": [23.3441, 85.3096], "Jharkhand|Jamshedpur": [22.8046, 86.2029],
+  "Karnataka|Bengaluru": [12.9716, 77.5946], "Karnataka|Mysuru": [12.2958, 76.6394],
+  "Karnataka|Hubballi": [15.3647, 75.1240], "Karnataka|Mangaluru": [12.9141, 74.8560],
+  "Kerala|Thiruvananthapuram": [8.5241, 76.9366], "Kerala|Kochi": [9.9312, 76.2673],
+  "Kerala|Kozhikode": [11.2588, 75.7804], "Kerala|Thrissur": [10.5276, 76.2144],
+  "Madhya Pradesh|Bhopal": [23.2599, 77.4126], "Madhya Pradesh|Indore": [22.7196, 75.8577],
+  "Madhya Pradesh|Gwalior": [26.2183, 78.1828], "Madhya Pradesh|Jabalpur": [23.1815, 79.9864],
+  "Maharashtra|Mumbai": [19.0760, 72.8777], "Maharashtra|Pune": [18.5204, 73.8567],
+  "Maharashtra|Nagpur": [21.1458, 79.0882], "Maharashtra|Nashik": [19.9975, 73.7898],
+  "Maharashtra|Thane": [19.2183, 72.9781], "Maharashtra|Aurangabad": [19.8762, 75.3433],
+  "Odisha|Bhubaneswar": [20.2961, 85.8245], "Odisha|Cuttack": [20.4625, 85.8828],
+  "Punjab|Amritsar": [31.6340, 74.8723], "Punjab|Ludhiana": [30.9010, 75.8573],
+  "Punjab|Jalandhar": [31.3260, 75.5762], "Punjab|Patiala": [30.3398, 76.3869],
+  "Rajasthan|Jaipur": [26.9124, 75.7873], "Rajasthan|Jodhpur": [26.2389, 73.0243],
+  "Rajasthan|Udaipur": [24.5854, 73.7125], "Rajasthan|Kota": [25.2138, 75.8648],
+  "Rajasthan|Ajmer": [26.4499, 74.6399],
+  "Tamil Nadu|Chennai": [13.0827, 80.2707], "Tamil Nadu|Coimbatore": [11.0168, 76.9558],
+  "Tamil Nadu|Madurai": [9.9252, 78.1198], "Tamil Nadu|Tiruchirappalli": [10.7905, 78.7047],
+  "Telangana|Hyderabad": [17.3850, 78.4867], "Telangana|Warangal": [17.9689, 79.5941],
+  "Tripura|Agartala": [23.8315, 91.2868],
+  "Uttar Pradesh|Lucknow": [26.8467, 80.9462], "Uttar Pradesh|Kanpur": [26.4667, 80.6833],
+  "Uttar Pradesh|Varanasi": [25.3176, 82.9739], "Uttar Pradesh|Agra": [27.1767, 78.0081],
+  "Uttar Pradesh|Prayagraj": [25.4358, 81.8463], "Uttar Pradesh|Ghaziabad": [28.6692, 77.4538],
+  "Uttar Pradesh|Noida": [28.5355, 77.3910], "Uttar Pradesh|Meerut": [28.9845, 77.7064],
+  "Uttar Pradesh|Gorakhpur": [26.7606, 83.3732], "Uttar Pradesh|Bareilly": [28.3670, 79.4304],
+  "Uttarakhand|Dehradun": [30.3165, 78.0322], "Uttarakhand|Haridwar": [29.9457, 78.1642],
+  "West Bengal|Kolkata": [22.5726, 88.3639], "West Bengal|Howrah": [22.5958, 88.2636],
+  "West Bengal|Siliguri": [26.7271, 88.3953], "West Bengal|Darjeeling": [27.0410, 88.2663],
+  "Delhi|New Delhi": [28.6139, 77.2090],
+  "Jammu and Kashmir|Srinagar": [34.0837, 74.7973], "Jammu and Kashmir|Jammu": [32.7266, 74.8570],
+  "Chandigarh|Chandigarh": [30.7333, 76.7794],
+  "Puducherry|Puducherry": [11.9416, 79.8083],
+};
+
+function coordsFor(state, city) {
+  const exact = CITY_COORDS[`${state}|${city}`];
+  if (exact) return exact;
+  return STATE_CAPITAL_COORDS[state] || null;
+}
+
+// ============================= KP ASTRO ENGINE =============================
+
+function norm360(x) { x = x % 360; if (x < 0) x += 360; return x; }
+function deg2rad(d) { return (d * Math.PI) / 180; }
+function rad2deg(r) { return (r * 180) / Math.PI; }
+
+function dateToJD(date) {
+  return date.getTime() / 86400000 + 2440587.5;
+}
+
+// KP (Krishnamurti) ayanamsa — this is what KP/Gulbarga-theory software (e.g.
+// Nakshatra Gold, Jagannatha Hora's "KP-Newcomb" mode) uses, not plain Lahiri;
+// the two differ by roughly 6 arcminutes in the current era, which is small
+// for signs/stars but large enough to flip a Sub Lord near a boundary.
+// Calibrated here against a verified Nakshatra Gold chart (30 Aug 2026,
+// 20:02:37 IST, Kanpur) where the required ayanamsa was 24°08'08" (24.13544°).
+function lahiriAyanamsa(date) {
+  const JD2000 = 2451544.5;
+  const yearsSince2000 = (dateToJD(date) - JD2000) / 365.25;
+  const base = 23.757423; // KP ayanamsa base at Jan 1 2000 00:00 UT
+  const rate = 0.0141775; // deg/year (~50.4"/year, close to Lahiri's rate)
+  return base + yearsSince2000 * rate;
+}
+
+// Mean obliquity of the ecliptic (Meeus 22.2)
+function obliquity(date) {
+  const T = (dateToJD(date) - 2451545.0) / 36525;
+  return 23.4392911 - 0.0130042 * T - 0.00000016 * T * T + 0.000000504 * T * T * T;
+}
+
+// Greenwich mean sidereal time, in degrees (Meeus 12.4)
+function gstDegrees(date) {
+  const JD = dateToJD(date);
+  const T = (JD - 2451545.0) / 36525;
+  const g = 280.46061837 + 360.98564736629 * (JD - 2451545.0) + 0.000387933 * T * T - (T * T * T) / 38710000;
+  return norm360(g);
+}
+
+// Tropical ecliptic longitude of the Ascendant
+function ascendantTropical(date, latitude, longitude) {
+  const ramc = norm360(gstDegrees(date) + longitude); // longitude: east positive
+  const eps = deg2rad(obliquity(date));
+  const ramcR = deg2rad(ramc);
+  const latR = deg2rad(latitude);
+  const asc = rad2deg(
+    Math.atan2(-Math.cos(ramcR), Math.sin(ramcR) * Math.cos(eps) + Math.tan(latR) * Math.sin(eps))
+  );
+  return norm360(asc + 180);
+}
+
+// Tropical ecliptic longitude of the Midheaven
+function mcTropical(date, longitude) {
+  const ramc = norm360(gstDegrees(date) + longitude);
+  const eps = deg2rad(obliquity(date));
+  const ramcR = deg2rad(ramc);
+  const mc = rad2deg(Math.atan2(Math.sin(ramcR), Math.cos(ramcR) * Math.cos(eps)));
+  return norm360(mc);
+}
+
+function signedDiff(a, b) { return ((a - b + 540) % 360) - 180; }
+
+// Convert a Right Ascension (on the ecliptic, i.e. for a house-cusp point)
+// back to ecliptic longitude.
+function raToLongitude(raDeg, epsDeg) {
+  const ra = deg2rad(raDeg), eps = deg2rad(epsDeg);
+  return norm360(rad2deg(Math.atan2(Math.sin(ra), Math.cos(eps) * Math.cos(ra))));
+}
+
+// Placidus intermediate-cusp RA via fixed-point iteration on the semi-arc
+// trisection condition (standard Placidus definition).
+//   cusps 11/12: RA = RAMC + acos(-sin(RA)*tanE*tanL) / F
+//   cusps 2/3:   RA = RAMC + 180 - acos(sin(RA)*tanE*tanL) / F
+function placidusCuspRA(ramc, initOffset, F, upperMeridian, epsDeg, latDeg, iterations = 40) {
+  const tanE = Math.tan(deg2rad(epsDeg)), tanL = Math.tan(deg2rad(latDeg));
+  let RA = ramc + initOffset;
+  for (let i = 0; i < iterations; i++) {
+    const s = Math.sin(deg2rad(RA));
+    const x = Math.max(-1, Math.min(1, upperMeridian ? -s * tanE * tanL : s * tanE * tanL));
+    const acos = rad2deg(Math.acos(x));
+    RA = upperMeridian ? ramc + acos / F : ramc + 180 - acos / F;
+  }
+  return RA;
+}
+
+// Placidus house cusps (tropical longitudes), cusp[0]=house1 ... cusp[11]=house12
+function placidusCusps(ascTrop, mcTrop, latDeg, epsDeg, ramc) {
+  const c1 = norm360(ascTrop), c10 = norm360(mcTrop);
+  const c4 = norm360(c10 + 180), c7 = norm360(c1 + 180);
+
+  const c11 = raToLongitude(placidusCuspRA(ramc, 30, 3, true, epsDeg, latDeg), epsDeg);
+  const c12 = raToLongitude(placidusCuspRA(ramc, 60, 1.5, true, epsDeg, latDeg), epsDeg);
+  const c2 = raToLongitude(placidusCuspRA(ramc, 120, 1.5, false, epsDeg, latDeg), epsDeg);
+  const c3 = raToLongitude(placidusCuspRA(ramc, 150, 3, false, epsDeg, latDeg), epsDeg);
+
+  const c5 = norm360(c11 + 180), c6 = norm360(c12 + 180);
+  const c8 = norm360(c2 + 180), c9 = norm360(c3 + 180);
+
+  return [c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12];
+}
+
+// Geocentric apparent tropical ecliptic longitude of the Moon
+// (Meeus ch. 47, main ~60-term periodic series — accurate to ~0.01-0.02°,
+// verified against a reference ephemeris)
+const MOON_TERMS = [
+  [0,0,1,0,6288774],[2,0,-1,0,1274027],[2,0,0,0,658314],[0,0,2,0,213618],
+  [0,1,0,0,-185116],[0,0,0,2,-114332],[2,0,-2,0,58793],[2,-1,-1,0,57066],
+  [2,0,1,0,53322],[2,-1,0,0,45758],[0,1,-1,0,-40923],[1,0,0,0,-34720],
+  [0,1,1,0,-30383],[2,0,0,-2,15327],[0,0,1,2,-12528],[0,0,1,-2,10980],
+  [4,0,-1,0,10675],[0,0,3,0,10034],[4,0,-2,0,8548],[2,1,-1,0,-7888],
+  [2,1,0,0,-6766],[1,0,-1,0,-5163],[1,1,0,0,4987],[2,-1,1,0,4036],
+  [2,0,2,0,3994],[4,0,0,0,3861],[2,0,-3,0,3665],[0,1,-2,0,-2689],
+  [2,0,-1,2,-2602],[2,-1,-2,0,2390],[1,0,1,0,-2348],[2,-2,0,0,2236],
+  [0,1,2,0,-2120],[0,2,0,0,-2069],[2,-2,-1,0,2048],[2,0,1,-2,-1773],
+  [2,0,0,2,-1595],[4,-1,-1,0,1215],[0,0,2,2,-1110],[3,0,-1,0,-892],
+  [2,1,1,0,-810],[4,-1,-2,0,759],[0,2,-1,0,-713],[2,2,-1,0,-700],
+  [2,1,-2,0,691],[2,-1,0,-2,596],[4,0,1,0,549],[0,0,4,0,537],
+  [4,-1,0,0,520],[1,0,-2,0,-487],[2,1,0,-2,-399],[0,0,2,-2,-381],
+  [1,1,1,0,351],[3,0,-2,0,-340],[4,0,-3,0,330],[2,-1,2,0,327],
+  [0,2,1,0,-323],[1,1,-1,0,299],[2,0,3,0,294],
+];
+
+function moonLongitudeTropical(date) {
+  const T = (dateToJD(date) - 2451545.0) / 36525;
+  const Lp = norm360(218.3164477 + 481267.88123421 * T - 0.0015786 * T * T + Math.pow(T, 3) / 538841 - Math.pow(T, 4) / 65194000);
+  const D  = norm360(297.8501921 + 445267.1114034 * T - 0.0018819 * T * T + Math.pow(T, 3) / 545868 - Math.pow(T, 4) / 113065000);
+  const M  = norm360(357.5291092 + 35999.0502909 * T - 0.0001536 * T * T + Math.pow(T, 3) / 24490000);
+  const Mp = norm360(134.9633964 + 477198.8675055 * T + 0.0087414 * T * T + Math.pow(T, 3) / 69699 - Math.pow(T, 4) / 14712000);
+  const F  = norm360(93.2720950 + 483202.0175233 * T - 0.0036539 * T * T - Math.pow(T, 3) / 3526000 + Math.pow(T, 4) / 863310000);
+  const E = 1 - 0.002516 * T - 0.0000074 * T * T;
+
+  let sumL = 0;
+  for (const [d, m, mp, f, coeff] of MOON_TERMS) {
+    let e = 1;
+    if (Math.abs(m) === 1) e = E;
+    else if (Math.abs(m) === 2) e = E * E;
+    sumL += coeff * e * Math.sin(deg2rad(D * d + M * m + Mp * mp + F * f));
+  }
+  const A1 = norm360(119.75 + 131.849 * T);
+  const A2 = norm360(53.09 + 479264.290 * T);
+  sumL += 3958 * Math.sin(deg2rad(A1));
+  sumL += 1962 * Math.sin(deg2rad(Lp - F));
+  sumL += 318 * Math.sin(deg2rad(A2));
+
+  return norm360(Lp + sumL / 1000000);
+}
+
+const VIM_ORDER = ["Ketu", "Venus", "Sun", "Moon", "Mars", "Rahu", "Jupiter", "Saturn", "Mercury"];
+const VIM_YEARS = { Ketu: 7, Venus: 20, Sun: 6, Moon: 10, Mars: 7, Rahu: 18, Jupiter: 16, Saturn: 19, Mercury: 17 };
+const TOTAL_YEARS = 120;
+
+const SIGN_ABBR = { Aries: "Ari", Taurus: "Tau", Gemini: "Gem", Cancer: "Can", Leo: "Leo", Virgo: "Vir", Libra: "Lib", Scorpio: "Sco", Sagittarius: "Sag", Capricorn: "Cap", Aquarius: "Aqu", Pisces: "Pis" };
+const PLANET_ABBR = { Sun: "Su", Moon: "Mo", Mars: "Ma", Mercury: "Me", Jupiter: "Ju", Venus: "Ve", Saturn: "Sa", Rahu: "Ra", Ketu: "Ke" };
+
+const SIGN_LORDS = ["Mars", "Venus", "Mercury", "Moon", "Sun", "Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Saturn", "Jupiter"];
+const SIGN_NAMES = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+const DAY_LORDS = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]; // JS getUTCDay(): 0=Sunday
+
+function signLord(lon) { return SIGN_LORDS[Math.floor(norm360(lon) / 30)]; }
+function signName(lon) { return SIGN_NAMES[Math.floor(norm360(lon) / 30)]; }
+
+// Inverse of SIGN_LORDS: which sign(s) each planet rules
+const PLANET_SIGNS = {};
+SIGN_LORDS.forEach((lord, signIdx) => {
+  if (!PLANET_SIGNS[lord]) PLANET_SIGNS[lord] = [];
+  PLANET_SIGNS[lord].push(signIdx); // 0=Aries ... 11=Pisces
+});
+
+// Which nakshatras (index + lord) overlap a given sign (0=Aries ... 11=Pisces)
+function nakshatrasInSign(signIdx) {
+  const NAK_SPAN_AM = 800, SIGN_SPAN_AM = 1800;
+  const signStartAM = signIdx * SIGN_SPAN_AM, signEndAM = signStartAM + SIGN_SPAN_AM;
+  const result = [];
+  for (let n = 0; n < 27; n++) {
+    const nStartAM = n * NAK_SPAN_AM, nEndAM = nStartAM + NAK_SPAN_AM;
+    if (nStartAM < signEndAM && nEndAM > signStartAM) {
+      result.push({ index: n, lord: VIM_ORDER[n % 9], startDeg: nStartAM / 60, endDeg: nEndAM / 60 });
+    }
+  }
+  return result;
+}
+
+// List all 9 sub-lord divisions of a nakshatra span [nakStart, nakStart+nakSpan)
+function allSubsOfNakshatra(nakStart, nakSpan, nakLord) {
+  const startIdx = VIM_ORDER.indexOf(nakLord);
+  let cursor = nakStart;
+  const subs = [];
+  for (let i = 0; i < 9; i++) {
+    const lord = VIM_ORDER[(startIdx + i) % 9];
+    const span = (VIM_YEARS[lord] / TOTAL_YEARS) * nakSpan;
+    subs.push({ lord, start: cursor, end: cursor + span });
+    cursor += span;
+  }
+  return subs;
+}
+
+// Sun's geocentric apparent tropical ecliptic longitude (Meeus low-precision
+// solar formula — accurate to well under 0.01°, verified against a reference)
+function sunLongitudeTropical(date) {
+  const T = (dateToJD(date) - 2451545.0) / 36525;
+  const L0 = norm360(280.46646 + 36000.76983 * T + 0.0003032 * T * T);
+  const M = norm360(357.52911 + 35999.05029 * T - 0.0001537 * T * T);
+  const Mr = deg2rad(M);
+  const C = (1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(Mr)
+          + (0.019993 - 0.000101 * T) * Math.sin(2 * Mr)
+          + 0.000289 * Math.sin(3 * Mr);
+  const trueLon = L0 + C;
+  const omega = 125.04 - 1934.136 * T;
+  const apparent = trueLon - 0.00569 - 0.00478 * Math.sin(deg2rad(omega));
+  return norm360(apparent);
+}
+
+// Find date windows within [fromDate, fromDate+searchDays] where the transiting
+// Sun's SIDEREAL longitude falls inside [winStart, winEnd) (handles zodiac wrap).
+function findSunTransitWindows(fromDate, searchDays, ayanamsa, winStart, winEnd, stepHours = 6) {
+  const stepMs = stepHours * 3600 * 1000;
+  const totalSteps = Math.ceil((searchDays * 24) / stepHours);
+  const inWindow = (lon) => (winStart <= winEnd ? lon >= winStart && lon < winEnd : lon >= winStart || lon < winEnd);
+  const windows = [];
+  let curStart = null, prevDate = null;
+  for (let i = 0; i <= totalSteps; i++) {
+    const t = new Date(fromDate.getTime() + i * stepMs);
+    const sunSid = norm360(sunLongitudeTropical(t) - ayanamsa);
+    const inside = inWindow(sunSid);
+    if (inside && curStart === null) curStart = t;
+    if (!inside && curStart !== null) { windows.push({ start: curStart, end: prevDate }); curStart = null; }
+    prevDate = t;
+  }
+  if (curStart !== null) windows.push({ start: curStart, end: prevDate });
+  return windows;
+}
+
+// Time of Event — Step 1-4: from L/S/R (Rahu/Ketu swapped for D), find each
+// planet's ruled sign(s), then keep only the signs that contain a nakshatra
+// whose lord is one of L/S/R/D.
+// Step 5: within each matching nakshatra, find the sub-lord (SL) division(s)
+// that also match L/S/R/D — those narrow degree windows are where a Sun
+// transit (gochar) signals the likely time of the event.
+function timeOfEventCandidates(rp, fromDate, ayanamsa) {
+  const byCode = Object.fromEntries(rp.map((x) => [x.code, x.planet]));
+  const { L, S, R, D } = byCode;
+  const swapRaKe = (p) => (p === "Rahu" || p === "Ketu" ? D : p);
+  let selectedPlanets = [...new Set([swapRaKe(L), swapRaKe(S), swapRaKe(R)])];
+  if (selectedPlanets.length < 3 && !selectedPlanets.includes(D)) {
+    selectedPlanets = [...selectedPlanets, D]; // fewer than 3 distinct — bring in the Day Lord too
+  }
+  const lsrdSet = new Set(selectedPlanets); // D counts only if it substituted for Rahu/Ketu, or added as the fallback above
+
+  const candidateSigns = [...new Set(selectedPlanets.flatMap((p) => PLANET_SIGNS[p] || []))].sort((a, b) => a - b);
+
+  const signDetails = candidateSigns.map((signIdx) => {
+    const rl = SIGN_LORDS[signIdx];
+    const signStart = signIdx * 30, signEnd = signStart + 30;
+    const naks = nakshatrasInSign(signIdx).map((n) => {
+      const nlValid = lsrdSet.has(n.lord) && n.lord !== rl; // NL must differ from RL
+      let matchingSubs = [];
+      if (nlValid) {
+        // Sub boundaries always come from the nakshatra's own full span, but a
+        // nakshatra can straddle two signs — so the part of a sub that
+        // actually belongs to THIS sign is clipped to the sign's own
+        // boundaries before it's used for a transit search. Without this, a
+        // nakshatra shared by two adjacent signs would report the exact same
+        // Sun-transit date under both sign names.
+        const allSubs = allSubsOfNakshatra(n.startDeg, n.endDeg - n.startDeg, n.lord);
+        matchingSubs = allSubs
+          .filter((s) => lsrdSet.has(s.lord) && s.lord !== rl && s.lord !== n.lord) // SL must differ from both RL and NL
+          .map((s) => ({ ...s, clipStart: Math.max(s.start, signStart), clipEnd: Math.min(s.end, signEnd) }))
+          .filter((s) => s.clipEnd > s.clipStart);
+      }
+      return { ...n, isMatch: nlValid && matchingSubs.length > 0, matchingSubs };
+    });
+    return { signIdx, signName: SIGN_NAMES[signIdx], rashiLord: rl, nakshatras: naks, selected: naks.some((n) => n.isMatch) };
+  });
+
+  const finalSigns = signDetails.filter((s) => s.selected);
+
+  const searchDays = 400;
+  const transitWindows = [];
+  finalSigns.forEach((s) => {
+    s.nakshatras.forEach((n) => {
+      if (!n.isMatch) return;
+      n.matchingSubs.forEach((sub) => {
+        const dates = findSunTransitWindows(fromDate, searchDays, ayanamsa, sub.clipStart, sub.clipEnd);
+        dates.forEach((w) => {
+          transitWindows.push({ sign: s.signName, rashiLord: s.rashiLord, nakLord: n.lord, subLord: sub.lord, start: w.start, end: w.end });
+        });
+      });
+    });
+  });
+  transitWindows.sort((a, b) => a.start - b.start);
+
+  const oneYearFromToday = new Date();
+  oneYearFromToday.setFullYear(oneYearFromToday.getFullYear() + 1);
+  const filteredWindows = transitWindows.filter((w) => w.start <= oneYearFromToday);
+
+  return { selectedPlanets, candidateSigns: signDetails, finalSigns, transitWindows: filteredWindows };
+}
+function nakshatraIndex(lon) { return Math.floor(norm360(lon) / (360 / 27)); }
+function nakshatraLord(lon) { return VIM_ORDER[nakshatraIndex(lon) % 9]; }
+
+// Divide [startDeg, startDeg+spanDeg) into 9 parts proportional to Vimshottari
+// years, cyclically starting at `startLord`. Returns the part containing posDeg.
+function subdivide(startDeg, spanDeg, startLord, posDeg) {
+  const startIdx = VIM_ORDER.indexOf(startLord);
+  let cursor = startDeg;
+  for (let i = 0; i < 9; i++) {
+    const lord = VIM_ORDER[(startIdx + i) % 9];
+    const partSpan = (VIM_YEARS[lord] / TOTAL_YEARS) * spanDeg;
+    if (posDeg < cursor + partSpan || i === 8) return { lord, subStart: cursor, subSpan: partSpan };
+    cursor += partSpan;
+  }
+}
+
+function subLordInfo(lon) {
+  lon = norm360(lon);
+  const nIdx = nakshatraIndex(lon);
+  const span = 360 / 27;
+  const nakStart = nIdx * span;
+  const nLord = VIM_ORDER[nIdx % 9];
+  return subdivide(nakStart, span, nLord, lon); // {lord, subStart, subSpan}
+}
+
+function subSubLord(lon) {
+  const sub = subLordInfo(lon);
+  return subdivide(sub.subStart, sub.subSpan, sub.lord, norm360(lon)).lord;
+}
+
+function dayLord(date) { return DAY_LORDS[date.getUTCDay()]; }
+
+// Compute the full RP (Ruling Planets) + Lagna SSL for a given moment/place.
+// dateStr: "YYYY-MM-DD", timeStr: "HH:MM" (or "HH:MM:SS"), tzOffsetHours: e.g. 5.5 for IST
+function castPrashna(dateStr, timeStr, tzOffsetHours, latitude, longitude, ayanamsaOverride) {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const timeParts = timeStr.split(":").map(Number);
+  const hh = timeParts[0] || 0, mm = timeParts[1] || 0, ss = timeParts[2] || 0;
+  const utcMs = Date.UTC(y, m - 1, d, hh, mm, ss) - tzOffsetHours * 3600 * 1000;
+  const date = new Date(utcMs);
+
+  const ayan = (typeof ayanamsaOverride === "number" && !Number.isNaN(ayanamsaOverride))
+    ? ayanamsaOverride
+    : lahiriAyanamsa(date);
+  const moonTrop = moonLongitudeTropical(date);
+  const moonSid = norm360(moonTrop - ayan);
+  const ascTrop = ascendantTropical(date, latitude, longitude);
+  const ascSid = norm360(ascTrop - ayan);
+  const mcTrop = mcTropical(date, longitude);
+  const ramc = norm360(gstDegrees(date) + longitude);
+  const eps = obliquity(date);
+
+  const L = signLord(ascSid);       // Lagna Lord
+  const S = nakshatraLord(moonSid); // Moon Star Lord
+  const R = signLord(moonSid);      // Moon Rashi Lord
+  const D = dayLord(date);          // Day Lord
+  const ssl = subSubLord(ascSid);   // Lagna's Sub-Sub Lord
+
+  const rp = [
+    { code: "L", label: "Lagna Lord", planet: L },
+    { code: "S", label: "Moon Star Lord", planet: S },
+    { code: "R", label: "Moon Rashi Lord", planet: R },
+    { code: "D", label: "Day Lord", planet: D },
+  ];
+  const answer = rp.some((x) => x.planet === ssl) ? "YES" : "NO";
+
+  // Full cusp detail (Placidus), for houses 1-12
+  const cuspsTrop = placidusCusps(ascTrop, mcTrop, latitude, eps, ramc);
+  const cusps = cuspsTrop.map((trop, i) => {
+    const sid = norm360(trop - ayan);
+    const sub = subLordInfo(sid);
+    return {
+      house: i + 1,
+      lonSid: sid,
+      sign: signName(sid),
+      signLord: signLord(sid),
+      starLord: nakshatraLord(sid),
+      subLord: sub.lord,
+      subSubLord: subSubLord(sid),
+    };
+  });
+
+  return {
+    ayanamsa: ayan, moonSid, ascSid,
+    ascSign: signName(ascSid), moonSign: signName(moonSid),
+    rp, ssl, answer, cusps,
+    timeOfEvent: answer === "YES" ? timeOfEventCandidates(rp, date, ayan) : null,
+  };
+}
+
+// ============================= COMPONENT =============================
+
+function pad2(n) { return String(n).padStart(2, "0"); }
+function nowDateStr() {
+  const n = new Date();
+  return `${pad2(n.getDate())}/${pad2(n.getMonth() + 1)}/${n.getFullYear()}`;
+}
+function nowTime12() {
+  const n = new Date();
+  let h = n.getHours();
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12; if (h === 0) h = 12;
+  return { time: `${pad2(h)}:${pad2(n.getMinutes())}:${pad2(n.getSeconds())}`, ampm };
+}
+// "HH:MM:SS" (12-hour) + AM/PM -> "HH:MM:SS" (24-hour), for the calculation
+function to24Hour(time12, ampm) {
+  const parts = (time12 || "").split(":").map(Number);
+  let h = parts[0] || 0;
+  const m = parts[1] || 0, s = parts[2] || 0;
+  if (ampm === "PM" && h !== 12) h += 12;
+  if (ampm === "AM" && h === 12) h = 0;
+  return `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
+}
+// Auto-insert ":" as the user types digits, hour clamped to 01-12: 41920 -> 04:19:20
+function formatTimeTyping(raw) {
+  let digits = raw.replace(/\D/g, "").slice(0, 6);
+  if (digits.length >= 2) {
+    let h = parseInt(digits.slice(0, 2), 10);
+    if (h > 12) h = 12;
+    if (h === 0) digits = "0" + digits.slice(1);
+    else digits = pad2(h) + digits.slice(2);
+  }
+  let out = digits.slice(0, 2);
+  if (digits.length > 2) out += ":" + digits.slice(2, 4);
+  if (digits.length > 4) out += ":" + digits.slice(4, 6);
+  return out;
+}
+// "DD/MM/YYYY" -> "YYYY-MM-DD" (returns null if not a complete, valid date)
+function ddmmyyyyToISO(s) {
+  const m = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(s || "");
+  if (!m) return null;
+  const [, dd, mm, yyyy] = m;
+  const d = Number(dd), mo = Number(mm), y = Number(yyyy);
+  if (mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+  return `${yyyy}-${mm}-${dd}`;
+}
+// Auto-insert "/" as the user types digits: 3082026 -> 30/08/2026
+function formatDateTyping(raw, prevValue) {
+  const digits = raw.replace(/\D/g, "").slice(0, 8);
+  let out = digits.slice(0, 2);
+  if (digits.length > 2) out += "/" + digits.slice(2, 4);
+  if (digits.length > 4) out += "/" + digits.slice(4, 8);
+  return out;
+}
+
+function GulbargaPrashnaApp() {
+  const DEFAULT_COUNTRY = "India";
+  const DEFAULT_STATE = "Uttar Pradesh";
+  const DEFAULT_CITY = "Kanpur";
+  const defaultCoords = coordsFor(DEFAULT_STATE, DEFAULT_CITY) || ["", ""];
+
+  const [question, setQuestion] = useState("");
+  const [date, setDate] = useState(nowDateStr);
+  const [time, setTime] = useState(() => nowTime12().time);
+  const [ampm, setAmpm] = useState(() => nowTime12().ampm);
+  const [country, setCountry] = useState(DEFAULT_COUNTRY);
+  const [stateVal, setStateVal] = useState(DEFAULT_STATE);
+  const [city, setCity] = useState(DEFAULT_CITY);
+  const [freeState, setFreeState] = useState("");
+  const [freeCity, setFreeCity] = useState("");
+  const [lat, setLat] = useState(String(defaultCoords[0]));
+  const [lon, setLon] = useState(String(defaultCoords[1]));
+  const [tzOffset, setTzOffset] = useState("");
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState("");
+  const [showTimeOfEvent, setShowTimeOfEvent] = useState(false);
+  const [showCuspDetail, setShowCuspDetail] = useState(false);
+  const [showStepDetail, setShowStepDetail] = useState(false);
+
+  function handleReset() {
+    setQuestion("");
+    setDate(nowDateStr());
+    const nt = nowTime12();
+    setTime(nt.time);
+    setAmpm(nt.ampm);
+    setCountry(DEFAULT_COUNTRY);
+    setStateVal(DEFAULT_STATE);
+    setCity(DEFAULT_CITY);
+    setFreeState("");
+    setFreeCity("");
+    setLat(String(defaultCoords[0]));
+    setLon(String(defaultCoords[1]));
+    setTzOffset("");
+    setResult(null);
+    setError("");
+    setShowTimeOfEvent(false);
+    setShowCuspDetail(false);
+    setShowStepDetail(false);
+  }
+
+  const isIndia = country === "India";
+  const cityOptions = useMemo(
+    () => (isIndia && stateVal ? INDIA_STATES[stateVal] || [] : []),
+    [isIndia, stateVal]
+  );
+
+  function handleStateChange(s) {
+    setStateVal(s);
+    setCity("");
+    setLat(""); setLon("");
+  }
+  function handleCityChange(c) {
+    setCity(c);
+    if (c && c !== "__other") {
+      const coords = coordsFor(stateVal, c);
+      if (coords) { setLat(String(coords[0])); setLon(String(coords[1])); }
+    }
+  }
+
+  const effectiveCity = isIndia ? (city === "__other" ? freeCity : city) : freeCity;
+  const effectiveState = isIndia ? stateVal : freeState;
+  const effectiveTz = isIndia ? 5.5 : parseFloat(tzOffset);
+  const dateISO = ddmmyyyyToISO(date);
+
+  const canCast =
+    question.trim().length > 0 && dateISO && time && country &&
+    effectiveState && effectiveCity &&
+    lat !== "" && lon !== "" && !Number.isNaN(effectiveTz);
+
+  function handleCast() {
+    setError("");
+    setResult(null);
+    setShowTimeOfEvent(false);
+    setShowCuspDetail(false);
+    setShowStepDetail(false);
+    if (!dateISO) { setError("Please enter the date as DD/MM/YYYY."); return; }
+    try {
+      const r = castPrashna(dateISO, to24Hour(time, ampm), effectiveTz, parseFloat(lat), parseFloat(lon));
+      setResult(r);
+    } catch (e) {
+      setError("Could not calculate — please check the date, time, and coordinates.");
+    }
+  }
+
+  return (
+    <div style={styles.page}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+        * { box-sizing: border-box; }
+        input, select, textarea { font-family: 'Work Sans', sans-serif; }
+        select { appearance: none; -webkit-appearance: none; }
+        ::placeholder { color: #8b8672; }
+        .field:focus { outline: none; border-color: #C9962B !important; box-shadow: 0 0 0 3px rgba(201,150,43,0.18); }
+        .cast-btn:hover:not(:disabled) { background: #8C4715; transform: translateY(-1px); }
+        .cast-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+        @keyframes slow-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .ring { animation: slow-spin 90s linear infinite; }
+        @media (prefers-reduced-motion: reduce) { .ring { animation: none; } }
+      `}</style>
+
+      <div style={styles.starLayer} aria-hidden="true" />
+
+      <div style={styles.ringWrap} aria-hidden="true">
+        <svg className="ring" viewBox="0 0 400 400" width="420" height="420">
+          <circle cx="200" cy="200" r="190" fill="none" stroke="#C9962B" strokeOpacity="0.14" strokeWidth="1" />
+          <circle cx="200" cy="200" r="150" fill="none" stroke="#C9962B" strokeOpacity="0.12" strokeWidth="1" />
+          {Array.from({ length: 12 }).map((_, i) => {
+            const angle = (i * 30 * Math.PI) / 180;
+            const x1 = 200 + 150 * Math.cos(angle), y1 = 200 + 150 * Math.sin(angle);
+            const x2 = 200 + 190 * Math.cos(angle), y2 = 200 + 190 * Math.sin(angle);
+            return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#C9962B" strokeOpacity="0.14" strokeWidth="1" />;
+          })}
+        </svg>
+      </div>
+
+      <div style={styles.container}>
+        <header style={styles.header}>
+          <div style={styles.eyebrow}>
+            <Sparkles size={13} style={{ marginRight: 6 }} />
+            TIME OF EVENT · RULING PLANETS
+          </div>
+          <h1 style={styles.title}>Ask one question, precisely</h1>
+          <p style={styles.subtitle}>
+            Prashna is cast for the moment the question is born — not your birth chart.
+            Answer honestly, ask only what troubles you, and ask it once.
+          </p>
+        </header>
+
+        <div style={styles.card}>
+          <label style={styles.label} htmlFor="question">Your question</label>
+          <textarea
+            id="question" className="field" style={styles.textarea}
+            placeholder="उदा. क्या मुझे यह नौकरी मिलेगी? / Will I get this job?"
+            value={question} onChange={(e) => setQuestion(e.target.value)} rows={3}
+          />
+          <div style={styles.helperRow}>
+            <span style={styles.helper}>Phrase it as a single yes/no question.</span>
+            <span style={styles.counter}>{question.length}/240</span>
+          </div>
+
+          <div style={styles.rowTwo}>
+            <div style={styles.fieldGroup}>
+              <label style={styles.label} htmlFor="date"><CalendarDays size={14} style={styles.labelIcon} /> Date (DD/MM/YYYY)</label>
+              <input id="date" type="text" inputMode="numeric" placeholder="DD/MM/YYYY" maxLength={10}
+                className="field" style={styles.input} value={date}
+                onChange={(e) => setDate(formatDateTyping(e.target.value))} />
+            </div>
+            <div style={styles.fieldGroup}>
+              <label style={styles.label} htmlFor="time"><Clock size={14} style={styles.labelIcon} /> Time</label>
+              <div style={styles.timeRow}>
+                <input id="time" type="text" inputMode="numeric" placeholder="HH:MM:SS" maxLength={8}
+                  className="field" style={{ ...styles.input, flex: 1 }} value={time}
+                  onChange={(e) => setTime(formatTimeTyping(e.target.value))} />
+                <button type="button" style={styles.ampmBtn} onClick={() => setAmpm(ampm === "AM" ? "PM" : "AM")}>
+                  {ampm}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div style={styles.helperRow}>
+            <span style={styles.helper}>Use the exact moment the question first formed in your mind.</span>
+            <button type="button" style={styles.nowBtn} onClick={() => { setDate(nowDateStr()); const nt = nowTime12(); setTime(nt.time); setAmpm(nt.ampm); }}>
+              Use current time
+            </button>
+          </div>
+
+          <div style={{ marginTop: 22 }}>
+            <label style={styles.label}><MapPin size={14} style={styles.labelIcon} /> Place of question</label>
+            <div style={styles.rowThree}>
+              <div>
+                <span style={styles.subLabel}>Country</span>
+                <div style={styles.selectWrap}>
+                  <select className="field" style={styles.select} value={country}
+                    onChange={(e) => { setCountry(e.target.value); setStateVal(""); setCity(""); setFreeState(""); setFreeCity(""); setLat(""); setLon(""); setTzOffset(""); }}>
+                    <option value="">Select country</option>
+                    {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <ChevronDown size={15} style={styles.selectIcon} />
+                </div>
+              </div>
+              <div>
+                <span style={styles.subLabel}>State</span>
+                {isIndia ? (
+                  <div style={styles.selectWrap}>
+                    <select className="field" style={styles.select} value={stateVal} disabled={!country}
+                      onChange={(e) => handleStateChange(e.target.value)}>
+                      <option value="">Select state</option>
+                      {INDIA_STATE_NAMES.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                    <ChevronDown size={15} style={styles.selectIcon} />
+                  </div>
+                ) : (
+                  <input className="field" style={styles.input} placeholder={country ? "Type state / province" : "Select a country first"}
+                    value={freeState} disabled={!country} onChange={(e) => setFreeState(e.target.value)} />
+                )}
+              </div>
+              <div>
+                <span style={styles.subLabel}>City</span>
+                {isIndia ? (
+                  <div style={styles.selectWrap}>
+                    <select className="field" style={styles.select} value={city} disabled={!stateVal}
+                      onChange={(e) => handleCityChange(e.target.value)}>
+                      <option value="">Select city</option>
+                      {cityOptions.map((c) => <option key={c} value={c}>{c}</option>)}
+                      <option value="__other">Other (type below)</option>
+                    </select>
+                    <ChevronDown size={15} style={styles.selectIcon} />
+                  </div>
+                ) : (
+                  <input className="field" style={styles.input} placeholder={country ? "Type city" : "Select a country first"}
+                    value={freeCity} disabled={!country} onChange={(e) => setFreeCity(e.target.value)} />
+                )}
+              </div>
+            </div>
+
+            {isIndia && city === "__other" && (
+              <input className="field" style={{ ...styles.input, marginTop: 10 }} placeholder="Type your city"
+                value={freeCity} onChange={(e) => setFreeCity(e.target.value)} />
+            )}
+
+            {/* Coordinates + timezone — needed for an exact Ascendant */}
+            {country && (
+              <div style={{ ...styles.rowThree, marginTop: 12 }}>
+                <div>
+                  <span style={styles.subLabel}>Latitude</span>
+                  <input className="field" style={styles.input} placeholder="e.g. 26.4499" value={lat} onChange={(e) => setLat(e.target.value)} />
+                </div>
+                <div>
+                  <span style={styles.subLabel}>Longitude</span>
+                  <input className="field" style={styles.input} placeholder="e.g. 80.3319" value={lon} onChange={(e) => setLon(e.target.value)} />
+                </div>
+                <div>
+                  <span style={styles.subLabel}>Time zone (UTC±)</span>
+                  {isIndia ? (
+                    <input className="field" style={{ ...styles.input, opacity: 0.7 }} value="+5:30 (IST)" disabled />
+                  ) : (
+                    <input className="field" style={styles.input} placeholder="e.g. -5 or 4" value={tzOffset} onChange={(e) => setTzOffset(e.target.value)} />
+                  )}
+                </div>
+              </div>
+            )}
+            {isIndia && city && city !== "__other" && !CITY_COORDS[`${stateVal}|${city}`] && (
+              <p style={styles.helper}>
+                Exact coordinates for {city} aren't in our table yet, so we filled in {stateVal}'s
+                capital as a stand-in — please correct the latitude/longitude above for accuracy.
+              </p>
+            )}
+          </div>
+
+          <button className="cast-btn" style={styles.button} disabled={!canCast} onClick={handleCast}>
+            <Moon size={16} style={{ marginRight: 8 }} />
+            Cast the Prashna
+          </button>
+          <button type="button" style={styles.resetBtn} onClick={handleReset} title="Reset to defaults (India, Uttar Pradesh, Kanpur)">
+            <RotateCcw size={13} style={{ marginRight: 5 }} /> Reset
+          </button>
+          {error && <p style={{ ...styles.footnote, color: "#A6591C" }}>{error}</p>}
+
+          {result && (
+            <div style={styles.resultBox}>
+              <div style={styles.verdictRow}>
+                <span style={{ ...styles.verdict, color: result.answer === "YES" ? "#2E7D32" : "#A6591C" }}>
+                  {result.answer}
+                </span>
+                <span style={styles.verdictSub}>
+                  Lagna SSL is <strong>{result.ssl}</strong> — {result.answer === "YES" ? "it matches one of L·S·R·D" : "no match among L·S·R·D"}
+                </span>
+                <div style={{ ...styles.verdictBanner, ...(result.answer === "YES" ? styles.verdictBannerYes : styles.verdictBannerNo) }}>
+                  {result.answer === "YES" ? "कार्य होने की पूर्ण संभावना है" : "कार्य पूर्ण होने में संदेह है"}
+                </div>
+              </div>
+
+              <div style={styles.rpGrid}>
+                {result.rp.map((x) => (
+                  <div key={x.code} style={{ ...styles.rpCell, ...(x.planet === result.ssl ? styles.rpCellHit : {}) }}>
+                    <div style={styles.rpCode}>{x.code}</div>
+                    <div style={styles.rpPlanet}>{x.planet}</div>
+                    <div style={styles.rpLabel}>{x.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={styles.metaRow}>
+                <Compass size={12} style={{ marginRight: 5 }} />
+                Lagna {result.ascSign} ({result.ascSid.toFixed(2)}°) · Moon {result.moonSign} ({result.moonSid.toFixed(2)}°) · Ayanamsa {result.ayanamsa.toFixed(3)}°
+              </div>
+
+              {!showCuspDetail && (
+                <button type="button" style={styles.toeToggleBtn} onClick={() => setShowCuspDetail(true)}>
+                  <Compass size={13} style={{ marginRight: 6 }} /> Show Cusp Detail
+                </button>
+              )}
+
+              {showCuspDetail && (
+                <div style={styles.cuspSection}>
+                  <div style={styles.cuspTitle}>Cusp detail (Placidus)</div>
+                  <div style={styles.cuspTableWrap}>
+                    <table style={styles.cuspTable}>
+                      <thead>
+                        <tr>
+                          <th style={styles.cuspTh}>House</th>
+                          <th style={styles.cuspTh}>Deg</th>
+                          <th style={styles.cuspTh}>Sign</th>
+                          <th style={styles.cuspTh}>RL</th>
+                          <th style={styles.cuspTh}>NL</th>
+                          <th style={styles.cuspTh}>SL</th>
+                          <th style={styles.cuspTh}>SSL</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {result.cusps.map((c) => (
+                          <tr key={c.house} style={c.house === 1 ? styles.cuspRowAsc : undefined}>
+                            <td style={styles.cuspTd}>{c.house}{c.house === 1 ? "*" : c.house === 10 ? "^" : ""}</td>
+                            <td style={styles.cuspTd}>{(c.lonSid % 30).toFixed(1)}°</td>
+                            <td style={styles.cuspTd}>{SIGN_ABBR[c.sign]}</td>
+                            <td style={styles.cuspTd}>{PLANET_ABBR[c.signLord]}</td>
+                            <td style={styles.cuspTd}>{PLANET_ABBR[c.starLord]}</td>
+                            <td style={styles.cuspTd}>{PLANET_ABBR[c.subLord]}</td>
+                            <td style={styles.cuspTd}>{PLANET_ABBR[c.subSubLord]}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <p style={styles.helper}>* Lagna · ^ MC · RL Sign Lord · NL Star Lord · SL Sub Lord · SSL Sub-Sub Lord</p>
+                </div>
+              )}
+
+              {result.timeOfEvent && !showTimeOfEvent && (
+                <button type="button" style={styles.toeToggleBtn} onClick={() => setShowTimeOfEvent(true)}>
+                  <Sparkles size={13} style={{ marginRight: 6 }} /> Show Time of Event
+                </button>
+              )}
+
+              {result.timeOfEvent && showTimeOfEvent && (
+                <div style={styles.cuspSection}>
+                  {!showStepDetail && (
+                    <button type="button" style={styles.stepToggleBtn} onClick={() => setShowStepDetail(true)}>
+                      Show Step Detail (1-4)
+                    </button>
+                  )}
+
+                  {showStepDetail && (
+                    <React.Fragment>
+                      <div style={styles.cuspTitle}>Time of Event — Step 1-4 (candidate signs)</div>
+                      <p style={styles.helper}>
+                        L/S/R with Rahu/Ketu swapped for D → <strong>{result.timeOfEvent.selectedPlanets.join(", ")}</strong>
+                      </p>
+                      {result.timeOfEvent.candidateSigns.map((s) => (
+                        <div key={s.signIdx} style={{ ...styles.toeSignBlock, ...(s.selected ? styles.toeSignBlockSelected : {}) }}>
+                          <div style={styles.toeSignName}>{s.signName} {s.selected ? "✓ selected" : ""}</div>
+                          <div style={styles.toeNakList}>
+                            {s.nakshatras.map((n) => (
+                              <span key={n.index} style={{ ...styles.toeNakChip, ...(n.isMatch ? styles.toeNakChipMatch : {}) }}>
+                                {n.lord}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                      <p style={styles.helper}>
+                        Final selected signs: <strong>{result.timeOfEvent.finalSigns.map((s) => s.signName).join(", ") || "none"}</strong>
+                      </p>
+                    </React.Fragment>
+                  )}
+
+                  <div style={styles.cuspTitle}>Predicted timing (Sun's gochar)</div>
+                  {result.timeOfEvent.transitWindows.length === 0 ? (
+                    <p style={styles.helper}>No matching Sun-transit window found in the next ~13 months.</p>
+                  ) : (
+                    result.timeOfEvent.transitWindows.map((w, i) => (
+                      <div key={i} style={styles.toeSignBlock}>
+                        <div style={styles.toeSignName}>
+                          {w.sign} (RL {w.rashiLord}) · NL {w.nakLord} · SL {w.subLord}
+                        </div>
+                        <div style={styles.helper}>
+                          {w.start.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                          {" – "}
+                          {w.end.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          <p style={styles.footnote}>
+            Rule: if any of L, S, R, D matches the Lagna's Sub-Sub Lord (SSL) at the moment of the
+            question, the answer is YES; otherwise NO. Ascendant precision depends on accurate
+            coordinates and clock time — for a boundary-close SSL, verify against a dedicated KP tool.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const styles = {
+  page: {
+    minHeight: "100vh", width: "100%",
+    background: `
+      radial-gradient(circle at 12% 10%, rgba(255,190,110,0.18) 0%, transparent 32%),
+      radial-gradient(circle at 88% 8%, rgba(255,140,120,0.14) 0%, transparent 36%),
+      radial-gradient(circle at 50% 105%, rgba(230,120,40,0.22) 0%, transparent 45%),
+      linear-gradient(160deg, #3A0F1E 0%, #4A1420 28%, #3D1112 56%, #2A0C10 82%, #170808 100%)
+    `,
+    display: "flex", justifyContent: "center", padding: "56px 20px", position: "relative", overflow: "hidden", fontFamily: "'Work Sans', sans-serif",
+  },
+  starLayer: {
+    position: "absolute", inset: 0, pointerEvents: "none",
+    backgroundImage: "radial-gradient(rgba(255,255,255,0.5) 1px, transparent 1.5px), radial-gradient(rgba(255,210,160,0.4) 1px, transparent 1.5px)",
+    backgroundSize: "180px 180px, 260px 260px",
+    backgroundPosition: "0 0, 90px 130px",
+    opacity: 0.45,
+  },
+  ringWrap: { position: "absolute", top: -60, left: "50%", transform: "translateX(-50%)", pointerEvents: "none" },
+  container: { width: "100%", maxWidth: 560, position: "relative", zIndex: 1 },
+  header: { textAlign: "center", marginBottom: 30, position: "relative" },
+  resetBtn: { display: "flex", alignItems: "center", justifyContent: "center", width: "100%", marginTop: 10, fontSize: 12.5, color: "#7A7256", background: "#E8DCB8", border: "1.5px solid #DCD2AE", borderRadius: 10, padding: "9px 0", cursor: "pointer", fontFamily: "'Work Sans', sans-serif" },
+  verdictBanner: { marginTop: 10, display: "inline-block", padding: "7px 16px", borderRadius: 8, fontSize: 13.5, fontFamily: "'Spectral', serif", fontWeight: 600 },
+  verdictBannerYes: { background: "#EAF4EA", color: "#2E7D32" },
+  verdictBannerNo: { background: "#FBEAE3", color: "#A6591C" },
+  toeToggleBtn: { display: "flex", alignItems: "center", justifyContent: "center", width: "100%", marginTop: 20, background: "#E0CE9C", color: "#7A5A1E", border: "1.5px dashed #C9962B", borderRadius: 10, padding: "11px 0", fontSize: 13.5, fontFamily: "'Work Sans', sans-serif", fontWeight: 600, cursor: "pointer" },
+  stepToggleBtn: { display: "flex", alignItems: "center", justifyContent: "center", width: "100%", marginBottom: 14, background: "#EDE3C6", color: "#7A5A1E", border: "1.5px solid #DCD2AE", borderRadius: 9, padding: "8px 0", fontSize: 12.5, fontFamily: "'Work Sans', sans-serif", fontWeight: 600, cursor: "pointer" },
+  eyebrow: { display: "inline-flex", alignItems: "center", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, letterSpacing: "0.14em", color: "#C9962B", marginBottom: 14 },
+  title: { fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 34, color: "#F3EEDF", margin: "0 0 10px", letterSpacing: "-0.01em" },
+  subtitle: { color: "#A8A3C4", fontSize: 14.5, lineHeight: 1.6, maxWidth: 440, margin: "0 auto" },
+  card: { background: "#F5EFDC", borderRadius: 14, padding: "30px 28px 26px", boxShadow: "0 24px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,150,43,0.22)" },
+  label: { display: "flex", alignItems: "center", fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 15, color: "#2E2A1F", marginBottom: 8 },
+  labelIcon: { marginRight: 7, color: "#A6591C" },
+  subLabel: { display: "block", fontFamily: "'JetBrains Mono', monospace", fontSize: 10.5, letterSpacing: "0.08em", color: "#7A7256", marginBottom: 6, textTransform: "uppercase" },
+  textarea: { width: "100%", border: "1.5px solid #DCD2AE", borderRadius: 9, padding: "12px 14px", fontSize: 15, color: "#2E2A1F", background: "#FFFDF7", resize: "vertical", lineHeight: 1.5 },
+  helperRow: { display: "flex", justifyContent: "space-between", marginTop: 6 },
+  helper: { fontSize: 12, color: "#8b8672" },
+  counter: { fontSize: 12, color: "#8b8672", fontFamily: "'JetBrains Mono', monospace" },
+  nowBtn: { fontSize: 11, color: "#A6591C", background: "none", border: "none", padding: 0, cursor: "pointer", textDecoration: "underline", fontFamily: "'Work Sans', sans-serif", flexShrink: 0 },
+  rowTwo: { display: "flex", gap: 14, marginTop: 20 },
+  fieldGroup: { flex: 1 },
+  timeRow: { display: "flex", gap: 6 },
+  ampmBtn: { flexShrink: 0, width: 52, border: "1.5px solid #DCD2AE", borderRadius: 9, background: "#EDE3C6", color: "#7A5A1E", fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, cursor: "pointer" },
+  input: { width: "100%", border: "1.5px solid #DCD2AE", borderRadius: 9, padding: "10px 12px", fontSize: 14.5, color: "#2E2A1F", background: "#FFFDF7" },
+  rowThree: { display: "flex", gap: 12, marginTop: 8 },
+  selectWrap: { position: "relative" },
+  select: { width: "100%", border: "1.5px solid #DCD2AE", borderRadius: 9, padding: "10px 30px 10px 12px", fontSize: 14, color: "#2E2A1F", background: "#FFFDF7" },
+  selectIcon: { position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", color: "#8b8672", pointerEvents: "none" },
+  button: { width: "100%", marginTop: 26, background: "#A6591C", color: "#FBF3E3", border: "none", borderRadius: 10, padding: "13px 0", fontSize: 15, fontWeight: 600, fontFamily: "'Work Sans', sans-serif", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "background 0.15s ease, transform 0.15s ease" },
+  footnote: { marginTop: 12, fontSize: 11.5, color: "#9c936f", lineHeight: 1.5, textAlign: "center" },
+  resultBox: { marginTop: 22, borderTop: "1.5px dashed #DCD2AE", paddingTop: 18 },
+  verdictRow: { textAlign: "center", marginBottom: 16 },
+  verdict: { display: "block", fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 40, letterSpacing: "0.02em" },
+  verdictSub: { fontSize: 12.5, color: "#7A7256" },
+  rpGrid: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 },
+  rpCell: { border: "1.5px solid #DCD2AE", borderRadius: 9, padding: "10px 6px", textAlign: "center", background: "#FFFDF7" },
+  rpCellHit: { borderColor: "#2E7D32", background: "#EAF4EA" },
+  rpCode: { fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#A6591C", fontWeight: 600 },
+  rpPlanet: { fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 14.5, color: "#2E2A1F", margin: "3px 0" },
+  rpLabel: { fontSize: 9.5, color: "#8b8672", lineHeight: 1.3 },
+  metaRow: { display: "flex", alignItems: "center", justifyContent: "center", marginTop: 14, fontSize: 11, color: "#9c936f", fontFamily: "'JetBrains Mono', monospace" },
+  cuspSection: { marginTop: 20 },
+  cuspTitle: { fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 14, color: "#2E2A1F", marginBottom: 8, textAlign: "center" },
+  cuspTableWrap: { overflowX: "auto", border: "1.5px solid #DCD2AE", borderRadius: 9 },
+  cuspTable: { width: "100%", borderCollapse: "collapse", fontSize: 11.5, fontFamily: "'JetBrains Mono', monospace" },
+  cuspTh: { textAlign: "center", padding: "6px 4px", background: "#EDE3C6", color: "#7A7256", fontWeight: 600, fontSize: 9.5, textTransform: "uppercase", letterSpacing: "0.02em", whiteSpace: "nowrap" },
+  cuspTd: { padding: "5px 4px", borderTop: "1px solid #E6DCBB", color: "#2E2A1F", whiteSpace: "nowrap", textAlign: "center" },
+  cuspRowAsc: { background: "#FCF6E4" },
+  toeSignBlock: { border: "1.5px solid #DCD2AE", borderRadius: 9, padding: "8px 10px", marginBottom: 6, background: "#FFFDF7" },
+  toeSignBlockSelected: { borderColor: "#2E7D32", background: "#EAF4EA" },
+  toeSignName: { fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 13, color: "#2E2A1F", marginBottom: 5 },
+  toeNakList: { display: "flex", gap: 5, flexWrap: "wrap" },
+  toeNakChip: { fontSize: 10.5, fontFamily: "'JetBrains Mono', monospace", padding: "2px 7px", borderRadius: 20, background: "#EDE3C6", color: "#7A7256" },
+  toeNakChipMatch: { background: "#2E7D32", color: "#FBF3E3" },
+};
+
+const rootEl = document.getElementById('root');
+const root = ReactDOM.createRoot(rootEl);
+root.render(<GulbargaPrashnaApp />);
+
+</script>
+</body>
+</html>
