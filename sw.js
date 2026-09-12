@@ -1,9 +1,12 @@
-const CACHE_NAME = 'cosmic-hub-v17';
+const CACHE_NAME = 'cosmic-hub-v18';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
   './icon.svg',
+  './watch_prashna.html',
+  './Panch_Pakshi.html',
+  './kp_vastu.html',
   './fortuna_point.html',
   './gulbarga_prashna_app.html',
   './aaj-ka-rashifal.html',
