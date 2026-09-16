@@ -31,7 +31,7 @@
 
     header {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
 
     .badge {
@@ -61,18 +61,74 @@
       margin-top: 6px;
     }
 
+    /* Book Appointment Featured Banner */
+    .appointment-banner {
+      width: 100%;
+      max-width: 480px;
+      background: linear-gradient(135deg, #b45309, #d97706, #f59e0b);
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-decoration: none;
+      color: #ffffff;
+      box-shadow: 0 8px 24px rgba(217, 119, 6, 0.35);
+      border: 1px solid rgba(254, 240, 138, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .appointment-banner:active {
+      transform: scale(0.98);
+    }
+
+    .banner-content {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .banner-icon {
+      font-size: 2.2rem;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+    }
+
+    .banner-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .banner-desc {
+      font-size: 0.78rem;
+      color: #fef3c7;
+      margin-top: 2px;
+    }
+
+    .banner-btn {
+      background: #ffffff;
+      color: #92400e;
+      padding: 8px 14px;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
     .install-bar {
       display: none;
       width: 100%;
       max-width: 480px;
-      background: linear-gradient(135deg, #d97706, #b45309);
+      background: linear-gradient(135deg, #1e293b, #334155);
       color: white;
       border-radius: 12px;
       padding: 12px 16px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 4px 14px rgba(217, 119, 6, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .install-bar p {
@@ -81,8 +137,8 @@
     }
 
     .install-btn {
-      background: #ffffff;
-      color: #92400e;
+      background: #fbbf24;
+      color: #0f172a;
       border: none;
       padding: 6px 14px;
       border-radius: 8px;
@@ -155,6 +211,18 @@
     <h1>The Cosmic Counsellor</h1>
     <p class="subtitle">एस्ट्रोलॉजी एवं वास्तु टूल्स हब</p>
   </header>
+
+  <!-- Book Appointment Featured Card -->
+  <a href="https://cosmicconsellorconsultationform.netlify.app/" class="appointment-banner" target="_blank" rel="noopener noreferrer">
+    <div class="banner-content">
+      <div class="banner-icon">📅</div>
+      <div>
+        <div class="banner-title">Book Appointment</div>
+        <div class="banner-desc">परामर्श हेतु अपॉइंटमेंट बुक करें</div>
+      </div>
+    </div>
+    <div class="banner-btn">बुक करें &rarr;</div>
+  </a>
 
   <div id="installContainer" class="install-bar">
     <p>होम स्क्रीन पर ऐप जोड़ें</p>
@@ -340,4 +408,4 @@
   </script>
 </body>
 </html>
-<!-- v19 -->
+<!-- v20 -->
