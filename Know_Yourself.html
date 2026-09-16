@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>स्वयं को जानें | Know Yourself</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
+<style>
+  :root{
+    --bg:#12132a;
+    --bg-soft:#181a3a;
+    --panel:#1c1e44;
+    --panel-2:#20234e;
+    --gold:#d4a54c;
+    --gold-soft:#e8c682;
+    --violet:#9b87d9;
+    --text:#f2efe6;
+    --muted:#a3a1c9;
+    --line:rgba(212,165,76,0.22);
+    --danger:#e08a8a;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 80% 8%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1.5px 1.5px at 60% 30%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,.3), transparent),
+      radial-gradient(1.5px 1.5px at 90% 70%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 45% 85%, rgba(255,255,255,.3), transparent),
+      linear-gradient(180deg, #0f1026 0%, #12132a 40%, #171a3d 100%);
+    background-attachment: fixed;
+    color:var(--text);
+    font-family:'Noto Sans Devanagari','Noto Sans',sans-serif;
+    line-height:1.6;
+    min-height:100vh;
+  }
+  h1,h2,h3,.serif{font-family:'Tiro Devanagari Hindi',serif;}
+  .wrap{max-width:760px;margin:0 auto;padding:32px 20px 80px;}
+
+  .langbar{display:flex;justify-content:center;gap:8px;margin-bottom:22px;}
+  .langbtn{
+    background:transparent;border:1px solid rgba(163,161,201,.35);color:var(--muted);
+    padding:7px 16px;border-radius:20px;font-size:.85rem;cursor:pointer;font-family:inherit;
+  }
+  .langbtn.active{background:var(--gold);color:#231a08;border-color:var(--gold);font-weight:600;}
+
+  header{text-align:center;margin-bottom:36px;}
+  header .eyebrow{color:var(--violet);font-size:.95rem;letter-spacing:.02em;margin-bottom:6px;}
+  header h1{font-size:2.4rem;margin:0 0 8px;color:var(--gold-soft);font-weight:400;}
+  header p{color:var(--muted);max-width:480px;margin:0 auto;font-size:.98rem;}
+  .divider{width:64px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:18px auto 0;}
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:28px 26px;
+    margin-bottom:22px;
+    position:relative;
+  }
+  .card::before{
+    content:"";
+    position:absolute; top:0; left:24px; right:24px; height:2px;
+    background:linear-gradient(90deg, var(--gold), transparent 70%);
+  }
+  .section-title{font-size:1.15rem;color:var(--gold-soft);margin:0 0 18px;font-weight:400;}
+
+  label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:6px;}
+  .field{margin-bottom:18px;}
+  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  select,input[type=text],input[type=number]{
+    width:100%;
+    background:var(--bg-soft);
+    border:1px solid rgba(163,161,201,0.25);
+    color:var(--text);
+    padding:11px 10px;
+    border-radius:4px;
+    font-family:inherit;
+    font-size:.95rem;
+    appearance:none;
+    -webkit-appearance:none;
+  }
+  select:focus,input:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold);}
+  .hint{font-size:.78rem;color:var(--muted);margin-top:6px;}
+  #manualFields{display:none;margin-top:14px;padding-top:14px;border-top:1px dashed rgba(163,161,201,0.25);}
+
+  .btnrow{display:flex;gap:12px;margin-top:8px;}
+  button.action{
+    font-family:inherit;font-size:1rem;font-weight:600;
+    padding:13px 20px;border-radius:4px;border:none;cursor:pointer;
+    flex:1;
+  }
+  #calcBtn{background:var(--gold);color:#231a08;}
+  #calcBtn:hover{background:var(--gold-soft);}
+  #resetBtn{background:transparent;color:var(--muted);border:1px solid rgba(163,161,201,0.35);}
+  #resetBtn:hover{color:var(--text);border-color:var(--text);}
+
+  .error{color:var(--danger);font-size:.88rem;margin-top:10px;display:none;}
+
+  #result{display:none;}
+  .summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px;}
+  .summary-box{background:var(--panel-2);border-radius:5px;padding:16px;text-align:center;border:1px solid var(--line);}
+  .summary-box .label{font-size:.78rem;color:var(--muted);margin-bottom:6px;}
+  .summary-box .value{font-size:1.3rem;color:var(--gold-soft);font-family:'Tiro Devanagari Hindi',serif;}
+  .summary-box .sub{font-size:.78rem;color:var(--violet);margin-top:3px;}
+
+  .detail-block h3{font-size:1.05rem;color:var(--gold-soft);margin:0 0 4px;font-weight:400;}
+  .detail-block .meta{font-size:.82rem;color:var(--violet);margin-bottom:10px;}
+  .detail-block p{color:var(--text);margin:0;font-size:.96rem;}
+
+  footer{text-align:center;color:var(--muted);font-size:.78rem;margin-top:30px;}
+  @media(max-width:480px){
+    .row3{grid-template-columns:1fr 1fr;}
+    .summary-grid{grid-template-columns:1fr;}
+    header h1{font-size:1.9rem;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="langbar">
+    <button class="langbtn" id="btnHi">हिंदी</button>
+    <button class="langbtn" id="btnEn">English</button>
+  </div>
+
+  <header>
+    <div class="eyebrow" id="txtEyebrow"></div>
+    <h1 id="txtTitle"></h1>
+    <p id="txtIntro"></p>
+    <div class="divider"></div>
+  </header>
+
+  <div class="card">
+    <h2 class="section-title" id="txtBirthDetails"></h2>
+
+    <div class="field">
+      <label id="lblName"></label>
+      <input type="text" id="nameInput">
+    </div>
+
+    <div class="field">
+      <label id="lblDob"></label>
+      <div class="row3">
+        <select id="dobDay"></select>
+        <select id="dobMonth"></select>
+        <select id="dobYear"></select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label id="lblTob"></label>
+      <div class="row3">
+        <select id="tobHour"></select>
+        <select id="tobMin"></select>
+        <select id="tobAmpm"><option value="AM">AM</option><option value="PM">PM</option></select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label id="lblPob"></label>
+      <div class="row2" style="margin-bottom:10px;">
+        <select id="pobCountry"></select>
+        <select id="pobState"></select>
+      </div>
+      <select id="pobCity"></select>
+      <div class="hint" id="txtPlaceHint"></div>
+    </div>
+
+    <div id="manualFields">
+      <div class="row3">
+        <div>
+          <label id="lblLat"></label>
+          <input type="number" id="manLat" step="0.0001" placeholder="26.4499">
+        </div>
+        <div>
+          <label id="lblLon"></label>
+          <input type="number" id="manLon" step="0.0001" placeholder="80.3319">
+        </div>
+        <div>
+          <label id="lblUtc"></label>
+          <input type="number" id="manUtc" step="0.25" placeholder="5.5">
+        </div>
+      </div>
+    </div>
+
+    <div class="error" id="errorMsg"></div>
+
+    <div class="btnrow">
+      <button class="action" id="calcBtn"></button>
+      <button class="action" id="resetBtn"></button>
+    </div>
+  </div>
+
+  <div id="result">
+    <div class="card">
+      <h2 class="section-title" id="resultHeading"></h2>
+      <div class="summary-grid">
+        <div class="summary-box"><div class="label" id="lblBoxRashi"></div><div class="value" id="sumRashi">-</div><div class="sub" id="sumRashiSub"></div></div>
+        <div class="summary-box"><div class="label" id="lblBoxNak"></div><div class="value" id="sumNak">-</div><div class="sub" id="sumNakSub"></div></div>
+        <div class="summary-box"><div class="label" id="lblBoxMool"></div><div class="value" id="sumMool">-</div><div class="sub" id="sumMoolSub"></div></div>
+        <div class="summary-box"><div class="label" id="lblBoxBhagya"></div><div class="value" id="sumBhagya">-</div><div class="sub" id="sumBhagyaSub"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="detail-block">
+        <h3 id="hRashi"></h3>
+        <div class="meta" id="rashiMeta"></div>
+        <p id="rashiDesc"></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="detail-block">
+        <h3 id="hNak"></h3>
+        <div class="meta" id="nakMeta"></div>
+        <p id="nakDesc"></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="detail-block">
+        <h3 id="hMool"></h3>
+        <div class="meta" id="moolMeta"></div>
+        <p id="moolDesc"></p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="detail-block">
+        <h3 id="hBhagya"></h3>
+        <div class="meta" id="bhagyaMeta"></div>
+        <p id="bhagyaDesc"></p>
+      </div>
+    </div>
+  </div>
+
+  <footer id="txtFooter"></footer>
+</div>
+
+<script>
+/* ============ UI STRINGS ============ */
+const STRINGS = {
+  hi:{
+    eyebrow:"वैदिक ज्योतिष एवं अंक ज्योतिष",
+    title:"स्वयं को जानें",
+    intro:"अपनी जन्म-तिथि, जन्म-समय व जन्म-स्थान दर्ज करें — अपनी राशि, नक्षत्र, मूलांक व भाग्यांक के अनुसार अपने व्यक्तित्व को विस्तार से जानें।",
+    birthDetails:"जन्म विवरण",
+    nameLabel:"नाम (वैकल्पिक)", namePlaceholder:"अपना नाम लिखें",
+    dobLabel:"जन्म तिथि (Date of Birth)",
+    tobLabel:"जन्म समय (Time of Birth)",
+    pobLabel:"जन्म स्थान (Place of Birth)",
+    placeHint:'भारत के बाहर के देशों हेतु मानक समय (Standard Time) का उपयोग किया गया है — डेलाइट सेविंग टाइम शामिल नहीं है। सटीकता हेतु "अन्य / मैन्युअल" चुनें।',
+    latLabel:"अक्षांश (Latitude)", lonLabel:"देशांतर (Longitude)", utcLabel:"UTC ऑफसेट (घंटे)",
+    calcBtn:"परिणाम देखें", resetBtn:"रीसेट करें",
+    errPlace:"कृपया जन्म स्थान की पूरी जानकारी भरें।",
+    errDate:"तिथि/समय में त्रुटि है, कृपया दोबारा जाँचें।",
+    resultHeading:"आपका सार", resultHeadingName:n=>n+" का सार",
+    boxRashi:"चंद्र राशि", boxNak:"नक्षत्र", boxMool:"मूलांक", boxBhagya:"भाग्यांक",
+    lordPrefix:"स्वामी: ", padaPrefix:"चरण ",
+    hRashi:"राशि के अनुसार", hNak:"नक्षत्र के अनुसार",
+    hMool:"मूलांक के अनुसार (अंक ज्योतिष)", hBhagya:"भाग्यांक के अनुसार (अंक ज्योतिष)",
+    metaRashi:(l,e,s)=>`स्वामी ग्रह: ${l} · तत्व: ${e} · प्रतीक: ${s}`,
+    metaNak:(l,d,s,p)=>`स्वामी ग्रह: ${l} · देवता: ${d} · प्रतीक: ${s} · चरण: ${p}`,
+    metaMool:(n,l)=>`मूलांक ${n} · स्वामी ग्रह: ${l}`,
+    metaBhagya:(n,l)=>`भाग्यांक ${n} · स्वामी ग्रह: ${l}`,
+    footer:"राशि व नक्षत्र की गणना लाहिड़ी अयनांश (Lahiri Ayanamsa) पर आधारित सायन-निरयण रूपांतरण से की गई है। यह सामान्य मार्गदर्शन हेतु है।",
+    months:["जनवरी","फरवरी","मार्च","अप्रैल","मई","जून","जुलाई","अगस्त","सितंबर","अक्टूबर","नवंबर","दिसंबर"]
+  },
+  en:{
+    eyebrow:"Vedic Astrology & Numerology",
+    title:"Know Yourself",
+    intro:"Enter your date of birth, time of birth and place of birth — discover your personality in detail according to your Rashi, Nakshatra, Moolank and Bhagyank.",
+    birthDetails:"Birth Details",
+    nameLabel:"Name (optional)", namePlaceholder:"Enter your name",
+    dobLabel:"Date of Birth",
+    tobLabel:"Time of Birth",
+    pobLabel:"Place of Birth",
+    placeHint:'For countries outside India, standard time is used — daylight saving time is not included. Choose "Other / Manual" for precision.',
+    latLabel:"Latitude", lonLabel:"Longitude", utcLabel:"UTC Offset (hours)",
+    calcBtn:"Show Result", resetBtn:"Reset",
+    errPlace:"Please fill in complete birth place details.",
+    errDate:"There is an error in the date/time, please check again.",
+    resultHeading:"Your Summary", resultHeadingName:n=>n+"'s Summary",
+    boxRashi:"Moon Sign", boxNak:"Nakshatra", boxMool:"Moolank", boxBhagya:"Bhagyank",
+    lordPrefix:"Ruler: ", padaPrefix:"Pada ",
+    hRashi:"According to your Rashi", hNak:"According to your Nakshatra",
+    hMool:"According to your Moolank (Numerology)", hBhagya:"According to your Bhagyank (Numerology)",
+    metaRashi:(l,e,s)=>`Ruling planet: ${l} · Element: ${e} · Symbol: ${s}`,
+    metaNak:(l,d,s,p)=>`Ruling planet: ${l} · Deity: ${d} · Symbol: ${s} · Pada: ${p}`,
+    metaMool:(n,l)=>`Moolank ${n} · Ruling planet: ${l}`,
+    metaBhagya:(n,l)=>`Bhagyank ${n} · Ruling planet: ${l}`,
+    footer:"Rashi and Nakshatra are calculated using a tropical-to-sidereal conversion based on the Lahiri Ayanamsa. This is intended as general guidance.",
+    months:["January","February","March","April","May","June","July","August","September","October","November","December"]
+  }
+};
+let currentLang = 'hi';
+
+/* ============ RASHI / NAKSHATRA / ANK DATA (bilingual) ============ */
+const RASHI = [
+ {name:{hi:"मेष",en:"Aries"}, lord:{hi:"मंगल",en:"Mars"}, element:{hi:"अग्नि",en:"Fire"}, symbol:{hi:"मेढ़ा",en:"Ram"},
+  desc:{hi:"मेष राशि के जातक ऊर्जावान, साहसी और नेतृत्व करने वाले होते हैं। मंगल के प्रभाव से इनमें आत्मविश्वास और तेज़ निर्णय लेने की क्षमता होती है। ये नई शुरुआत करने में माहिर होते हैं, पर जल्दबाज़ी और गुस्सा इनकी कमजोरी बन सकती है। करियर में ये सेना, खेल, उद्यमिता व नेतृत्व की भूमिकाओं में सफल होते हैं। रिश्तों में ये सीधे व स्पष्टवादी होते हैं, पर धैर्य रखना सीखना इनके लिए लाभदायक रहेगा।",
+      en:"Aries natives are energetic, courageous and natural leaders. Mars gives them confidence and the ability to make quick decisions. They excel at starting new things, though haste and a short temper can be their weakness. They find success in the military, sports, entrepreneurship and leadership roles. In relationships they are direct and straightforward, though learning patience will serve them well."}},
+ {name:{hi:"वृषभ",en:"Taurus"}, lord:{hi:"शुक्र",en:"Venus"}, element:{hi:"पृथ्वी",en:"Earth"}, symbol:{hi:"बैल",en:"Bull"},
+  desc:{hi:"वृषभ राशि के जातक स्थिर, धैर्यवान और भौतिक सुख-सुविधाओं को महत्व देने वाले होते हैं। शुक्र के प्रभाव से इनमें सौंदर्यबोध, कला-प्रेम और आरामतलबी स्वभाव पाया जाता है। ये भरोसेमंद व मेहनती होते हैं, पर ज़िद्दी और बदलाव से बचने वाले भी हो सकते हैं। वित्त, बैंकिंग, कला व खाद्य उद्योग में सफलता मिलती है। रिश्तों में वफादार पर मालिकाना भावना रखने वाले होते हैं।",
+      en:"Taurus natives are stable, patient and value material comfort. Venus gives them an eye for beauty, a love of art and a relaxed nature. They are reliable and hardworking, though they can also be stubborn and resistant to change. They find success in finance, banking, the arts and the food industry. In relationships they are loyal but can be possessive."}},
+ {name:{hi:"मिथुन",en:"Gemini"}, lord:{hi:"बुध",en:"Mercury"}, element:{hi:"वायु",en:"Air"}, symbol:{hi:"युगल",en:"Twins"},
+  desc:{hi:"मिथुन राशि के जातक बुद्धिमान, वाक्पटु और जिज्ञासु स्वभाव के होते हैं। बुध के प्रभाव से इनमें संचार कौशल, तर्कशक्ति और सीखने की गहरी रुचि होती है। ये बहुमुखी प्रतिभा के धनी होते हैं पर एकाग्रता व स्थिरता की कमी हो सकती है। मीडिया, लेखन, शिक्षण व बिक्री जैसे क्षेत्रों में सफल होते हैं। रिश्तों में मज़ेदार व दिलचस्प साथी होते हैं, पर भावनात्मक गहराई विकसित करना ज़रूरी है।",
+      en:"Gemini natives are intelligent, articulate and deeply curious. Mercury gives them strong communication skills, sharp reasoning and a love of learning. They are versatile and multi-talented, though they may lack focus and consistency. They succeed in media, writing, teaching and sales. In relationships they are fun and interesting companions, though developing emotional depth is important for them."}},
+ {name:{hi:"कर्क",en:"Cancer"}, lord:{hi:"चंद्र",en:"Moon"}, element:{hi:"जल",en:"Water"}, symbol:{hi:"केकड़ा",en:"Crab"},
+  desc:{hi:"कर्क राशि के जातक भावुक, संवेदनशील और देखभाल करने वाले स्वभाव के होते हैं। चंद्रमा के प्रभाव से इनमें गहरी अंतर्ज्ञान शक्ति, पारिवारिक लगाव और कल्पनाशीलता पाई जाती है। ये अपनों की रक्षा करने में आगे रहते हैं, पर मूड में उतार-चढ़ाव व अतीत से जुड़ाव इनकी चुनौती है। गृह-निर्माण, खानपान, नर्सिंग व मनोविज्ञान क्षेत्र इनके अनुकूल हैं। रिश्तों में वफादार व स्नेही साथी साबित होते हैं।",
+      en:"Cancer natives are emotional, sensitive and nurturing by nature. The Moon gives them deep intuition, strong family attachment and vivid imagination. They protect their loved ones fiercely, though mood swings and holding onto the past can be a challenge. Homemaking, food, nursing and psychology suit them well. In relationships they prove to be loyal and affectionate partners."}},
+ {name:{hi:"सिंह",en:"Leo"}, lord:{hi:"सूर्य",en:"Sun"}, element:{hi:"अग्नि",en:"Fire"}, symbol:{hi:"सिंह",en:"Lion"},
+  desc:{hi:"सिंह राशि के जातक आत्मविश्वासी, दमदार व्यक्तित्व वाले और स्वाभाविक नेता होते हैं। सूर्य के प्रभाव से इनमें गरिमा, रचनात्मकता व उदारता पाई जाती है। ये मंच पर चमकना पसंद करते हैं व सम्मान चाहते हैं, पर अहंकार व अधिकार-भाव इनकी कमजोरी बन सकते हैं। प्रशासन, मनोरंजन, राजनीति व नेतृत्व की भूमिकाओं में सफलता मिलती है। रिश्तों में उदार व वफादार होते हैं, पर सराहना की अपेक्षा रखते हैं।",
+      en:"Leo natives are confident, charismatic and natural-born leaders. The Sun gives them dignity, creativity and generosity. They enjoy being in the spotlight and seek respect, though ego and a sense of entitlement can be their weakness. They find success in administration, entertainment, politics and leadership roles. In relationships they are generous and loyal, but expect appreciation in return."}},
+ {name:{hi:"कन्या",en:"Virgo"}, lord:{hi:"बुध",en:"Mercury"}, element:{hi:"पृथ्वी",en:"Earth"}, symbol:{hi:"कन्या",en:"Maiden"},
+  desc:{hi:"कन्या राशि के जातक विश्लेषणात्मक, व्यवस्थित और पूर्णतावादी स्वभाव के होते हैं। बुध के प्रभाव से इनमें सेवा-भाव, बारीकी पर ध्यान व व्यावहारिक बुद्धि पाई जाती है। ये भरोसेमंद कर्मचारी व सलाहकार होते हैं, पर अत्यधिक आलोचनात्मक व चिंतित स्वभाव इनकी चुनौती है। स्वास्थ्य सेवा, लेखांकन, अनुसंधान व प्रशासन में सफल होते हैं। रिश्तों में समर्पित पर अपेक्षाओं में सटीकता चाहने वाले होते हैं।",
+      en:"Virgo natives are analytical, organised and perfectionist by nature. Mercury gives them a service orientation, attention to detail and practical intelligence. They make reliable employees and advisors, though excessive criticism and worry can be their challenge. Healthcare, accounting, research and administration suit them well. In relationships they are devoted but expect precision in what they get back."}},
+ {name:{hi:"तुला",en:"Libra"}, lord:{hi:"शुक्र",en:"Venus"}, element:{hi:"वायु",en:"Air"}, symbol:{hi:"तराजू",en:"Scales"},
+  desc:{hi:"तुला राशि के जातक संतुलित, न्यायप्रिय व सामाजिक स्वभाव के होते हैं। शुक्र के प्रभाव से इनमें सौंदर्यबोध, कूटनीति व सामंजस्य बिठाने की कला पाई जाती है। ये अच्छे मध्यस्थ व साथी होते हैं, पर निर्णय लेने में हिचकिचाहट इनकी कमजोरी है। कानून, कला, फैशन व जनसंपर्क क्षेत्र इनके अनुकूल हैं। रिश्तों में साझेदारी को प्राथमिकता देते हैं व सामंजस्यपूर्ण जीवन चाहते हैं।",
+      en:"Libra natives are balanced, fair-minded and social by nature. Venus gives them an eye for beauty, diplomacy and the art of creating harmony. They make good mediators and partners, though indecisiveness can be their weakness. Law, art, fashion and public relations suit them well. In relationships they prioritise partnership and seek a harmonious life."}},
+ {name:{hi:"वृश्चिक",en:"Scorpio"}, lord:{hi:"मंगल",en:"Mars"}, element:{hi:"जल",en:"Water"}, symbol:{hi:"बिच्छू",en:"Scorpion"},
+  desc:{hi:"वृश्चिक राशि के जातक तीव्र, रहस्यमयी व दृढ़ इच्छाशक्ति वाले होते हैं। मंगल के प्रभाव से इनमें गहन भावनाएँ, अनुसंधान की प्रवृत्ति व परिवर्तनकारी ऊर्जा पाई जाती है। ये वफादार व साहसी होते हैं, पर शक और बदले की भावना इनकी चुनौती बन सकती है। शोध, मनोविज्ञान, चिकित्सा व गुप्तचर कार्यों में सफल होते हैं। रिश्तों में गहरी आत्मीयता व वफादारी चाहते हैं।",
+      en:"Scorpio natives are intense, mysterious and strong-willed. Mars gives them deep emotions, a research-oriented mind and transformative energy. They are loyal and courageous, though suspicion and a vengeful streak can be their challenge. Research, psychology, medicine and investigative work suit them well. In relationships they seek deep intimacy and loyalty."}},
+ {name:{hi:"धनु",en:"Sagittarius"}, lord:{hi:"गुरु",en:"Jupiter"}, element:{hi:"अग्नि",en:"Fire"}, symbol:{hi:"धनुष",en:"Bow"},
+  desc:{hi:"धनु राशि के जातक आशावादी, स्वतंत्रताप्रिय व दार्शनिक सोच वाले होते हैं। गुरु के प्रभाव से इनमें ज्ञान की प्यास, यात्रा-प्रेम व सत्यनिष्ठा पाई जाती है। ये उत्साही व प्रेरणादायक होते हैं, पर अधीरता व अति-स्पष्टवादिता इनकी कमजोरी है। शिक्षा, यात्रा, कानून व धर्म से जुड़े क्षेत्रों में सफलता मिलती है। रिश्तों में स्वतंत्रता व ईमानदारी को महत्व देते हैं।",
+      en:"Sagittarius natives are optimistic, freedom-loving and philosophical by nature. Jupiter gives them a thirst for knowledge, a love of travel and honesty. They are enthusiastic and inspiring, though impatience and excessive bluntness can be their weakness. Education, travel, law and religious fields suit them well. In relationships they value freedom and honesty."}},
+ {name:{hi:"मकर",en:"Capricorn"}, lord:{hi:"शनि",en:"Saturn"}, element:{hi:"पृथ्वी",en:"Earth"}, symbol:{hi:"मगरमच्छ",en:"Sea-goat"},
+  desc:{hi:"मकर राशि के जातक अनुशासित, महत्वाकांक्षी व यथार्थवादी होते हैं। शनि के प्रभाव से इनमें धैर्य, ज़िम्मेदारी व दीर्घकालिक सोच पाई जाती है। ये कड़ी मेहनत से लक्ष्य प्राप्त करते हैं, पर अत्यधिक गंभीरता व निराशावाद इनकी चुनौती है। प्रबंधन, इंजीनियरिंग, राजनीति व वित्त क्षेत्र इनके अनुकूल हैं। रिश्तों में स्थिरता व प्रतिबद्धता को महत्व देते हैं।",
+      en:"Capricorn natives are disciplined, ambitious and realistic. Saturn gives them patience, a sense of responsibility and long-term thinking. They achieve their goals through hard work, though excessive seriousness and pessimism can be their challenge. Management, engineering, politics and finance suit them well. In relationships they value stability and commitment."}},
+ {name:{hi:"कुंभ",en:"Aquarius"}, lord:{hi:"शनि",en:"Saturn"}, element:{hi:"वायु",en:"Air"}, symbol:{hi:"घड़ा",en:"Water-bearer"},
+  desc:{hi:"कुंभ राशि के जातक नवाचारी, स्वतंत्र सोच वाले व मानवतावादी होते हैं। शनि के प्रभाव से इनमें मौलिकता, सामाजिक चेतना व बुद्धिमत्ता पाई जाती है। ये भविष्यदृष्टा व अलग सोचने वाले होते हैं, पर भावनात्मक दूरी व ज़िद इनकी कमजोरी बन सकती है। विज्ञान, तकनीक, समाजसेवा व अनुसंधान में सफल होते हैं। रिश्तों में मित्रता को प्राथमिकता देते हैं व स्वतंत्रता चाहते हैं।",
+      en:"Aquarius natives are innovative, independent-minded and humanitarian. Saturn gives them originality, social awareness and intelligence. They are visionary and think differently, though emotional distance and stubbornness can be their weakness. Science, technology, social work and research suit them well. In relationships they prioritise friendship and value independence."}},
+ {name:{hi:"मीन",en:"Pisces"}, lord:{hi:"गुरु",en:"Jupiter"}, element:{hi:"जल",en:"Water"}, symbol:{hi:"मछली",en:"Fish"},
+  desc:{hi:"मीन राशि के जातक कल्पनाशील, करुणामयी व आध्यात्मिक झुकाव वाले होते हैं। गुरु के प्रभाव से इनमें गहरी संवेदनशीलता, रचनात्मकता व सहानुभूति पाई जाती है। ये कलाप्रेमी व सपने देखने वाले होते हैं, पर यथार्थ से पलायन व अनिर्णय इनकी चुनौती है। कला, संगीत, चिकित्सा व आध्यात्मिक क्षेत्रों में सफलता मिलती है। रिश्तों में समर्पित व त्यागी स्वभाव के होते हैं।",
+      en:"Pisces natives are imaginative, compassionate and spiritually inclined. Jupiter gives them deep sensitivity, creativity and empathy. They are artistic and dreamy, though escapism and indecision can be their challenge. Art, music, medicine and spiritual fields bring them success. In relationships they are devoted and self-sacrificing."}}
+];
+
+const NAKSHATRA = [
+ {name:{hi:"अश्विनी",en:"Ashwini"}, lord:{hi:"केतु",en:"Ketu"}, deity:{hi:"अश्विनी कुमार",en:"Ashwini Kumaras"}, symbol:{hi:"घोड़े का सिर",en:"Horse's head"},
+  desc:{hi:"अश्विनी नक्षत्र के जातक ऊर्जावान, तेज़ और साहसी होते हैं। ये नई शुरुआत करने में माहिर, स्वतंत्र व चिकित्सा-कला में रुचि रखने वाले होते हैं। जल्दबाज़ी से बचकर धैर्य अपनाना इनके लिए लाभकारी रहेगा।",
+      en:"Ashwini natives are energetic, quick and courageous. They excel at new beginnings, value independence and are drawn to the healing arts. Avoiding haste and cultivating patience will benefit them."}},
+ {name:{hi:"भरणी",en:"Bharani"}, lord:{hi:"शुक्र",en:"Venus"}, deity:{hi:"यम",en:"Yama"}, symbol:{hi:"योनि",en:"Yoni"},
+  desc:{hi:"भरणी नक्षत्र के जातक दृढ़ इच्छाशक्ति, रचनात्मक व अनुशासित होते हैं। ये जिम्मेदारी निभाने में सक्षम व गहरी भावनाओं वाले होते हैं। संयम बनाए रखना व अति-नियंत्रण से बचना इनके लिए ज़रूरी है।",
+      en:"Bharani natives have strong willpower, are creative and disciplined. They can shoulder responsibility well and feel deeply. Staying balanced and avoiding excessive control will help them."}},
+ {name:{hi:"कृत्तिका",en:"Krittika"}, lord:{hi:"सूर्य",en:"Sun"}, deity:{hi:"अग्नि",en:"Agni"}, symbol:{hi:"छुरी / ज्वाला",en:"Blade / Flame"},
+  desc:{hi:"कृत्तिका नक्षत्र के जातक तीक्ष्ण बुद्धि, स्पष्टवादी व नेतृत्वक्षम होते हैं। ये शुद्धता व अनुशासन को महत्व देते हैं, पर तीखे स्वभाव पर नियंत्रण रखना इनके लिए लाभदायक होगा।",
+      en:"Krittika natives are sharp-minded, outspoken and natural leaders. They value purity and discipline. Keeping their sharp temper in check will be beneficial."}},
+ {name:{hi:"रोहिणी",en:"Rohini"}, lord:{hi:"चंद्र",en:"Moon"}, deity:{hi:"ब्रह्मा",en:"Brahma"}, symbol:{hi:"बैलगाड़ी",en:"Bullock cart"},
+  desc:{hi:"रोहिणी नक्षत्र के जातक आकर्षक, सृजनात्मक व भौतिक सुख चाहने वाले होते हैं। ये कला, सौंदर्य व समृद्धि से जुड़े होते हैं। अधिकार-भाव व ज़िद्दीपन से बचना इनके लिए हितकर है।",
+      en:"Rohini natives are attractive, creative and seek material comfort. They are drawn to art, beauty and prosperity. Avoiding possessiveness and stubbornness will serve them well."}},
+ {name:{hi:"मृगशिरा",en:"Mrigashira"}, lord:{hi:"मंगल",en:"Mars"}, deity:{hi:"चंद्र (सोम)",en:"Soma"}, symbol:{hi:"हिरण का सिर",en:"Deer's head"},
+  desc:{hi:"मृगशिरा नक्षत्र के जातक जिज्ञासु, कोमल व खोजी प्रवृत्ति के होते हैं। ये यात्रा व नई जानकारी में रुचि रखते हैं। निर्णय में स्थिरता लाना इनके लिए लाभदायक रहेगा।",
+      en:"Mrigashira natives are curious, gentle and exploratory by nature. They are drawn to travel and new knowledge. Bringing more steadiness to decisions will be beneficial."}},
+ {name:{hi:"आर्द्रा",en:"Ardra"}, lord:{hi:"राहु",en:"Rahu"}, deity:{hi:"रुद्र",en:"Rudra"}, symbol:{hi:"आँसू / रत्न",en:"Teardrop / Gem"},
+  desc:{hi:"आर्द्रा नक्षत्र के जातक तीव्र बुद्धि, भावुक व परिवर्तनकारी स्वभाव के होते हैं। ये संकट से सीखकर आगे बढ़ते हैं। क्रोध व अस्थिरता पर नियंत्रण रखना इनके लिए ज़रूरी है।",
+      en:"Ardra natives are sharp-minded, emotional and transformative. They grow through crisis and challenge. Keeping anger and instability in check is important for them."}},
+ {name:{hi:"पुनर्वसु",en:"Punarvasu"}, lord:{hi:"गुरु",en:"Jupiter"}, deity:{hi:"अदिति",en:"Aditi"}, symbol:{hi:"तरकश",en:"Quiver"},
+  desc:{hi:"पुनर्वसु नक्षत्र के जातक आशावादी, उदार व पुनर्निर्माण करने वाले होते हैं। ये कठिनाई के बाद फिर खड़े होने की क्षमता रखते हैं। अत्यधिक भटकाव से बचना इनके लिए लाभकारी है।",
+      en:"Punarvasu natives are optimistic, generous and good at rebuilding. They have the capacity to rise again after hardship. Avoiding excessive restlessness will help them."}},
+ {name:{hi:"पुष्य",en:"Pushya"}, lord:{hi:"शनि",en:"Saturn"}, deity:{hi:"बृहस्पति",en:"Brihaspati"}, symbol:{hi:"फूल / थन",en:"Flower / Udder"},
+  desc:{hi:"पुष्य नक्षत्र के जातक पोषण करने वाले, अनुशासित व आध्यात्मिक झुकाव वाले होते हैं। इसे सबसे शुभ नक्षत्रों में गिना जाता है। यह जातक जिम्मेदार व भरोसेमंद होते हैं।",
+      en:"Pushya natives are nurturing, disciplined and spiritually inclined. This is considered one of the most auspicious nakshatras. These natives are responsible and dependable."}},
+ {name:{hi:"आश्लेषा",en:"Ashlesha"}, lord:{hi:"बुध",en:"Mercury"}, deity:{hi:"नाग",en:"Naga"}, symbol:{hi:"सर्प",en:"Serpent"},
+  desc:{hi:"आश्लेषा नक्षत्र के जातक रहस्यमयी, तीक्ष्ण बुद्धि व गहरी अंतर्दृष्टि वाले होते हैं। ये मनोविज्ञान व शोध में रुचि रखते हैं। शक व चालाकी से बचना इनके लिए हितकर है।",
+      en:"Ashlesha natives are mysterious, sharp-minded and deeply perceptive. They are drawn to psychology and research. Avoiding suspicion and cunning will serve them well."}},
+ {name:{hi:"मघा",en:"Magha"}, lord:{hi:"केतु",en:"Ketu"}, deity:{hi:"पितर",en:"Pitras"}, symbol:{hi:"सिंहासन",en:"Throne"},
+  desc:{hi:"मघा नक्षत्र के जातक गरिमामयी, परंपरावादी व नेतृत्वक्षम होते हैं। ये पूर्वजों व परंपरा का सम्मान करते हैं। अहंकार पर नियंत्रण रखना इनके लिए लाभदायक रहेगा।",
+      en:"Magha natives are dignified, traditional and natural leaders. They honour their ancestors and heritage. Keeping ego in check will be beneficial for them."}},
+ {name:{hi:"पूर्वा फाल्गुनी",en:"Purva Phalguni"}, lord:{hi:"शुक्र",en:"Venus"}, deity:{hi:"भग",en:"Bhaga"}, symbol:{hi:"पलंग का अगला पैर",en:"Front legs of a bed"},
+  desc:{hi:"पूर्वा फाल्गुनी नक्षत्र के जातक रचनात्मक, प्रेमपूर्ण व आनंदप्रिय होते हैं। ये कला व रिश्तों में गहराई चाहते हैं। आलस्य से बचकर लक्ष्य पर ध्यान देना ज़रूरी है।",
+      en:"Purva Phalguni natives are creative, loving and pleasure-seeking. They seek depth in art and relationships. Avoiding laziness and staying goal-focused is important."}},
+ {name:{hi:"उत्तरा फाल्गुनी",en:"Uttara Phalguni"}, lord:{hi:"सूर्य",en:"Sun"}, deity:{hi:"अर्यमा",en:"Aryaman"}, symbol:{hi:"पलंग का पिछला पैर",en:"Back legs of a bed"},
+  desc:{hi:"उत्तरा फाल्गुनी नक्षत्र के जातक भरोसेमंद, उदार व मित्रवत्सल होते हैं। ये साझेदारी व सामाजिक कार्यों में सफल होते हैं। संतुलन बनाए रखना इनकी सफलता की कुंजी है।",
+      en:"Uttara Phalguni natives are reliable, generous and friendly. They succeed in partnerships and social work. Maintaining balance is key to their success."}},
+ {name:{hi:"हस्त",en:"Hasta"}, lord:{hi:"चंद्र",en:"Moon"}, deity:{hi:"सवितृ",en:"Savitar"}, symbol:{hi:"हथेली",en:"Palm of the hand"},
+  desc:{hi:"हस्त नक्षत्र के जातक कुशल, हुनरमंद व व्यावहारिक बुद्धि वाले होते हैं। ये हाथ के कौशल व चतुराई से कार्य सिद्ध करते हैं। अधीरता पर नियंत्रण रखना लाभदायक रहेगा।",
+      en:"Hasta natives are skilful, dexterous and practically intelligent. They accomplish tasks through craft and cleverness. Keeping impatience in check will be beneficial."}},
+ {name:{hi:"चित्रा",en:"Chitra"}, lord:{hi:"मंगल",en:"Mars"}, deity:{hi:"त्वष्टा",en:"Tvashtar"}, symbol:{hi:"चमकता रत्न",en:"Bright jewel"},
+  desc:{hi:"चित्रा नक्षत्र के जातक आकर्षक, कलात्मक व डिज़ाइन-कुशल होते हैं। ये सुंदरता व सृजन में उत्कृष्टता चाहते हैं। दिखावे से ज़्यादा सार पर ध्यान देना इनके लिए हितकर है।",
+      en:"Chitra natives are attractive, artistic and skilled at design. They seek excellence in beauty and creation. Focusing on substance over appearance will serve them well."}},
+ {name:{hi:"स्वाति",en:"Swati"}, lord:{hi:"राहु",en:"Rahu"}, deity:{hi:"वायु",en:"Vayu"}, symbol:{hi:"मूँगा / पौधा",en:"Coral / Young plant"},
+  desc:{hi:"स्वाति नक्षत्र के जातक स्वतंत्र, लचीले व संतुलनप्रिय होते हैं। ये व्यापार व कूटनीति में कुशल होते हैं। अस्थिरता से बचकर स्थायित्व लाना इनके लिए लाभदायक है।",
+      en:"Swati natives are independent, flexible and balance-seeking. They excel in business and diplomacy. Avoiding instability and building steadiness will help them."}},
+ {name:{hi:"विशाखा",en:"Vishakha"}, lord:{hi:"गुरु",en:"Jupiter"}, deity:{hi:"इंद्राग्नि",en:"Indra-Agni"}, symbol:{hi:"सजी हुई मेहराब",en:"Decorated archway"},
+  desc:{hi:"विशाखा नक्षत्र के जातक महत्वाकांक्षी, दृढ़ निश्चयी व लक्ष्य-उन्मुख होते हैं। ये कई क्षेत्रों में एक साथ सफलता चाहते हैं। धैर्य व एकाग्रता इनकी सफलता बढ़ाएगी।",
+      en:"Vishakha natives are ambitious, determined and goal-oriented. They seek success in many areas at once. Patience and focus will boost their success."}},
+ {name:{hi:"अनुराधा",en:"Anuradha"}, lord:{hi:"शनि",en:"Saturn"}, deity:{hi:"मित्र",en:"Mitra"}, symbol:{hi:"कमल",en:"Lotus"},
+  desc:{hi:"अनुराधा नक्षत्र के जातक मित्रवत्सल, समर्पित व संगठन-कुशल होते हैं। ये टीम भावना व सहयोग में विश्वास रखते हैं। अत्यधिक भावनात्मक निर्भरता से बचना इनके लिए हितकर है।",
+      en:"Anuradha natives are friendly, devoted and good organisers. They believe in teamwork and cooperation. Avoiding excessive emotional dependence will help them."}},
+ {name:{hi:"ज्येष्ठा",en:"Jyeshtha"}, lord:{hi:"बुध",en:"Mercury"}, deity:{hi:"इंद्र",en:"Indra"}, symbol:{hi:"कुंडल",en:"Earring"},
+  desc:{hi:"ज्येष्ठा नक्षत्र के जातक साहसी, संरक्षक स्वभाव व जिम्मेदार होते हैं। ये नेतृत्व व सुरक्षा की भावना रखते हैं। अहंकार व वर्चस्व की भावना पर नियंत्रण रखना ज़रूरी है।",
+      en:"Jyeshtha natives are courageous, protective and responsible. They carry a strong sense of leadership and security. Keeping ego and the need for dominance in check is important."}},
+ {name:{hi:"मूल",en:"Mula"}, lord:{hi:"केतु",en:"Ketu"}, deity:{hi:"निऋति",en:"Nirriti"}, symbol:{hi:"जड़ों का गुच्छा",en:"Bunch of roots"},
+  desc:{hi:"मूल नक्षत्र के जातक गहन शोधकर्ता, जड़ तक पहुँचने वाले व परिवर्तनकारी होते हैं। ये सत्य की खोज में रहते हैं। विनाशकारी प्रवृत्तियों पर नियंत्रण रखना लाभदायक रहेगा।",
+      en:"Mula natives are deep researchers who get to the root of things and bring transformation. They are drawn to seeking truth. Keeping destructive tendencies in check will be beneficial."}},
+ {name:{hi:"पूर्वाषाढ़ा",en:"Purva Ashadha"}, lord:{hi:"शुक्र",en:"Venus"}, deity:{hi:"आपः",en:"Apas"}, symbol:{hi:"सूप / पंखा",en:"Winnowing fan"},
+  desc:{hi:"पूर्वाषाढ़ा नक्षत्र के जातक अजेय इच्छाशक्ति, वाकपटु व प्रेरक होते हैं। ये अपनी बात मनवाने में सक्षम होते हैं। ज़िद्दीपन कम कर दूसरों की सुनना इनके लिए हितकर है।",
+      en:"Purva Ashadha natives have invincible willpower, are eloquent and persuasive. They are skilled at winning others over. Listening to others more and easing stubbornness will help them."}},
+ {name:{hi:"उत्तराषाढ़ा",en:"Uttara Ashadha"}, lord:{hi:"सूर्य",en:"Sun"}, deity:{hi:"विश्वेदेवा",en:"Vishvadevas"}, symbol:{hi:"हाथी दाँत",en:"Elephant tusk"},
+  desc:{hi:"उत्तराषाढ़ा नक्षत्र के जातक जिम्मेदार, सत्यनिष्ठ व दीर्घकालिक विजेता होते हैं। ये अंतिम विजय तक डटे रहते हैं। धैर्य इनकी सबसे बड़ी ताकत है।",
+      en:"Uttara Ashadha natives are responsible, truthful and long-term winners. They persist until final victory. Patience is their greatest strength."}},
+ {name:{hi:"श्रवण",en:"Shravana"}, lord:{hi:"चंद्र",en:"Moon"}, deity:{hi:"विष्णु",en:"Vishnu"}, symbol:{hi:"कान / तीन पदचिह्न",en:"Ear / Three footprints"},
+  desc:{hi:"श्रवण नक्षत्र के जातक अच्छे श्रोता, ज्ञानपिपासु व संचारकुशल होते हैं। ये सीखने व सिखाने दोनों में निपुण होते हैं। अफ़वाहों से दूर रहना इनके लिए लाभदायक है।",
+      en:"Shravana natives are good listeners, knowledge-seeking and skilled communicators. They are adept at both learning and teaching. Staying away from rumours will benefit them."}},
+ {name:{hi:"धनिष्ठा",en:"Dhanishtha"}, lord:{hi:"मंगल",en:"Mars"}, deity:{hi:"अष्ट वसु",en:"Eight Vasus"}, symbol:{hi:"ढोलक",en:"Drum"},
+  desc:{hi:"धनिष्ठा नक्षत्र के जातक ऊर्जावान, संगीतप्रिय व महत्वाकांक्षी होते हैं। ये धन व यश दोनों चाहते हैं। उदारता बनाए रखना इनके रिश्तों के लिए हितकर है।",
+      en:"Dhanishtha natives are energetic, musical and ambitious. They seek both wealth and fame. Staying generous will help their relationships."}},
+ {name:{hi:"शतभिषा",en:"Shatabhisha"}, lord:{hi:"राहु",en:"Rahu"}, deity:{hi:"वरुण",en:"Varuna"}, symbol:{hi:"सौ चिकित्सक / वृत्त",en:"Hundred healers / circle"},
+  desc:{hi:"शतभिषा नक्षत्र के जातक रहस्यप्रिय, स्वतंत्र व चिकित्सा-विज्ञान में रुचि रखने वाले होते हैं। ये अकेले रहकर गहराई से सोचना पसंद करते हैं। सामाजिक जुड़ाव बढ़ाना इनके लिए लाभदायक है।",
+      en:"Shatabhisha natives are secretive, independent and drawn to medical science. They prefer solitude for deep thinking. Building more social connection will help them."}},
+ {name:{hi:"पूर्वाभाद्रपद",en:"Purva Bhadrapada"}, lord:{hi:"गुरु",en:"Jupiter"}, deity:{hi:"अज एकपाद",en:"Aja Ekapada"}, symbol:{hi:"पलंग का अगला पैर / तलवार",en:"Front legs of a bed / sword"},
+  desc:{hi:"पूर्वाभाद्रपद नक्षत्र के जातक आदर्शवादी, आध्यात्मिक व उग्र सुधारक होते हैं। ये गहरे दार्शनिक विचार रखते हैं। अतिवाद से बचना इनके लिए हितकर है।",
+      en:"Purva Bhadrapada natives are idealistic, spiritual and fierce reformers. They hold deep philosophical views. Avoiding extremes will serve them well."}},
+ {name:{hi:"उत्तराभाद्रपद",en:"Uttara Bhadrapada"}, lord:{hi:"शनि",en:"Saturn"}, deity:{hi:"अहिर्बुध्न्य",en:"Ahirbudhnya"}, symbol:{hi:"पलंग का पिछला पैर / सर्प",en:"Back legs of a bed / serpent"},
+  desc:{hi:"उत्तराभाद्रपद नक्षत्र के जातक शांत, गहन ज्ञानी व परोपकारी होते हैं। ये धैर्यपूर्वक गहराई से कार्य करते हैं। आलस्य से बचकर सक्रियता बनाए रखना लाभदायक रहेगा।",
+      en:"Uttara Bhadrapada natives are calm, deeply wise and altruistic. They work patiently and thoroughly. Avoiding laziness and staying active will be beneficial."}},
+ {name:{hi:"रेवती",en:"Revati"}, lord:{hi:"बुध",en:"Mercury"}, deity:{hi:"पूषन",en:"Pushan"}, symbol:{hi:"मछली / ढोल",en:"Fish / Drum"},
+  desc:{hi:"रेवती नक्षत्र के जातक करुणामयी, पोषण करने वाले व यात्रा-प्रेमी होते हैं। ये दूसरों का मार्गदर्शन करने में कुशल होते हैं। अत्यधिक भावुकता पर संतुलन रखना इनके लिए हितकर है।",
+      en:"Revati natives are compassionate, nurturing and travel-loving. They are skilled at guiding others. Balancing their emotional sensitivity will serve them well."}}
+];
+
+const ANK = {
+ 1:{planet:{hi:"सूर्य",en:"Sun"}, desc:{hi:"अंक 1 के जातक स्वाभाविक नेता, आत्मविश्वासी व मौलिक सोच वाले होते हैं। सूर्य के प्रभाव से इनमें नेतृत्व क्षमता, महत्वाकांक्षा व स्वाभिमान पाया जाता है। ये स्वतंत्र रूप से कार्य करना पसंद करते हैं व नई राह बनाने में सक्षम होते हैं। प्रशासन, उद्यमिता व नेतृत्व की भूमिकाओं में सफलता मिलती है। अहंकार व हठधर्मिता पर नियंत्रण रखना इनके लिए लाभदायक रहेगा।",
+   en:"Number 1 people are natural leaders, self-confident and original thinkers. The Sun gives them leadership ability, ambition and self-respect. They prefer working independently and are capable of forging new paths. They find success in administration, entrepreneurship and leadership roles. Keeping ego and stubbornness in check will be beneficial for them."}},
+ 2:{planet:{hi:"चंद्र",en:"Moon"}, desc:{hi:"अंक 2 के जातक संवेदनशील, सहयोगी व कूटनीतिक स्वभाव के होते हैं। चंद्रमा के प्रभाव से इनमें भावनात्मक गहराई, कल्पनाशीलता व सामंजस्य बिठाने की कला पाई जाती है। ये टीम भावना में विश्वास रखते हैं व रिश्तों को सहेजने में कुशल होते हैं। कला, परामर्श व सेवा क्षेत्रों में सफलता मिलती है। आत्मविश्वास की कमी व अति-संवेदनशीलता इनकी चुनौती है।",
+   en:"Number 2 people are sensitive, cooperative and diplomatic by nature. The Moon gives them emotional depth, imagination and the art of creating harmony. They believe in teamwork and are skilled at nurturing relationships. They find success in the arts, counselling and service fields. Lack of confidence and over-sensitivity are their challenge."}},
+ 3:{planet:{hi:"गुरु",en:"Jupiter"}, desc:{hi:"अंक 3 के जातक रचनात्मक, आशावादी व अभिव्यक्ति-कुशल होते हैं। गुरु के प्रभाव से इनमें ज्ञान, वाक्पटुता व सामाजिकता पाई जाती है। ये शिक्षा, लेखन व संचार क्षेत्रों में उत्कृष्ट प्रदर्शन करते हैं। जीवन के प्रति सकारात्मक दृष्टिकोण इनकी पहचान है। बिखराव व अतिशयोक्ति से बचना इनके लिए हितकर रहेगा।",
+   en:"Number 3 people are creative, optimistic and skilled communicators. Jupiter gives them knowledge, eloquence and sociability. They excel in education, writing and communication fields. A positive outlook on life is their hallmark. Avoiding scattered focus and exaggeration will be beneficial."}},
+ 4:{planet:{hi:"राहु",en:"Rahu"}, desc:{hi:"अंक 4 के जातक व्यवस्थित, मेहनती व व्यावहारिक स्वभाव के होते हैं। राहु के प्रभाव से इनमें दृढ़ता, अपरंपरागत सोच व संघर्षशीलता पाई जाती है। ये ठोस नींव पर काम खड़ा करने में विश्वास रखते हैं। इंजीनियरिंग, प्रशासन व तकनीकी क्षेत्रों में सफलता मिलती है। कठोरता व अस्थिरता पर नियंत्रण रखना ज़रूरी है।",
+   en:"Number 4 people are organised, hardworking and practical by nature. Rahu gives them determination, unconventional thinking and resilience. They believe in building on solid foundations. They find success in engineering, administration and technical fields. Keeping rigidity and instability in check is important."}},
+ 5:{planet:{hi:"बुध",en:"Mercury"}, desc:{hi:"अंक 5 के जातक बुद्धिमान, चंचल व बहुमुखी प्रतिभा वाले होते हैं। बुध के प्रभाव से इनमें संचार कौशल, अनुकूलनशीलता व जिज्ञासा पाई जाती है। ये बदलाव व स्वतंत्रता पसंद करते हैं व जल्दी सीखने की क्षमता रखते हैं। व्यापार, मीडिया व यात्रा से जुड़े क्षेत्र इनके अनुकूल हैं। स्थिरता व एकाग्रता बनाए रखना इनके लिए लाभदायक रहेगा।",
+   en:"Number 5 people are intelligent, restless and versatile. Mercury gives them communication skills, adaptability and curiosity. They love change and freedom and learn quickly. Business, media and travel-related fields suit them. Maintaining stability and focus will be beneficial for them."}},
+ 6:{planet:{hi:"शुक्र",en:"Venus"}, desc:{hi:"अंक 6 के जातक प्रेमपूर्ण, जिम्मेदार व सौंदर्यप्रिय स्वभाव के होते हैं। शुक्र के प्रभाव से इनमें कला-प्रेम, पारिवारिक लगाव व सामंजस्य की चाह पाई जाती है। ये रिश्तों व घर-परिवार को प्राथमिकता देते हैं। कला, फैशन व सेवा क्षेत्रों में सफलता मिलती है। अति-आदर्शवाद व दूसरों को खुश करने की अत्यधिक चाह से बचना ज़रूरी है।",
+   en:"Number 6 people are loving, responsible and beauty-loving by nature. Venus gives them a love of art, family attachment and a desire for harmony. They prioritise relationships and home. They find success in art, fashion and service fields. Avoiding excessive idealism and the need to please others is important."}},
+ 7:{planet:{hi:"केतु",en:"Ketu"}, desc:{hi:"अंक 7 के जातक रहस्यमयी, आध्यात्मिक व गहन चिंतक होते हैं। केतु के प्रभाव से इनमें अंतर्दृष्टि, अनुसंधान की प्रवृत्ति व एकांतप्रियता पाई जाती है। ये सत्य की खोज व आत्म-ज्ञान की ओर उन्मुख रहते हैं। अनुसंधान, अध्यात्म व दर्शनशास्त्र क्षेत्रों में सफलता मिलती है। अलगाव व अति-संदेह से बचना इनके लिए हितकर है।",
+   en:"Number 7 people are mysterious, spiritual and deep thinkers. Ketu gives them insight, a research-oriented mind and a love of solitude. They are drawn towards seeking truth and self-knowledge. They find success in research, spirituality and philosophy. Avoiding isolation and excessive suspicion will serve them well."}},
+ 8:{planet:{hi:"शनि",en:"Saturn"}, desc:{hi:"अंक 8 के जातक दृढ़, अनुशासित व न्यायप्रिय स्वभाव के होते हैं। शनि के प्रभाव से इनमें धैर्य, कर्मठता व गहरी जिम्मेदारी का भाव पाया जाता है। ये कठिन परिश्रम से बड़ी सफलता अर्जित करते हैं। प्रबंधन, कानून व वित्त क्षेत्रों में सफलता मिलती है। निराशावाद व कठोरता पर नियंत्रण रखना इनके लिए लाभदायक रहेगा।",
+   en:"Number 8 people are strong-willed, disciplined and justice-loving by nature. Saturn gives them patience, diligence and a deep sense of responsibility. They achieve great success through hard work. Management, law and finance fields suit them. Keeping pessimism and harshness in check will be beneficial."}},
+ 9:{planet:{hi:"मंगल",en:"Mars"}, desc:{hi:"अंक 9 के जातक साहसी, ऊर्जावान व आदर्शवादी स्वभाव के होते हैं। मंगल के प्रभाव से इनमें नेतृत्व क्षमता, करुणा व संघर्षशीलता पाई जाती है। ये मानवता की सेवा व बड़े लक्ष्यों की ओर आकर्षित होते हैं। सेना, समाजसेवा व नेतृत्व क्षेत्रों में सफलता मिलती है। क्रोध व अधीरता पर नियंत्रण रखना इनके लिए ज़रूरी है।",
+   en:"Number 9 people are courageous, energetic and idealistic by nature. Mars gives them leadership ability, compassion and a fighting spirit. They are drawn towards serving humanity and pursuing big goals. Military, social work and leadership fields suit them. Keeping anger and impatience in check is important for them."}}
+};
+
+/* ============ PLACE DATA (bilingual labels, India + world) ============ */
+const INDIA_STATES = {
+ "आंध्र प्रदेश":{en:"Andhra Pradesh", cities:[["विशाखापत्तनम","Visakhapatnam",17.6868,83.2185],["विजयवाड़ा","Vijayawada",16.5062,80.6480],["गुंटूर","Guntur",16.3067,80.4365],["नेल्लोर","Nellore",14.4426,79.9865],["तिरुपति","Tirupati",13.6288,79.4192],["कुरनूल","Kurnool",15.8281,78.0373],["राजामहेंद्रवरम","Rajahmundry",17.0005,81.8040],["काकीनाडा","Kakinada",16.9891,82.2475],["अनंतपुर","Anantapur",14.6819,77.6006],["चित्तूर","Chittoor",13.2172,79.1003]]},
+ "अरुणाचल प्रदेश":{en:"Arunachal Pradesh", cities:[["ईटानगर","Itanagar",27.0844,93.6053],["तवांग","Tawang",27.5860,91.8594],["पासीघाट","Pasighat",28.0667,95.3333],["जीरो","Ziro",27.5480,93.8340]]},
+ "असम":{en:"Assam", cities:[["गुवाहाटी","Guwahati",26.1445,91.7362],["सिलचर","Silchar",24.8333,92.7789],["डिब्रूगढ़","Dibrugarh",27.4728,94.9120],["जोरहाट","Jorhat",26.7509,94.2037],["तेजपुर","Tezpur",26.6338,92.8000],["नागांव","Nagaon",26.3480,92.6840]]},
+ "बिहार":{en:"Bihar", cities:[["पटना","Patna",25.5941,85.1376],["गया","Gaya",24.7955,84.9994],["भागलपुर","Bhagalpur",25.2425,86.9842],["मुजफ्फरपुर","Muzaffarpur",26.1225,85.3906],["दरभंगा","Darbhanga",26.1542,85.8918],["पूर्णिया","Purnia",25.7771,87.4753],["आरा","Ara",25.5541,84.6636]]},
+ "छत्तीसगढ़":{en:"Chhattisgarh", cities:[["रायपुर","Raipur",21.2514,81.6296],["बिलासपुर","Bilaspur",22.0797,82.1409],["दुर्ग","Durg",21.1904,81.2849],["कोरबा","Korba",22.3595,82.7501],["राजनांदगांव","Rajnandgaon",21.0974,81.0388]]},
+ "गोवा":{en:"Goa", cities:[["पणजी","Panaji",15.4909,73.8278],["मडगांव","Madgaon",15.2832,73.9862],["वास्को","Vasco da Gama",15.3955,73.8154]]},
+ "गुजरात":{en:"Gujarat", cities:[["अहमदाबाद","Ahmedabad",23.0225,72.5714],["सूरत","Surat",21.1702,72.8311],["वडोदरा","Vadodara",22.3072,73.1812],["राजकोट","Rajkot",22.3039,70.8022],["भावनगर","Bhavnagar",21.7645,72.1519],["जामनगर","Jamnagar",22.4707,70.0577],["गांधीनगर","Gandhinagar",23.2156,72.6369],["जूनागढ़","Junagadh",21.5222,70.4579]]},
+ "हरियाणा":{en:"Haryana", cities:[["गुड़गांव","Gurugram",28.4595,77.0266],["फरीदाबाद","Faridabad",28.4089,77.3178],["पानीपत","Panipat",29.3909,76.9635],["करनाल","Karnal",29.6857,76.9905],["हिसार","Hisar",29.1492,75.7217],["अंबाला","Ambala",30.3752,76.7821],["रोहतक","Rohtak",28.8955,76.6066]]},
+ "हिमाचल प्रदेश":{en:"Himachal Pradesh", cities:[["शिमला","Shimla",31.1048,77.1734],["धर्मशाला","Dharamshala",32.2190,76.3234],["मनाली","Manali",32.2396,77.1887],["कुल्लू","Kullu",31.9576,77.1095],["सोलन","Solan",30.9045,77.0967]]},
+ "झारखंड":{en:"Jharkhand", cities:[["रांची","Ranchi",23.3441,85.3096],["जमशेदपुर","Jamshedpur",22.8046,86.2029],["धनबाद","Dhanbad",23.7957,86.4304],["बोकारो","Bokaro",23.6693,86.1511],["देवघर","Deoghar",24.4823,86.6961]]},
+ "कर्नाटक":{en:"Karnataka", cities:[["बेंगलुरु","Bengaluru",12.9716,77.5946],["मैसूर","Mysuru",12.2958,76.6394],["हुबली","Hubballi",15.3647,75.1240],["मंगलुरु","Mangaluru",12.9141,74.8560],["बेलगावी","Belagavi",15.8497,74.4977],["कालबुर्गी","Kalaburagi",17.3297,76.8343],["शिमोगा","Shivamogga",13.9299,75.5681]]},
+ "केरल":{en:"Kerala", cities:[["तिरुवनंतपुरम","Thiruvananthapuram",8.5241,76.9366],["कोच्चि","Kochi",9.9312,76.2673],["कोझिकोड","Kozhikode",11.2588,75.7804],["त्रिशूर","Thrissur",10.5276,76.2144],["कोल्लम","Kollam",8.8932,76.6141],["कन्नूर","Kannur",11.8745,75.3704],["अलाप्पुझा","Alappuzha",9.4981,76.3388]]},
+ "मध्य प्रदेश":{en:"Madhya Pradesh", cities:[["भोपाल","Bhopal",23.2599,77.4126],["इंदौर","Indore",22.7196,75.8577],["ग्वालियर","Gwalior",26.2183,78.1828],["जबलपुर","Jabalpur",23.1815,79.9864],["उज्जैन","Ujjain",23.1765,75.7885],["सागर","Sagar",23.8388,78.7378],["रीवा","Rewa",24.5364,81.3037]]},
+ "महाराष्ट्र":{en:"Maharashtra", cities:[["मुंबई","Mumbai",19.0760,72.8777],["पुणे","Pune",18.5204,73.8567],["नागपुर","Nagpur",21.1458,79.0882],["नासिक","Nashik",19.9975,73.7898],["छत्रपति संभाजीनगर","Chhatrapati Sambhajinagar",19.8762,75.3433],["कोल्हापुर","Kolhapur",16.7050,74.2433],["सोलापुर","Solapur",17.6599,75.9064],["अमरावती","Amravati",20.9374,77.7796]]},
+ "मणिपुर":{en:"Manipur", cities:[["इम्फाल","Imphal",24.8170,93.9368],["थौबल","Thoubal",24.6333,93.9833]]},
+ "मेघालय":{en:"Meghalaya", cities:[["शिलांग","Shillong",25.5788,91.8933],["तुरा","Tura",25.5138,90.2020]]},
+ "मिजोरम":{en:"Mizoram", cities:[["आइज़ोल","Aizawl",23.7271,92.7176],["लुंगलेई","Lunglei",22.8879,92.7361]]},
+ "नागालैंड":{en:"Nagaland", cities:[["कोहिमा","Kohima",25.6751,94.1086],["दीमापुर","Dimapur",25.9091,93.7266]]},
+ "ओडिशा":{en:"Odisha", cities:[["भुवनेश्वर","Bhubaneswar",20.2961,85.8245],["कटक","Cuttack",20.4625,85.8830],["राउरकेला","Rourkela",22.2604,84.8536],["बरहमपुर","Berhampur",19.3149,84.7941],["संबलपुर","Sambalpur",21.4669,83.9756]]},
+ "पंजाब":{en:"Punjab", cities:[["अमृतसर","Amritsar",31.6340,74.8723],["लुधियाना","Ludhiana",30.9010,75.8573],["जालंधर","Jalandhar",31.3260,75.5762],["पटियाला","Patiala",30.3398,76.3869],["बठिंडा","Bathinda",30.2110,74.9455]]},
+ "राजस्थान":{en:"Rajasthan", cities:[["जयपुर","Jaipur",26.9124,75.7873],["जोधपुर","Jodhpur",26.2389,73.0243],["उदयपुर","Udaipur",24.5854,73.7125],["कोटा","Kota",25.2138,75.8648],["अजमेर","Ajmer",26.4499,74.6399],["बीकानेर","Bikaner",28.0229,73.3119]]},
+ "सिक्किम":{en:"Sikkim", cities:[["गंगटोक","Gangtok",27.3389,88.6065],["नामची","Namchi",27.1656,88.3639]]},
+ "तमिलनाडु":{en:"Tamil Nadu", cities:[["चेन्नई","Chennai",13.0827,80.2707],["कोयंबटूर","Coimbatore",11.0168,76.9558],["मदुरै","Madurai",9.9252,78.1198],["तिरुचिरापल्ली","Tiruchirappalli",10.7905,78.7047],["सेलम","Salem",11.6643,78.1460],["तिरुनेलवेली","Tirunelveli",8.7139,77.7567]]},
+ "तेलंगाना":{en:"Telangana", cities:[["हैदराबाद","Hyderabad",17.3850,78.4867],["वारंगल","Warangal",17.9689,79.5941],["करीमनगर","Karimnagar",18.4386,79.1288],["निजामाबाद","Nizamabad",18.6725,78.0941]]},
+ "त्रिपुरा":{en:"Tripura", cities:[["अगरतला","Agartala",23.8315,91.2868],["उदयपुर (त्रिपुरा)","Udaipur (Tripura)",23.5322,91.4830]]},
+ "उत्तर प्रदेश":{en:"Uttar Pradesh", cities:[["कानपुर","Kanpur",26.4499,80.3319],["लखनऊ","Lucknow",26.8467,80.9462],["वाराणसी","Varanasi",25.3176,82.9739],["आगरा","Agra",27.1767,78.0081],["प्रयागराज","Prayagraj",25.4358,81.8463],["मेरठ","Meerut",28.9845,77.7064],["गोरखपुर","Gorakhpur",26.7606,83.3732],["नोएडा","Noida",28.5355,77.3910],["बरेली","Bareilly",28.3670,79.4304],["अलीगढ़","Aligarh",27.8974,78.0880]]},
+ "उत्तराखंड":{en:"Uttarakhand", cities:[["देहरादून","Dehradun",30.3165,78.0322],["हरिद्वार","Haridwar",29.9457,78.1642],["नैनीताल","Nainital",29.3919,79.4542],["हल्द्वानी","Haldwani",29.2183,79.5130]]},
+ "पश्चिम बंगाल":{en:"West Bengal", cities:[["कोलकाता","Kolkata",22.5726,88.3639],["सिलीगुड़ी","Siliguri",26.7271,88.3953],["आसनसोल","Asansol",23.6739,86.9524],["दुर्गापुर","Durgapur",23.5204,87.3119],["हावड़ा","Howrah",22.5958,88.2636]]},
+ "दिल्ली":{en:"Delhi", cities:[["नई दिल्ली","New Delhi",28.6139,77.2090],["द्वारका","Dwarka",28.5921,77.0460],["रोहिणी","Rohini",28.7495,77.0565]]},
+ "चंडीगढ़":{en:"Chandigarh", cities:[["चंडीगढ़","Chandigarh",30.7333,76.7794]]},
+ "पुदुचेरी":{en:"Puducherry", cities:[["पुदुचेरी","Puducherry",11.9416,79.8083],["कराईकल","Karaikal",10.9254,79.8380]]},
+ "जम्मू और कश्मीर":{en:"Jammu & Kashmir", cities:[["श्रीनगर","Srinagar",34.0837,74.7973],["जम्मू","Jammu",32.7266,74.8570]]},
+ "लद्दाख":{en:"Ladakh", cities:[["लेह","Leh",34.1526,77.5771],["कारगिल","Kargil",34.5539,76.1349]]},
+ "अंडमान और निकोबार":{en:"Andaman & Nicobar", cities:[["पोर्ट ब्लेयर","Port Blair",11.6234,92.7265]]},
+ "दादरा नगर हवेली और दमन दीव":{en:"Dadra & Nagar Haveli and Daman & Diu", cities:[["दमन","Daman",20.3974,72.8328],["सिलवासा","Silvassa",20.2766,73.0169]]},
+ "लक्षद्वीप":{en:"Lakshadweep", cities:[["कवरत्ती","Kavaratti",10.5669,72.6420]]}
+};
+
+const OTHER_COUNTRIES = {
+ "नेपाल":{en:"Nepal", cities:[["काठमांडू","Kathmandu",27.7172,85.3240,5.75]]},
+ "श्रीलंका":{en:"Sri Lanka", cities:[["कोलंबो","Colombo",6.9271,79.8612,5.5]]},
+ "बांग्लादेश":{en:"Bangladesh", cities:[["ढाका","Dhaka",23.8103,90.4125,6]]},
+ "पाकिस्तान":{en:"Pakistan", cities:[["कराची","Karachi",24.8607,67.0011,5],["लाहौर","Lahore",31.5497,74.3436,5]]},
+ "भूटान":{en:"Bhutan", cities:[["थिम्पू","Thimphu",27.4728,89.6390,6]]},
+ "म्यांमार":{en:"Myanmar", cities:[["यांगून","Yangon",16.8409,96.1735,6.5]]},
+ "संयुक्त अरब अमीरात":{en:"UAE", cities:[["दुबई","Dubai",25.2048,55.2708,4],["अबू धाबी","Abu Dhabi",24.4539,54.3773,4]]},
+ "सऊदी अरब":{en:"Saudi Arabia", cities:[["रियाद","Riyadh",24.7136,46.6753,3],["जेद्दाह","Jeddah",21.4858,39.1925,3]]},
+ "कुवैत":{en:"Kuwait", cities:[["कुवैत सिटी","Kuwait City",29.3759,47.9774,3]]},
+ "कतर":{en:"Qatar", cities:[["दोहा","Doha",25.2854,51.5310,3]]},
+ "ओमान":{en:"Oman", cities:[["मस्कट","Muscat",23.5880,58.3829,4]]},
+ "बहरीन":{en:"Bahrain", cities:[["मनामा","Manama",26.2285,50.5860,3]]},
+ "इज़राइल":{en:"Israel", cities:[["तेल अवीव","Tel Aviv",32.0853,34.7818,2]]},
+ "संयुक्त राज्य अमेरिका - पूर्वी":{en:"USA - Eastern", cities:[["न्यूयॉर्क","New York",40.7128,-74.0060,-5]]},
+ "संयुक्त राज्य अमेरिका - मध्य":{en:"USA - Central", cities:[["शिकागो","Chicago",41.8781,-87.6298,-6]]},
+ "संयुक्त राज्य अमेरिका - पर्वतीय":{en:"USA - Mountain", cities:[["डेनवर","Denver",39.7392,-104.9903,-7]]},
+ "संयुक्त राज्य अमेरिका - पश्चिमी":{en:"USA - Pacific", cities:[["लॉस एंजेलिस","Los Angeles",34.0522,-118.2437,-8]]},
+ "कनाडा - पूर्वी":{en:"Canada - Eastern", cities:[["टोरंटो","Toronto",43.6532,-79.3832,-5]]},
+ "कनाडा - पश्चिमी":{en:"Canada - Pacific", cities:[["वैंकूवर","Vancouver",49.2827,-123.1207,-8]]},
+ "यूनाइटेड किंगडम":{en:"United Kingdom", cities:[["लंदन","London",51.5072,-0.1276,0]]},
+ "आयरलैंड":{en:"Ireland", cities:[["डबलिन","Dublin",53.3498,-6.2603,0]]},
+ "जर्मनी":{en:"Germany", cities:[["बर्लिन","Berlin",52.5200,13.4050,1]]},
+ "फ्रांस":{en:"France", cities:[["पेरिस","Paris",48.8566,2.3522,1]]},
+ "नीदरलैंड्स":{en:"Netherlands", cities:[["एम्स्टर्डम","Amsterdam",52.3676,4.9041,1]]},
+ "इटली":{en:"Italy", cities:[["रोम","Rome",41.9028,12.4964,1]]},
+ "स्पेन":{en:"Spain", cities:[["मैड्रिड","Madrid",40.4168,-3.7038,1]]},
+ "रूस":{en:"Russia", cities:[["मॉस्को","Moscow",55.7558,37.6173,3]]},
+ "ऑस्ट्रेलिया - पूर्वी":{en:"Australia - Eastern", cities:[["सिडनी","Sydney",-33.8688,151.2093,10]]},
+ "ऑस्ट्रेलिया - पश्चिमी":{en:"Australia - Western", cities:[["पर्थ","Perth",-31.9523,115.8613,8]]},
+ "न्यूज़ीलैंड":{en:"New Zealand", cities:[["ऑकलैंड","Auckland",-36.8485,174.7633,12]]},
+ "सिंगापुर":{en:"Singapore", cities:[["सिंगापुर","Singapore",1.3521,103.8198,8]]},
+ "मलेशिया":{en:"Malaysia", cities:[["कुआलालंपुर","Kuala Lumpur",3.1390,101.6869,8]]},
+ "थाईलैंड":{en:"Thailand", cities:[["बैंकॉक","Bangkok",13.7563,100.5018,7]]},
+ "इंडोनेशिया":{en:"Indonesia", cities:[["जकार्ता","Jakarta",-6.2088,106.8456,7]]},
+ "जापान":{en:"Japan", cities:[["टोक्यो","Tokyo",35.6762,139.6503,9]]},
+ "दक्षिण कोरिया":{en:"South Korea", cities:[["सियोल","Seoul",37.5665,126.9780,9]]},
+ "चीन":{en:"China", cities:[["बीजिंग","Beijing",39.9042,116.4074,8]]},
+ "दक्षिण अफ्रीका":{en:"South Africa", cities:[["जोहान्सबर्ग","Johannesburg",-26.2041,28.0473,2]]},
+ "केन्या":{en:"Kenya", cities:[["नैरोबी","Nairobi",-1.2921,36.8219,3]]},
+ "नाइजीरिया":{en:"Nigeria", cities:[["लागोस","Lagos",6.5244,3.3792,1]]},
+ "ब्राज़ील":{en:"Brazil", cities:[["साओ पाओलो","São Paulo",-23.5505,-46.6333,-3]]},
+ "मॉरीशस":{en:"Mauritius", cities:[["पोर्ट लुइस","Port Louis",-20.1609,57.5012,4]]},
+ "फिजी":{en:"Fiji", cities:[["सुवा","Suva",-18.1416,178.4419,12]]}
+};
+
+/* ============ DOM helpers ============ */
+const $ = id => document.getElementById(id);
+function fillSelect(sel, items, keepValue){
+  const prev = keepValue ? sel.value : null;
+  sel.innerHTML = items.map(v=>`<option value="${v.value}">${v.label}</option>`).join('');
+  if(prev){ sel.value = prev; }
+}
+
+function initDateTime(keep){
+  const dayItems = Array.from({length:31},(_,i)=>({value:i+1,label:String(i+1).padStart(2,'0')}));
+  fillSelect($('dobDay'), dayItems, keep);
+  const months = STRINGS[currentLang].months;
+  fillSelect($('dobMonth'), months.map((m,i)=>({value:i+1,label:m})), keep);
+  if(!keep){
+    const yNow = new Date().getFullYear();
+    fillSelect($('dobYear'), Array.from({length:120},(_,i)=>yNow-i).map(y=>({value:y,label:y})));
+    fillSelect($('tobHour'), Array.from({length:12},(_,i)=>({value:i+1,label:String(i+1).padStart(2,'0')})));
+    fillSelect($('tobMin'), Array.from({length:60},(_,i)=>({value:i,label:String(i).padStart(2,'0')})));
+  }
+}
+
+function placeLabel(hi, en){ return hi + " / " + en; }
+
+function initPlace(){
+  const countries = [{value:"भारत",label:placeLabel("भारत","India")}]
+    .concat(Object.keys(OTHER_COUNTRIES).map(c=>({value:c,label:placeLabel(c, OTHER_COUNTRIES[c].en)})))
+    .concat([{value:"__manual__",label:currentLang==='hi' ? "अन्य / मैन्युअल (Manual)" : "Other / Manual"}]);
+  fillSelect($('pobCountry'), countries);
+  updateStateOptions();
+  $('pobCountry').addEventListener('change', ()=>{updateStateOptions(); updateCityOptions();});
+  $('pobState').addEventListener('change', updateCityOptions);
+}
+
+function updateStateOptions(){
+  const country = $('pobCountry').value;
+  const stateSel = $('pobState');
+  if(country === "__manual__"){
+    stateSel.style.display='none';
+    $('manualFields').style.display='block';
+    fillSelect($('pobCity'), [{value:"",label:"—"}]);
+    $('pobCity').style.display='none';
+    return;
+  }
+  $('manualFields').style.display='none';
+  if(country === "भारत"){
+    stateSel.style.display='';
+    $('pobCity').style.display='';
+    fillSelect(stateSel, Object.keys(INDIA_STATES).map(s=>({value:s,label:placeLabel(s, INDIA_STATES[s].en)})));
+  } else {
+    stateSel.style.display='none';
+    $('pobCity').style.display='';
+  }
+}
+
+function updateCityOptions(){
+  const country = $('pobCountry').value;
+  if(country === "__manual__") return;
+  let cities;
+  if(country === "भारत"){
+    cities = (INDIA_STATES[$('pobState').value] || {}).cities || [];
+  } else {
+    cities = (OTHER_COUNTRIES[country] || {}).cities || [];
+  }
+  fillSelect($('pobCity'), cities.map(c=>({value:c[0], label:placeLabel(c[0], c[1])})));
+}
+
+function getPlaceCoords(){
+  const country = $('pobCountry').value;
+  if(country === "__manual__"){
+    const lat = parseFloat($('manLat').value);
+    const lon = parseFloat($('manLon').value);
+    const utc = parseFloat($('manUtc').value);
+    if(isNaN(lat)||isNaN(lon)||isNaN(utc)) return null;
+    return {lat, lon, utc};
+  }
+  if(country === "भारत"){
+    const state = $('pobState').value;
+    const cityName = $('pobCity').value;
+    const list = (INDIA_STATES[state] || {}).cities || [];
+    const c = list.find(x=>x[0]===cityName);
+    if(!c) return null;
+    return {lat:c[2], lon:c[3], utc:5.5};
+  }
+  const cityName = $('pobCity').value;
+  const list = (OTHER_COUNTRIES[country] || {}).cities || [];
+  const c = list.find(x=>x[0]===cityName);
+  if(!c) return null;
+  return {lat:c[2], lon:c[3], utc:c[4]};
+}
+
+/* ============ Astro calculations ============ */
+function lahiriAyanamsa(utcDate){
+  const j2000 = Date.UTC(2000,0,1,12,0,0);
+  const yearsSince2000 = (utcDate.getTime() - j2000) / (365.25*24*3600*1000);
+  return 23.8531 + yearsSince2000 * 0.013958;
+}
+
+function digitalRoot(n){
+  n = Math.abs(Math.trunc(n));
+  while(n > 9){
+    n = String(n).split('').reduce((a,b)=>a+parseInt(b,10),0);
+  }
+  return n;
+}
+
+/* Corrected: use geocentric equatorial Moon vector -> true ecliptic-of-date longitude.
+   (Astronomy.EclipticLongitude is HELIOCENTRIC and must not be used for the Moon.) */
+function getSiderealMoonLongitude(utcDate){
+  const time = Astronomy.MakeTime(utcDate);
+  const geoVec = Astronomy.GeoVector(Astronomy.Body.Moon, time, true);
+  const ecl = Astronomy.Ecliptic(geoVec);
+  const tropicalLon = ecl.elon;
+  const ayanamsa = lahiriAyanamsa(utcDate);
+  let sidereal = tropicalLon - ayanamsa;
+  sidereal = ((sidereal % 360) + 360) % 360;
+  return sidereal;
+}
+
+function rashiFromLongitude(lon){
+  return Math.floor(lon / 30) % 12;
+}
+
+function nakshatraFromLongitude(lon){
+  const span = 360/27;
+  const idx = Math.floor(lon / span) % 27;
+  const posInNak = lon % span;
+  const pada = Math.floor(posInNak / (span/4)) + 1;
+  return {idx, pada};
+}
+
+/* ============ Render / control ============ */
+function showError(msg){
+  const e = $('errorMsg');
+  e.textContent = msg;
+  e.style.display = msg ? 'block' : 'none';
+}
+
+let lastResult = null;
+
+function calculate(){
+  showError('');
+  const day = parseInt($('dobDay').value,10);
+  const month = parseInt($('dobMonth').value,10);
+  const year = parseInt($('dobYear').value,10);
+  let hour = parseInt($('tobHour').value,10);
+  const minute = parseInt($('tobMin').value,10);
+  const ampm = $('tobAmpm').value;
+
+  if(ampm === 'AM'){ if(hour===12) hour=0; } else { if(hour!==12) hour+=12; }
+
+  const place = getPlaceCoords();
+  if(!place){
+    showError(STRINGS[currentLang].errPlace);
+    return;
+  }
+
+  const utcMillis = Date.UTC(year, month-1, day, hour, minute, 0) - place.utc*3600000;
+  const utcDate = new Date(utcMillis);
+
+  if(isNaN(utcDate.getTime())){
+    showError(STRINGS[currentLang].errDate);
+    return;
+  }
+
+  const siderealLon = getSiderealMoonLongitude(utcDate);
+  const rashiIdx = rashiFromLongitude(siderealLon);
+  const {idx: nakIdx, pada} = nakshatraFromLongitude(siderealLon);
+
+  const moolank = digitalRoot(day);
+  const allDigits = (String(day)+String(month)+String(year)).split('').reduce((a,b)=>a+parseInt(b,10),0);
+  const bhagyank = digitalRoot(allDigits);
+
+  lastResult = {rashiIdx, nakIdx, pada, moolank, bhagyank};
+  renderResult();
+}
+
+function renderResult(){
+  if(!lastResult) return;
+  const {rashiIdx, nakIdx, pada, moolank, bhagyank} = lastResult;
+  const S = STRINGS[currentLang];
+  const name = $('nameInput').value.trim();
+  $('resultHeading').textContent = name ? S.resultHeadingName(name) : S.resultHeading;
+
+  const r = RASHI[rashiIdx];
+  const n = NAKSHATRA[nakIdx];
+  const m = ANK[moolank];
+  const b = ANK[bhagyank];
+
+  $('sumRashi').textContent = r.name[currentLang];
+  $('sumRashiSub').textContent = S.lordPrefix + r.lord[currentLang];
+  $('sumNak').textContent = n.name[currentLang];
+  $('sumNakSub').textContent = S.padaPrefix + pada;
+  $('sumMool').textContent = moolank;
+  $('sumMoolSub').textContent = m.planet[currentLang];
+  $('sumBhagya').textContent = bhagyank;
+  $('sumBhagyaSub').textContent = b.planet[currentLang];
+
+  $('rashiMeta').textContent = S.metaRashi(r.lord[currentLang], r.element[currentLang], r.symbol[currentLang]);
+  $('rashiDesc').textContent = r.desc[currentLang];
+
+  $('nakMeta').textContent = S.metaNak(n.lord[currentLang], n.deity[currentLang], n.symbol[currentLang], pada);
+  $('nakDesc').textContent = n.desc[currentLang];
+
+  $('moolMeta').textContent = S.metaMool(moolank, m.planet[currentLang]);
+  $('moolDesc').textContent = m.desc[currentLang];
+
+  $('bhagyaMeta').textContent = S.metaBhagya(bhagyank, b.planet[currentLang]);
+  $('bhagyaDesc').textContent = b.desc[currentLang];
+
+  $('result').style.display = 'block';
+}
+
+function applyStaticText(){
+  const S = STRINGS[currentLang];
+  document.documentElement.lang = currentLang;
+  $('txtEyebrow').textContent = S.eyebrow;
+  $('txtTitle').textContent = S.title;
+  $('txtIntro').textContent = S.intro;
+  $('txtBirthDetails').textContent = S.birthDetails;
+  $('lblName').textContent = S.nameLabel;
+  $('nameInput').placeholder = S.namePlaceholder;
+  $('lblDob').textContent = S.dobLabel;
+  $('lblTob').textContent = S.tobLabel;
+  $('lblPob').textContent = S.pobLabel;
+  $('txtPlaceHint').textContent = S.placeHint;
+  $('lblLat').textContent = S.latLabel;
+  $('lblLon').textContent = S.lonLabel;
+  $('lblUtc').textContent = S.utcLabel;
+  $('calcBtn').textContent = S.calcBtn;
+  $('resetBtn').textContent = S.resetBtn;
+  $('hRashi').textContent = S.hRashi;
+  $('hNak').textContent = S.hNak;
+  $('hMool').textContent = S.hMool;
+  $('hBhagya').textContent = S.hBhagya;
+  $('lblBoxRashi').textContent = S.boxRashi;
+  $('lblBoxNak').textContent = S.boxNak;
+  $('lblBoxMool').textContent = S.boxMool;
+  $('lblBoxBhagya').textContent = S.boxBhagya;
+  $('txtFooter').textContent = S.footer;
+  $('btnHi').classList.toggle('active', currentLang==='hi');
+  $('btnEn').classList.toggle('active', currentLang==='en');
+}
+
+function setLang(lang){
+  currentLang = lang;
+  applyStaticText();
+  initDateTime(true);
+  initPlace();
+  if(lastResult){ renderResult(); }
+}
+
+function resetForm(){
+  $('nameInput').value = '';
+  initDateTime(false);
+  initPlace();
+  $('manLat').value=''; $('manLon').value=''; $('manUtc').value='';
+  showError('');
+  lastResult = null;
+  $('result').style.display = 'none';
+}
+
+$('calcBtn').addEventListener('click', calculate);
+$('resetBtn').addEventListener('click', resetForm);
+$('btnHi').addEventListener('click', ()=>setLang('hi'));
+$('btnEn').addEventListener('click', ()=>setLang('en'));
+
+applyStaticText();
+initDateTime(false);
+initPlace();
+</script>
+</body>
+</html>
