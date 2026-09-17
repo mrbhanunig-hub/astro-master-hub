@@ -128,16 +128,26 @@
   .custom-row .field{flex:1;min-width:140px;}
 
   #con4{min-height:70px;}
-  #con4 .placeholder{color:#9ca3af;text-align:center;font-size:.88rem;padding:14px 0;}
-  #con4 .result-head{font-weight:700;font-size:1rem;margin-bottom:6px;}
-  #con4 .result-sub{font-size:.82rem;color:var(--muted);margin-bottom:10px;}
+  #con4 .placeholder, #timingResult .placeholder{color:#9ca3af;text-align:center;font-size:.88rem;padding:14px 0;}
+  #con4 .result-head, #timingResult .result-head{font-weight:700;font-size:1rem;margin-bottom:6px;}
+  #con4 .result-sub, #timingResult .result-sub{font-size:.82rem;color:var(--muted);margin-bottom:10px;}
   #con4 .result-body{font-size:.9rem;line-height:1.6;color:#374151;}
-  #con4 .lang-block{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);}
-  #con4 .lang-block:first-of-type{border-top:none;margin-top:10px;padding-top:0;}
-  #con4 .lang-title{font-weight:700;font-size:.82rem;color:var(--accent2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;}
+  #con4 .lang-block, #timingResult .lang-block{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border);}
+  #con4 .lang-block:first-of-type, #timingResult .lang-block:first-of-type{border-top:none;margin-top:10px;padding-top:0;}
+  #con4 .lang-title, #timingResult .lang-title{font-weight:700;font-size:.82rem;color:var(--accent2);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;}
   #con4 .pred-list{margin:0;padding-left:20px;font-size:.88rem;line-height:1.65;color:#374151;}
   #con4 .pred-list li{margin-bottom:6px;}
-  #con4 .note{font-size:.78rem;color:#b45309;background:#fffbeb;border:1px solid #fde68a;padding:8px 10px;border-radius:8px;margin-top:10px;}
+  #con4 .note, #timingResult .note{font-size:.78rem;color:#b45309;background:#fffbeb;border:1px solid #fde68a;padding:8px 10px;border-radius:8px;margin-top:10px;}
+  #timingResult .line{font-size:.85rem;color:#374151;padding:5px 0;border-bottom:1px dashed var(--border);}
+  #timingResult .line:last-child{border-bottom:none;}
+  #timingResult .empty{color:#9ca3af;font-size:.82rem;}
+  .gender-toggle{display:flex;gap:6px;}
+  .gender-btn{flex:1;padding:9px 10px;border-radius:8px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:.86rem;font-weight:600;cursor:pointer;transition:.15s;}
+  .gender-btn.active{background:var(--accent2);border-color:var(--accent2);color:#fff;}
+  .gender-btn:hover{border-color:var(--accent2);}
+  .collapse-toggle{cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px;}
+  .collapse-toggle .chevron{margin-left:auto;font-size:.75rem;color:var(--muted);transition:transform .15s;}
+  .collapse-toggle.open .chevron{transform:rotate(90deg);}
 
   .err{color:#b91c1c;font-size:.82rem;margin-top:10px;text-align:center;}
   .footer-note{text-align:center;font-size:.74rem;color:#9ca3af;margin-top:6px;}
@@ -155,7 +165,7 @@
   <!-- INPUT CARD -->
   <div class="card">
     <h2>जन्म विवरण <span class="tag">INPUT</span></h2>
-    <div class="grid2">
+    <div class="grid3">
       <div class="field">
         <label>Name (वैकल्पिक)</label>
         <input type="text" id="personName" placeholder="नाम दर्ज करें">
@@ -166,6 +176,13 @@
           <select id="tobHour"></select>
           <select id="tobMinute"></select>
           <select id="tobAmPm"><option value="AM">AM</option><option value="PM">PM</option></select>
+        </div>
+      </div>
+      <div class="field">
+        <label>जातक (Gender)</label>
+        <div class="gender-toggle" id="genderToggle">
+          <button type="button" class="gender-btn active" data-gender="Male">पुरुष</button>
+          <button type="button" class="gender-btn" data-gender="Female">स्त्री</button>
         </div>
       </div>
     </div>
@@ -218,38 +235,60 @@
 
   <!-- PLANET POSITIONS -->
   <div class="card" id="planetCard" style="display:none;">
-    <h2>ग्रह स्थिति <span class="tag">AUTO-CALCULATED</span></h2>
-    <div class="planet-grid" id="planetGrid"></div>
+    <h2 class="collapse-toggle" data-target="planetGrid">ग्रह स्थिति <span class="tag">AUTO-CALCULATED</span><span class="chevron">&#9656;</span></h2>
+    <div class="planet-grid" id="planetGrid" style="display:none;"></div>
   </div>
 
   <!-- TRIKONA GROUPS -->
   <div class="card" id="trikonaCard" style="display:none;">
-    <h2>त्रिकोण समूह</h2>
-    <div class="trikona-grid" id="trikonaGrid"></div>
+    <h2 class="collapse-toggle" data-target="trikonaGrid">त्रिकोण समूह<span class="chevron">&#9656;</span></h2>
+    <div class="trikona-grid" id="trikonaGrid" style="display:none;"></div>
   </div>
 
   <!-- CON-3 PAIRS -->
   <div class="card" id="con3Card" style="display:none;">
-    <h2>Con-3: Planet Pairs</h2>
-    <p class="hint-note">नीचे केवल एक ही त्रिकोण में बैठे ग्रहों के जोड़े अपने आप बनते हैं। अलग-अलग त्रिकोण के दो ग्रहों का जोड़ा (जैसे Sun+Mercury अगर अलग त्रिकोण में हों) देखने के लिए नीचे "+ Add Custom Pair" से खुद चुनें।</p>
-    <div class="custom-row">
-      <div class="field">
-        <label>Planet A</label>
-        <select id="customA"></select>
+    <h2 class="collapse-toggle" data-target="con3Body">Planet Pairs<span class="chevron">&#9656;</span></h2>
+    <div id="con3Body" style="display:none;">
+      <p class="hint-note">नीचे केवल एक ही त्रिकोण में बैठे ग्रहों के जोड़े अपने आप बनते हैं। अलग-अलग त्रिकोण के दो ग्रहों का जोड़ा (जैसे Sun+Mercury अगर अलग त्रिकोण में हों) देखने के लिए नीचे "+ Add Custom Pair" से खुद चुनें।</p>
+      <div class="custom-row">
+        <div class="field">
+          <label>Planet A</label>
+          <select id="customA"></select>
+        </div>
+        <div class="field">
+          <label>Planet B</label>
+          <select id="customB"></select>
+        </div>
+        <button class="btn btn-green" id="addCustomBtn" style="height:41px;">+ Add Custom Pair</button>
       </div>
-      <div class="field">
-        <label>Planet B</label>
-        <select id="customB"></select>
-      </div>
-      <button class="btn btn-green" id="addCustomBtn" style="height:41px;">+ Add Custom Pair</button>
+      <div class="pairs-grid" id="pairsGrid"></div>
     </div>
-    <div class="pairs-grid" id="pairsGrid"></div>
   </div>
 
   <!-- CON-4 DETAILS -->
   <div class="card" id="con4Card" style="display:none;">
-    <h2>Con-4: Pair Result</h2>
-    <div id="con4"><div class="placeholder">Select a pair from Con-3 to view details here</div></div>
+    <h2>Pair Result</h2>
+    <div id="con4"><div class="placeholder">Select a pair above to view details here</div></div>
+  </div>
+
+  <!-- TIMING: JUPITER 12-YEAR PROGRESSION -->
+  <div class="card" id="timingCard" style="display:none;">
+    <h2 class="collapse-toggle" data-target="timingBody">गुरु प्रोग्रेशन — Event Timing <span class="tag">BETA</span><span class="chevron">&#9656;</span></h2>
+    <div id="timingBody" style="display:none;">
+      <p class="hint-note">यह टूल बृहस्पति (गुरु) के 12-वर्षीय प्रोग्रेशन नियम पर आधारित है (गुरु प्रति वर्ष 1 राशि आगे बढ़ते हैं, पूरा चक्र 12 वर्ष में)। यह एक सहायक/अनुमानित संकेत है — अंतिम निर्णय हमेशा जातक की पूरी कुंडली और अनुभवी विश्लेषण पर आधारित होना चाहिए।</p>
+      <div class="custom-row">
+        <div class="field">
+          <label>घटना चुनें (Event Type)</label>
+          <select id="eventType"></select>
+        </div>
+        <div class="field">
+          <label>आयु चुनें (Age)</label>
+          <select id="timingAge"></select>
+        </div>
+        <button class="btn btn-green" id="timingCalcBtn" style="height:41px;">समय गणना करें</button>
+      </div>
+      <div id="timingResult"><div class="placeholder">ऊपर से घटना और आयु चुनकर "समय गणना करें" दबाएँ</div></div>
+    </div>
   </div>
 
   <p class="footer-note">Ayanamsa: Lahiri (Chitra Paksha) · Calculations run entirely in your browser · Rahu/Ketu: Mean Node</p>
@@ -2280,6 +2319,276 @@ function computeChart(utcDate){
   return out;
 }
 
+// ---------------------------- Timing: Jupiter 12-Year Progression ----------------------------
+let currentBirthUtcDate = null; // set at Calculate time; used for age-based Jupiter progression
+let currentGender = "Male";     // toggled by the Male/Female buttons in the Timing card
+
+// General life-theme text per 12-year round (informational context only —
+// independent of the progressive-sign calculation below).
+const ROUND_THEMES = [
+  {round:1, ageFrom:1,  ageTo:12, hi:"बाल्यावस्था, प्राथमिक शिक्षा और स्वास्थ्य की नींव का काल।"},
+  {round:2, ageFrom:13, ageTo:24, hi:"उच्च शिक्षा, प्राथमिक करियर चयन और वयस्कता में प्रवेश। इस राउंड में गुरु जन्मकालीन ग्रहों के साथ पुनः संपर्क बनाते हैं।"},
+  {round:3, ageFrom:25, ageTo:36, hi:"विवाह, वैवाहिक जीवन, संतान प्राप्ति और करियर में स्थायित्व का मुख्य चक्र।"},
+  {round:4, ageFrom:37, ageTo:48, hi:"सामाजिक प्रतिष्ठा, संपत्ति अर्जन, कार्यक्षेत्र में स्थिरता या परिवर्तन।"},
+  {round:5, ageFrom:49, ageTo:60, hi:"उत्तरदायित्वों की पूर्ति, संतानों की प्रगति, आध्यात्मिक झुकाव।"},
+  {round:6, ageFrom:61, ageTo:72, hi:"निवृत्ति (Retirement), पोते-पोती, ज्ञान का दान और मोक्ष मार्ग।"}
+];
+
+// Base karaka text per planet (context display only). Venus/Mars additionally
+// carry the marriage signification for the selected gender (see getKarakaText).
+const EVENT_BASE_HI = {
+  Sun:"प्रतिष्ठा, पिता का सहयोग, सरकारी नौकरी, प्रमोशन",
+  Moon:"मन / माता / भावनाएँ",
+  Mercury:"व्यापार की शुरुआत, उच्च शिक्षा, नया अनुबंध",
+  Jupiter:"स्वयं जातक / गुरु / धर्म-ज्ञान / संतान",
+  Venus:"धन लाभ, वाहन, भौतिक सुख",
+  Mars:"पदोन्नति, भूमि, भ्राता सुख",
+  Saturn:"कर्म/नौकरी की शुरुआत, पदभार, कार्यभार में बदलाव",
+  Rahu:"विदेश यात्रा, अचानक घटना, तकनीकी कार्य, भ्रम/रोग",
+  Ketu:"आध्यात्मिक दीक्षा, नौकरी छूटना/बदलना, अवरोध"
+};
+
+const PLANET_HI_NAME = {
+  Sun:"सूर्य", Moon:"चंद्र", Mars:"मंगल", Mercury:"बुध", Jupiter:"गुरु",
+  Venus:"शुक्र", Saturn:"शनि", Rahu:"राहु", Ketu:"केतु"
+};
+
+// Named life-events shown in the dropdown (event names only — the underlying
+// karaka planet is resolved internally and never shown as the dropdown text).
+const EVENT_DEFINITIONS = [
+  {key:"marriage",           hi:"विवाह (Marriage)",                          planetFor:function(g){ return g==="Male" ? "Venus" : "Mars"; }},
+  {key:"childbirth",         hi:"संतान जन्म (Child Birth)",                   planetFor:function(){ return "Jupiter"; }},
+  {key:"job_start",          hi:"नौकरी/कर्म की शुरुआत (Job Start)",           planetFor:function(){ return "Saturn"; }},
+  {key:"role_change",        hi:"पदभार / कार्यभार में बदलाव (Role Change)",   planetFor:function(){ return "Saturn"; }},
+  {key:"prestige",           hi:"प्रतिष्ठा / सरकारी नौकरी / प्रमोशन (Prestige/Promotion)", planetFor:function(){ return "Sun"; }},
+  {key:"business_start",     hi:"व्यापार की शुरुआत (Business Start)",         planetFor:function(){ return "Mercury"; }},
+  {key:"education",          hi:"उच्च शिक्षा / नया अनुबंध (Higher Education/Contract)", planetFor:function(){ return "Mercury"; }},
+  {key:"wealth",             hi:"धन लाभ / वाहन सुख (Wealth/Vehicle Gain)",    planetFor:function(){ return "Venus"; }},
+  {key:"property_promotion", hi:"भूमि लाभ / पदोन्नति (Property/Promotion)",   planetFor:function(){ return "Mars"; }},
+  {key:"foreign_travel",     hi:"विदेश यात्रा (Foreign Travel)",              planetFor:function(){ return "Rahu"; }},
+  {key:"sudden_event",       hi:"अचानक घटना / तकनीकी कार्य (Sudden Event/Tech Work)", planetFor:function(){ return "Rahu"; }},
+  {key:"spiritual",          hi:"आध्यात्मिक दीक्षा (Spiritual Initiation)",   planetFor:function(){ return "Ketu"; }},
+  {key:"job_loss",           hi:"नौकरी छूटना / बदलना / अवरोध (Job Loss/Obstruction)", planetFor:function(){ return "Ketu"; }}
+];
+
+function getKarakaText(planetLabel, gender){
+  const g = gender || currentGender;
+  if (planetLabel === "Venus"){
+    return (g==="Male" ? "विवाह, " : "") + EVENT_BASE_HI.Venus;
+  }
+  if (planetLabel === "Mars"){
+    return (g==="Female" ? "विवाह, " : "") + EVENT_BASE_HI.Mars;
+  }
+  return EVENT_BASE_HI[planetLabel] || "";
+}
+
+function resolveEventPlanet(eventKey, gender){
+  const def = EVENT_DEFINITIONS.filter(function(e){ return e.key===eventKey; })[0];
+  if (!def) return null;
+  return def.planetFor(gender || currentGender);
+}
+
+function setGender(g){
+  currentGender = g;
+  const buttons = document.querySelectorAll("#genderToggle .gender-btn");
+  buttons.forEach(function(b){ b.classList.toggle("active", b.getAttribute("data-gender")===g); });
+  if (currentPlanetData && currentBirthUtcDate) onCalculateTiming();
+}
+
+function populateEventDropdown(){
+  const sel = document.getElementById("eventType");
+  if (!sel) return;
+  const prevValue = sel.value;
+  sel.innerHTML = EVENT_DEFINITIONS.map(function(e){
+    return '<option value="'+e.key+'">'+e.hi+'</option>';
+  }).join("");
+  if (prevValue && EVENT_DEFINITIONS.some(function(e){ return e.key===prevValue; })) sel.value = prevValue;
+}
+
+function populateAgeSelect(defaultAge){
+  const sel = document.getElementById("timingAge");
+  if (!sel) return;
+  const prevValue = sel.value;
+  sel.innerHTML = "";
+  for (let a=1; a<=100; a++){
+    const opt = document.createElement("option");
+    opt.value = a; opt.textContent = a + " वर्ष";
+    sel.appendChild(opt);
+  }
+  if (defaultAge && defaultAge>=1 && defaultAge<=100){ sel.value = defaultAge; }
+  else if (prevValue){ sel.value = prevValue; }
+}
+
+// Date that falls exactly `age` completed years after birth (their Nth birthday).
+function dateAtAge(birthUtcDate, age){
+  return new Date(Date.UTC(birthUtcDate.getUTCFullYear()+age, birthUtcDate.getUTCMonth(), birthUtcDate.getUTCDate(), 12, 0, 0));
+}
+
+// Rashi that sits `houseNum` houses away from fromRashi (houseNum=1 -> fromRashi itself).
+function rashiAtHouse(fromRashi, houseNum){
+  return ((fromRashi - 1 + (houseNum - 1)) % 12) + 1;
+}
+
+// House number of toRashi counted from fromRashi (fromRashi itself = house 1).
+function houseNumberFrom(fromRashi, toRashi){
+  return ((toRashi - fromRashi + 12) % 12) + 1;
+}
+
+// Trikona (1,5,9) AND 7th house (opposition) are treated as equally significant
+// — per the rule that Jupiter/Saturn's progression & transit effect on the
+// 7th house works the same way as on the trikona houses.
+function isTrikonaOrSeventh(rashiA, rashiB){
+  const h = houseNumberFrom(rashiA, rashiB);
+  return h===1 || h===5 || h===7 || h===9;
+}
+
+// Progressive Jupiter — 12-year cycle, 1 sign per year:
+//   Progressive Sign = ((natal_jup_sign - 1 + age) mod 12) + 1
+//   Round            = floor(age / 12) + 1
+// age is taken fractional (in years) so the sign advances smoothly; the
+// fractional part of (natal_jup_sign - 1 + age) gives the degree travelled
+// within the current progressive sign (30 deg = 1 full year = 1 sign).
+function jupiterProgression(natalJupiterRashi, ageYears){
+  const a = Math.max(ageYears, 0);
+  const raw = (natalJupiterRashi - 1) + a;
+  const progRashi = (Math.floor(raw) % 12) + 1;
+  const degWithin = (raw - Math.floor(raw)) * 30;
+  const round = Math.floor(a / 12) + 1;
+  const houseFromNatalJupiter = ((progRashi - natalJupiterRashi + 12) % 12) + 1;
+  return {ageYears:a, round, progRashi, degWithin, houseFromNatalJupiter};
+}
+
+// Real transiting sidereal position of Jupiter/Saturn on a given UTC date.
+function computeTransitRashi(body, utcDate){
+  const vec = Astronomy.GeoVector(body, utcDate, true);
+  const ecl = Astronomy.Ecliptic(vec);
+  const sid = toSidereal(ecl.elon, utcDate);
+  return rashiAndDegree(sid);
+}
+
+function planetsInRashi(data, rashi){
+  return PLANETS.map(function(p){ return data[p.key]; }).filter(function(d){ return d.rashi===rashi; });
+}
+
+function planetsInSignificantHouses(data, rashi){
+  return PLANETS.map(function(p){ return data[p.key]; }).filter(function(d){ return isTrikonaOrSeventh(rashi, d.rashi); });
+}
+
+// Every age (integer years) up to maxAge at which progressive Jupiter's sign
+// is in trikona/7th relation with the given natal planet's sign. The pattern
+// found in the first 12 years repeats identically every subsequent cycle.
+function findEventAgeWindows(natalJupiterRashi, natalPlanetRashi, maxAge){
+  const baseMatches = [];
+  for (let k=0;k<12;k++){
+    const p = jupiterProgression(natalJupiterRashi, k);
+    if (isTrikonaOrSeventh(p.progRashi, natalPlanetRashi)) baseMatches.push(k);
+  }
+  const all = [];
+  baseMatches.forEach(function(b){
+    for (let age=b; age<=maxAge; age+=12) all.push(age);
+  });
+  all.sort(function(a,b){ return a-b; });
+  return all;
+}
+
+function renderTimingPlanetList(list){
+  if (!list.length){ return '<div class="empty">कोई ग्रह नहीं</div>'; }
+  return list.map(function(d){
+    return '<div class="line"><b>'+d.label+'</b> – Rashi '+d.rashi+', '+d.degStr+'&deg;'+
+      '<br><span style="color:#9ca3af;">'+ (getKarakaText(d.label)||"") +'</span></div>';
+  }).join("");
+}
+
+function onCalculateTiming(){
+  const box = document.getElementById("timingResult");
+  if (!currentPlanetData || !currentBirthUtcDate){
+    box.innerHTML = '<div class="note">पहले ऊपर जन्म-विवरण भरकर "Calculate" दबाएँ।</div>';
+    return;
+  }
+  const eventKey = document.getElementById("eventType").value;
+  const age = parseInt(document.getElementById("timingAge").value, 10);
+  if (!eventKey || !age){
+    box.innerHTML = '<div class="note">कृपया घटना और आयु दोनों चुनें।</div>';
+    return;
+  }
+  try{
+    const eventDef = EVENT_DEFINITIONS.filter(function(e){ return e.key===eventKey; })[0];
+    const planetKey = resolveEventPlanet(eventKey, currentGender);
+    const targetUtcDate = dateAtAge(currentBirthUtcDate, age);
+
+    const prog = jupiterProgression(currentPlanetData.Jupiter.rashi, age);
+    const themeIdx = Math.min(prog.round - 1, ROUND_THEMES.length - 1);
+    const roundInfo = ROUND_THEMES[themeIdx];
+    const roundAgeFrom = (prog.round - 1) * 12 + 1;
+    const roundAgeTo = prog.round * 12;
+
+    const natalPlanet = currentPlanetData[planetKey];
+    const progTrigger = isTrikonaOrSeventh(prog.progRashi, natalPlanet.rashi);
+
+    const transitJup = computeTransitRashi("Jupiter", targetUtcDate);
+    const transitSat = computeTransitRashi("Saturn", targetUtcDate);
+    const jupTrigger = isTrikonaOrSeventh(transitJup.rashi, natalPlanet.rashi) || isTrikonaOrSeventh(transitJup.rashi, prog.progRashi);
+    const satTrigger = isTrikonaOrSeventh(transitSat.rashi, natalPlanet.rashi) || isTrikonaOrSeventh(transitSat.rashi, prog.progRashi);
+
+    const score = (progTrigger?1:0) + (jupTrigger?1:0) + (satTrigger?1:0);
+    const verdicts = [
+      {min:3, hi:"बहुत अधिक संभावना", color:"#0f7a3d"},
+      {min:2, hi:"अधिक संभावना",      color:"#1a7a4c"},
+      {min:1, hi:"मध्यम संभावना",     color:"#b45309"},
+      {min:0, hi:"संभावना कम",        color:"#b91c1c"}
+    ];
+    const verdict = verdicts.filter(function(v){ return score>=v.min; })[0];
+
+    const sigMembers = planetsInSignificantHouses(currentPlanetData, prog.progRashi);
+    const rashi2 = rashiAtHouse(prog.progRashi, 2);
+    const rashi12 = rashiAtHouse(prog.progRashi, 12);
+    const house2Members = planetsInRashi(currentPlanetData, rashi2);
+    const house12Members = planetsInRashi(currentPlanetData, rashi12);
+
+    const maxAge = Math.max(96, Math.ceil(age/12)*12 + 24);
+    const windows = findEventAgeWindows(currentPlanetData.Jupiter.rashi, natalPlanet.rashi, maxAge);
+    const upcoming = windows.filter(function(a){ return a >= age; }).slice(0,6);
+    const past = windows.filter(function(a){ return a < age; }).slice(-3);
+
+    let html = "";
+
+    // ---- Primary: selected event verdict ----
+    html += '<div class="result-head">'+eventDef.hi+' &nbsp;·&nbsp; आयु '+age+' वर्ष</div>';
+    html += '<div class="result-sub">कारक ग्रह: <b>'+PLANET_HI_NAME[planetKey]+'</b> ('+getKarakaText(planetKey)+') — Rashi '+natalPlanet.rashi+', '+natalPlanet.degStr+'&deg;</div>';
+    html += '<div class="lang-block"><div class="lang-title">घटना की संभावना</div>';
+    html += '<div class="line" style="font-size:1rem;"><b style="color:'+verdict.color+';">'+verdict.hi+'</b> (स्कोर '+score+'/3)</div>';
+    html += '<div class="line">प्रोग्रेसिव गुरु का 1,5,7,9 संबंध कारक ग्रह से: <b style="color:'+(progTrigger?'#1a7a4c':'#b91c1c')+'">'+(progTrigger?"सक्रिय":"निष्क्रिय")+'</b></div>';
+    html += '<div class="line">गोचर गुरु का समर्थन: <b style="color:'+(jupTrigger?'#1a7a4c':'#b91c1c')+'">'+(jupTrigger?"हाँ":"नहीं")+'</b> (Rashi '+transitJup.rashi+', '+transitJup.degStr+'&deg;)</div>';
+    html += '<div class="line">गोचर शनि का समर्थन: <b style="color:'+(satTrigger?'#1a7a4c':'#b91c1c')+'">'+(satTrigger?"हाँ":"नहीं")+'</b> (Rashi '+transitSat.rashi+', '+transitSat.degStr+'&deg;)</div>';
+    html += '</div>';
+
+    if (past.length){
+      html += '<div class="line">पिछली संभावित आयु: ' + past.join(", ") + ' वर्ष</div>';
+    }
+    html += '<div class="line">आगामी संभावित आयु (इसी घटना हेतु): <b>' + (upcoming.length ? upcoming.join(", ") + " वर्ष" : "—") + '</b></div>';
+    html += '<div class="line" style="color:#9ca3af;">यह क्रम हर 12 वर्ष में उन्हीं आयु-बिंदुओं पर दोहराता है।</div>';
+
+    // ---- Context: round, progressive Jupiter, house placements ----
+    html += '<div class="lang-block"><div class="lang-title">राउंड व प्रोग्रेसिव गुरु</div>';
+    html += '<div class="line">राउंड '+prog.round+' ('+roundAgeFrom+'–'+roundAgeTo+' वर्ष): '+roundInfo.hi+(prog.round>6 ? ' <span style="color:#9ca3af;">(राउंड 6 के बाद सामान्य थीम अनुमानित)</span>' : '')+'</div>';
+    html += '<div class="line">जन्म-गुरु से '+prog.houseFromNatalJupiter+'वाँ भाव &nbsp;→&nbsp; Rashi <b>'+prog.progRashi+'</b>, अनुमानित अंश <b>'+prog.degWithin.toFixed(2)+'&deg;</b></div>';
+    html += '</div>';
+
+    html += '<div class="lang-block"><div class="lang-title">1, 5, 7, 9 संबंध — सीधा प्रभाव इन कारकों का</div>' +
+      renderTimingPlanetList(sigMembers) + '</div>';
+
+    html += '<div class="lang-block"><div class="lang-title">2nd भाव (आने वाली घटना)</div>' + renderTimingPlanetList(house2Members) + '</div>';
+    html += '<div class="lang-block"><div class="lang-title">12th भाव (पिछला प्रभाव / व्यय)</div>' + renderTimingPlanetList(house12Members) + '</div>';
+
+    html += '<div class="note">यह एक सहायक/अनुमानित संकेत है — अंतिम निर्णय जातक की पूरी कुंडली और अनुभवी विश्लेषण पर आधारित होना चाहिए।</div>';
+
+    box.innerHTML = html;
+  } catch(e){
+    console.error(e);
+    box.innerHTML = '<div class="note">गणना में त्रुटि: ' + e.message + '</div>';
+  }
+}
+
 // ---------------------------- UI: populate Time of Birth selects ----------------------------
 function populateTobSelects(){
   const hourSel = document.getElementById("tobHour");
@@ -2586,6 +2895,7 @@ function onCalculate(){
 
     currentPersonName = document.getElementById("personName").value.trim();
     currentPlanetData = computeChart(utcDate);
+    currentBirthUtcDate = utcDate;
     customPairs = [];
     selectedPairKey = null;
 
@@ -2593,8 +2903,19 @@ function onCalculate(){
     const groups = getTrikonaGroups(currentPlanetData);
     renderTrikonaGrid(groups);
     renderPairsGrid(currentPlanetData);
-    document.getElementById("con4").innerHTML = '<div class="placeholder">Select a pair from Con-3 to view details here</div>';
+    document.getElementById("con4").innerHTML = '<div class="placeholder">Select a pair above to view details here</div>';
     document.getElementById("con4Card").style.display = "block";
+
+    document.getElementById("timingCard").style.display = "block";
+    const nowUtc = new Date();
+    let currentAgeGuess = nowUtc.getUTCFullYear() - utcDate.getUTCFullYear();
+    const notYetBirthday = (nowUtc.getUTCMonth() < utcDate.getUTCMonth()) ||
+      (nowUtc.getUTCMonth() === utcDate.getUTCMonth() && nowUtc.getUTCDate() < utcDate.getUTCDate());
+    if (notYetBirthday) currentAgeGuess -= 1;
+    if (currentAgeGuess < 1) currentAgeGuess = 1;
+    if (currentAgeGuess > 100) currentAgeGuess = 100;
+    populateAgeSelect(currentAgeGuess);
+    onCalculateTiming();
   } catch(e){
     console.error(e);
     errBox.textContent = "गणना में त्रुटि आई: " + e.message;
@@ -2629,17 +2950,31 @@ function resetForm(){
 
   currentPlanetData = null;
   currentPersonName = "";
+  currentBirthUtcDate = null;
   customPairs = [];
   selectedPairKey = null;
+  currentGender = "Male";
+  document.querySelectorAll("#genderToggle .gender-btn").forEach(function(b){
+    b.classList.toggle("active", b.getAttribute("data-gender")==="Male");
+  });
+  populateEventDropdown();
+  populateAgeSelect(25);
 
   document.getElementById("planetCard").style.display = "none";
   document.getElementById("trikonaCard").style.display = "none";
   document.getElementById("con3Card").style.display = "none";
   document.getElementById("con4Card").style.display = "none";
+  document.getElementById("timingCard").style.display = "none";
+  document.getElementById("planetGrid").style.display = "none";
+  document.getElementById("trikonaGrid").style.display = "none";
+  document.getElementById("con3Body").style.display = "none";
+  document.getElementById("timingBody").style.display = "none";
+  document.querySelectorAll(".collapse-toggle").forEach(function(h){ h.classList.remove("open"); });
   document.getElementById("planetGrid").innerHTML = "";
   document.getElementById("trikonaGrid").innerHTML = "";
   document.getElementById("pairsGrid").innerHTML = "";
-  document.getElementById("con4").innerHTML = '<div class="placeholder">Select a pair from Con-3 to view details here</div>';
+  document.getElementById("con4").innerHTML = '<div class="placeholder">Select a pair above to view details here</div>';
+  document.getElementById("timingResult").innerHTML = '<div class="placeholder">ऊपर से घटना और आयु चुनकर "समय गणना करें" दबाएँ</div>';
 }
 
 // ---------------------------- Init ----------------------------
@@ -2648,30 +2983,31 @@ window.addEventListener("DOMContentLoaded", function(){
   populateTobSelects();
   populateCountryDropdown();
   populatePlanetSelects();
+  populateEventDropdown();
+  populateAgeSelect(25);
   document.getElementById("calcBtn").addEventListener("click", onCalculate);
   document.getElementById("resetBtn").addEventListener("click", resetForm);
   document.getElementById("addCustomBtn").addEventListener("click", onAddCustomPair);
+  document.getElementById("timingCalcBtn").addEventListener("click", onCalculateTiming);
+  document.querySelectorAll("#genderToggle .gender-btn").forEach(function(b){
+    b.addEventListener("click", function(){ setGender(b.getAttribute("data-gender")); });
+  });
+  document.getElementById("eventType").addEventListener("change", function(){
+    if (currentPlanetData && currentBirthUtcDate) onCalculateTiming();
+  });
+  document.getElementById("timingAge").addEventListener("change", function(){
+    if (currentPlanetData && currentBirthUtcDate) onCalculateTiming();
+  });
+  document.querySelectorAll(".collapse-toggle").forEach(function(h){
+    h.addEventListener("click", function(){
+      const target = document.getElementById(h.getAttribute("data-target"));
+      const isHidden = target.style.display === "none";
+      target.style.display = isHidden ? "" : "none";
+      h.classList.toggle("open", isHidden);
+    });
+  });
 });
 
-</script>
-
-<script src="birth-profile.js"></script>
-<script>
-  window.addEventListener("DOMContentLoaded", function () {
-    if (window.BirthProfile) {
-      BirthProfile.init({
-        name: 'personName',
-        dob: { day: 'dobDay', month: 'dobMonth', year: 'dobYear' },
-        tob: { hour: 'tobHour', minute: 'tobMinute', ampm: 'tobAmPm' },
-        place: {
-          mode: 'country_manual',
-          countrySelect: 'countrySelect',
-          manualValue: '__MANUAL__',
-          lat: 'lat', lon: 'lon', tz: 'manualTz'
-        }
-      });
-    }
-  });
 </script>
 </body>
 </html>
