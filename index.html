@@ -329,14 +329,14 @@
     </a>
 
     <!-- 15. नेम न्यूमेरोलॉजी -->
-    <a href="https://name-numerology-calculator.vercel.app/" class="card" target="_blank" rel="noopener noreferrer">
+    <a href="https://name-numerology-calculator.vercel.app/" class="card" id="nameNumerologyCard" target="_blank" rel="noopener noreferrer">
       <div class="card-icon">🔢</div>
       <div class="card-title">नेम न्यूमेरोलॉजी</div>
       <div class="card-desc">नाम अंक, नामांक व भाग्य विश्लेषण</div>
     </a>
 
     <!-- 16. मोबाइल न्यूमेरोलॉजी -->
-    <a href="https://mobile-number-numerology-calculator.vercel.app/" class="card" target="_blank" rel="noopener noreferrer">
+    <a href="https://mobile-number-numerology-calculator.vercel.app/" class="card" id="mobileNumerologyCard" target="_blank" rel="noopener noreferrer">
       <div class="card-icon">📱</div>
       <div class="card-title">मोबाइल न्यूमेरोलॉजी</div>
       <div class="card-desc">मोबाइल नंबर व लकी नंबर विश्लेषण</div>
@@ -406,6 +406,38 @@
       console.log(name + ' खोला जा रहा है...');
     }
   </script>
+<script src="birth-profile.js"></script>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    if (window.BirthProfile) BirthProfile.init({}); // adds the 👤 floating button on the hub too
+
+    function buildNumerologyUrl(baseUrl) {
+      var p = window.BirthProfile ? BirthProfile.get() : null;
+      if (!p) return baseUrl;
+      var nameParts = (p.name || "").trim().split(/\s+/).filter(Boolean);
+      var first = nameParts[0] || "";
+      var middle = nameParts.length > 2 ? nameParts.slice(1, -1).join(" ") : "";
+      var last = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
+      var dobIso = p.year + "-" + String(p.month).padStart(2, "0") + "-" + String(p.day).padStart(2, "0");
+      var dobDdmmyyyy = String(p.day).padStart(2, "0") + "/" + String(p.month).padStart(2, "0") + "/" + p.year;
+      var params = new URLSearchParams({
+        first: first, middle: middle, last: last,
+        dob_iso: dobIso, dob_ddmmyyyy: dobDdmmyyyy
+      });
+      return baseUrl + "?" + params.toString();
+    }
+
+    ["nameNumerologyCard", "mobileNumerologyCard"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var base = el.getAttribute("href");
+      el.addEventListener("click", function (e) {
+        e.preventDefault();
+        window.open(buildNumerologyUrl(base), "_blank", "noopener,noreferrer");
+      });
+    });
+  });
+</script>
 </body>
 </html>
 <!-- v20 -->
