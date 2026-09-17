@@ -306,7 +306,12 @@
         <!-- Boy's Details -->
         <div class="card">
             <h2>Boy's Details</h2>
-            <div class="form-group"><label>Name</label><input type="text" id="boy-name" placeholder="Enter Name"></div>
+            <div class="form-group"><label>Name</label>
+                <div style="display:flex; gap:6px;">
+                    <input type="text" id="boy-name" placeholder="Enter Name" style="flex:1;">
+                    <button type="button" id="boy-fill-btn" title="जन्म विवरण भरें" style="flex:0 0 auto;border:1px solid #cbd5e1;background:#f1f5f9;border-radius:8px;padding:0 12px;cursor:pointer;">👤</button>
+                </div>
+            </div>
             <div class="form-group">
                 <label>Date of Birth (DD/MM/YYYY)</label>
                 <div style="display:flex; gap:8px;">
@@ -333,7 +338,12 @@
         <!-- Girl's Details -->
         <div class="card">
             <h2>Girl's Details</h2>
-            <div class="form-group"><label>Name</label><input type="text" id="girl-name" placeholder="Enter Name"></div>
+            <div class="form-group"><label>Name</label>
+                <div style="display:flex; gap:6px;">
+                    <input type="text" id="girl-name" placeholder="Enter Name" style="flex:1;">
+                    <button type="button" id="girl-fill-btn" title="जन्म विवरण भरें" style="flex:0 0 auto;border:1px solid #cbd5e1;background:#f1f5f9;border-radius:8px;padding:0 12px;cursor:pointer;">👤</button>
+                </div>
+            </div>
             <div class="form-group">
                 <label>Date of Birth (DD/MM/YYYY)</label>
                 <div style="display:flex; gap:8px;">
@@ -1690,5 +1700,36 @@
         <p style="margin: 4px 0 0 0; font-size: 16px;">Mob: +91 9450122288</p>
     </footer>
 
+
+<script src="birth-profile.js"></script>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    if (!window.BirthProfile) return;
+    function adapterFor(prefix) {
+      return {
+        name: prefix + '-name',
+        dob: { day: prefix + '-dob-day', month: prefix + '-dob-month', year: prefix + '-dob-year' },
+        tob: { mode: 'time24', id: prefix + '-time' },
+        place: {
+          mode: 'state_city_manual',
+          stateSelect: prefix + '-state',
+          manualStateValue: '__other__',
+          citySelect: prefix + '-city',
+          manualCityValue: '__other__',
+          lat: prefix + '-lat', lon: prefix + '-lon'
+        }
+      };
+    }
+    var boyBtn = document.getElementById('boy-fill-btn');
+    var girlBtn = document.getElementById('girl-fill-btn');
+    if (boyBtn) boyBtn.addEventListener('click', function () {
+      if (!BirthProfile.apply(adapterFor('boy'))) BirthProfile.open();
+    });
+    if (girlBtn) girlBtn.addEventListener('click', function () {
+      if (!BirthProfile.apply(adapterFor('girl'))) BirthProfile.open();
+    });
+    BirthProfile.init({ autoApply: false }); // just adds the 👤 floating button
+  });
+</script>
 </body>
 </html>

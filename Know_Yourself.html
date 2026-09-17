@@ -802,5 +802,24 @@ applyStaticText();
 initDateTime(false);
 initPlace();
 </script>
+
+<script src="birth-profile.js"></script>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    if (window.BirthProfile) {
+      BirthProfile.init({
+        name: 'nameInput',
+        dob: { day: 'dobDay', month: 'dobMonth', year: 'dobYear' },
+        tob: { hour: 'tobHour', minute: 'tobMin', ampm: 'tobAmpm' },
+        place: {
+          mode: 'country_manual',
+          countrySelect: 'pobCountry',
+          manualValue: '__manual__',
+          lat: 'manLat', lon: 'manLon', tz: 'manUtc'
+        }
+      });
+    }
+  });
+</script>
 </body>
 </html>

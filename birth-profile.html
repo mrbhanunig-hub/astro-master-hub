@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>जन्म विवरण - The Cosmic Counsellor</title>
+<meta name="theme-color" content="#020617">
+<link rel="icon" type="image/svg+xml" href="./icon.svg">
+<link rel="apple-touch-icon" href="./icon.svg">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif; }
+  body {
+    background: radial-gradient(circle at top, #1e293b, #0b0f19);
+    color: #f8fafc; min-height: 100vh; padding: 24px 16px;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  header { text-align: center; margin-bottom: 22px; max-width: 480px; }
+  .badge {
+    display: inline-block; padding: 4px 12px; font-size: 0.75rem; font-weight: 600;
+    letter-spacing: 0.05em; text-transform: uppercase; background: rgba(245,158,11,.15);
+    color: #fbbf24; border: 1px solid rgba(245,158,11,.3); border-radius: 9999px; margin-bottom: 10px;
+  }
+  h1 { font-size: 1.5rem; font-weight: 700; color: #fff; line-height: 1.25; }
+  .subtitle { font-size: 0.85rem; color: #94a3b8; margin-top: 6px; }
+
+  .backlink {
+    display: inline-flex; align-items: center; gap: 6px; color: #94a3b8; text-decoration: none;
+    font-size: 0.8rem; margin-bottom: 18px; padding: 6px 12px; border: 1px solid rgba(255,255,255,.08);
+    border-radius: 9999px; background: rgba(30,41,59,.6);
+  }
+  .backlink:active { background: rgba(51,65,85,.9); }
+
+  .panel {
+    width: 100%; max-width: 480px; background: rgba(30,41,59,.7); backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.08); border-radius: 16px; padding: 20px; margin-bottom: 16px;
+  }
+  .panel h2 { font-size: 1rem; color: #fbbf24; margin-bottom: 12px; display:flex; align-items:center; gap:8px; }
+
+  .summaryRow { display: flex; justify-content: space-between; padding: 7px 0; font-size: 0.88rem; border-bottom: 1px dashed rgba(255,255,255,.08); }
+  .summaryRow:last-child { border-bottom: none; }
+  .summaryRow .k { color: #94a3b8; }
+  .summaryRow .v { color: #f1f5f9; font-weight: 600; text-align: right; }
+
+  .empty { text-align: center; color: #94a3b8; font-size: 0.88rem; padding: 14px 0; }
+
+  .bigBtn {
+    width: 100%; padding: 13px; border: none; border-radius: 12px; font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; margin-top: 10px;
+  }
+  .bigBtn.primary { background: linear-gradient(135deg,#4f46e5,#7c3aed); color: #fff; }
+  .bigBtn.danger { background: rgba(239,68,68,.12); color: #f87171; border: 1px solid rgba(239,68,68,.3); }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; width: 100%; max-width: 480px; }
+  .card {
+    background: rgba(30,41,59,.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.08);
+    border-radius: 16px; padding: 20px 14px; text-decoration: none; color: inherit; display: flex;
+    flex-direction: column; align-items: center; text-align: center; transition: all .2s ease;
+  }
+  .card:active { transform: scale(0.96); background: rgba(51,65,85,.9); border-color: #fbbf24; }
+  .card-icon { font-size: 2.2rem; margin-bottom: 8px; }
+  .card-title { font-size: 0.85rem; font-weight: 600; }
+
+  .sectionLabel { width: 100%; max-width: 480px; font-size: 0.8rem; color: #94a3b8; margin: 4px 4px 10px; text-transform: uppercase; letter-spacing: .04em; }
+
+  footer { margin-top: 20px; font-size: 0.7rem; color: #64748b; text-align: center; }
+</style>
+</head>
+<body>
+
+  <a href="./index.html" class="backlink">← मुख्य हब पर वापस जाएँ</a>
+
+  <header>
+    <div class="badge">Astro Master Hub</div>
+    <h1>🪐 जन्म विवरण</h1>
+    <div class="subtitle">एक बार यहाँ भरें — नाम, जन्म तिथि, समय व स्थान — और यह सभी कुंडली-आधारित ऐप्स में अपने-आप भर जाएगा।</div>
+  </header>
+
+  <div class="panel">
+    <h2>📋 सेव किया हुआ विवरण</h2>
+    <div id="summaryBox"><div class="empty">अभी कोई जन्म विवरण सेव नहीं है।</div></div>
+    <button class="bigBtn primary" id="editBtn">✏️ जन्म विवरण भरें / बदलें</button>
+    <button class="bigBtn danger" id="clearBtn" style="display:none;">🗑️ प्रोफाइल हटाएँ</button>
+  </div>
+
+  <div class="sectionLabel">जन्म-कुंडली आधारित ऐप्स</div>
+  <div class="grid">
+    <a href="./BNN_Kundli_Calculator.html" class="card">
+      <div class="card-icon">🔮</div>
+      <div class="card-title">BNN कैलकुलेटर</div>
+    </a>
+    <a href="./Life_Promise.html" class="card">
+      <div class="card-icon">📜</div>
+      <div class="card-title">लाइफ प्रॉमिस</div>
+    </a>
+    <a href="./navtara_chakra.html" class="card">
+      <div class="card-icon">🌟</div>
+      <div class="card-title">नवतारा चक्र</div>
+    </a>
+    <a href="./kundli-milan.html" class="card">
+      <div class="card-icon">🪐</div>
+      <div class="card-title">कुंडली मिलान</div>
+    </a>
+  </div>
+
+  <footer>जन्म विवरण सिर्फ आपके इस ब्राउज़र/डिवाइस पर सेव होता है (localStorage) — कहीं और नहीं भेजा जाता।</footer>
+
+<script src="birth-profile.js"></script>
+<script>
+  var MONTH_NAMES = ['जन','फर','मार्च','अप्रैल','मई','जून','जुला','अग','सित','अक्टू','नव','दिस'];
+
+  function placeLabel(p) {
+    if (p.placeMode === 'india') return p.placeName || (p.state || '');
+    if (p.placeMode === 'world') return p.placeName || '';
+    return 'मैनुअल (' + p.lat.toFixed(3) + ', ' + p.lon.toFixed(3) + ')';
+  }
+
+  function renderSummary() {
+    var box = document.getElementById('summaryBox');
+    var clearBtn = document.getElementById('clearBtn');
+    var p = window.BirthProfile ? BirthProfile.get() : null;
+    if (!p) {
+      box.innerHTML = '<div class="empty">अभी कोई जन्म विवरण सेव नहीं है।</div>';
+      clearBtn.style.display = 'none';
+      return;
+    }
+    var h = p.hour24 % 12; if (h === 0) h = 12;
+    var ampm = p.hour24 < 12 ? 'AM' : 'PM';
+    var timeStr = h + ':' + String(p.minute).padStart(2,'0') + ' ' + ampm;
+    var dateStr = String(p.day).padStart(2,'0') + ' ' + MONTH_NAMES[p.month-1] + ' ' + p.year;
+
+    var rows = '';
+    if (p.name) rows += row('नाम', p.name);
+    rows += row('जन्म तिथि', dateStr);
+    rows += row('जन्म समय', timeStr);
+    rows += row('जन्म स्थान', placeLabel(p));
+    rows += row('Lat / Lon', p.lat.toFixed(4) + ', ' + p.lon.toFixed(4));
+    box.innerHTML = rows;
+    clearBtn.style.display = 'block';
+  }
+  function row(k, v) {
+    return '<div class="summaryRow"><span class="k">' + k + '</span><span class="v">' + v + '</span></div>';
+  }
+
+  document.getElementById('editBtn').addEventListener('click', function () {
+    if (window.BirthProfile) BirthProfile.open();
+  });
+  document.getElementById('clearBtn').addEventListener('click', function () {
+    if (confirm('क्या आप सेव किया हुआ जन्म विवरण हटाना चाहते हैं?')) {
+      BirthProfile.clear();
+    }
+  });
+
+  window.addEventListener('birthProfileSaved', renderSummary);
+  window.addEventListener('DOMContentLoaded', function () {
+    if (window.BirthProfile) BirthProfile.init({ autoApply: false });
+    renderSummary();
+  });
+</script>
+</body>
+</html>

@@ -2654,5 +2654,24 @@ window.addEventListener("DOMContentLoaded", function(){
 });
 
 </script>
+
+<script src="birth-profile.js"></script>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    if (window.BirthProfile) {
+      BirthProfile.init({
+        name: 'personName',
+        dob: { day: 'dobDay', month: 'dobMonth', year: 'dobYear' },
+        tob: { hour: 'tobHour', minute: 'tobMinute', ampm: 'tobAmPm' },
+        place: {
+          mode: 'country_manual',
+          countrySelect: 'countrySelect',
+          manualValue: '__MANUAL__',
+          lat: 'lat', lon: 'lon', tz: 'manualTz'
+        }
+      });
+    }
+  });
+</script>
 </body>
 </html>

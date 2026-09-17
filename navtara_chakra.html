@@ -524,5 +524,21 @@ document.getElementById('targetDate').addEventListener('change', ()=>{
   if(document.getElementById('resultPanel').style.display==='block') computeResult();
 });
 </script>
+
+<script src="birth-profile.js"></script>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    if (window.BirthProfile) {
+      BirthProfile.init({
+        dob: { mode: 'text_ddmmyyyy', id: 'bDate' },
+        tob: { mode: 'time24', id: 'bTime' },
+        place: { mode: 'direct_latlon', lat: 'bLat', lon: 'bLon' },
+        afterApply: function () {
+          if (typeof autoCalcJanmaNak === 'function') autoCalcJanmaNak();
+        }
+      });
+    }
+  });
+</script>
 </body>
 </html>

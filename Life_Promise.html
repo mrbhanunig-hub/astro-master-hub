@@ -3820,5 +3820,24 @@ document.getElementById('resetBtn').addEventListener('click', resetAll);
 document.getElementById('promiseSelect').addEventListener('change', renderSelectedPromise);
 renderSelectedPromise();
 </script>
+
+<script src="birth-profile.js"></script>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    if (window.BirthProfile) {
+      BirthProfile.init({
+        name: 'fname',
+        dob: { day: 'dob_d', month: 'dob_m', year: 'dob_y' },
+        tob: { hour: 'tob_h', minute: 'tob_min', ampm: 'tob_ap' },
+        place: {
+          mode: 'country_manual',
+          countrySelect: 'place_country',
+          manualValue: 'Other / Manual',
+          lat: 'man_lat', lon: 'man_lon', tz: 'man_tz'
+        }
+      });
+    }
+  });
+</script>
 </body>
 </html>
