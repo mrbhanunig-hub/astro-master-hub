@@ -25,7 +25,6 @@
             align-items: center;
         }
 
-        /* ----- HEADER STYLES ----- */
         header {
             background-color: var(--primary-color);
             color: white;
@@ -76,7 +75,6 @@
             max-width: 700px;
         }
 
-        /* ----- FORM LAYOUT ----- */
         .container {
             display: flex;
             flex-direction: column;
@@ -131,6 +129,14 @@
             background: white;
         }
 
+        .profile-picker {
+            background: #fff8e1;
+            border: 1.5px dashed var(--secondary-color);
+            padding: 8px 10px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+        }
+
         .manual-latlon {
             display: none;
             gap: 10px;
@@ -139,13 +145,6 @@
         .manual-latlon.show { display: flex; }
         .manual-latlon .form-group { flex: 1; margin-bottom: 0; }
 
-        .field-hint {
-            font-size: 12px;
-            color: #888;
-            margin-top: 4px;
-        }
-
-        /* ----- BUTTONS ----- */
         .button-group {
             display: flex;
             gap: 15px;
@@ -185,7 +184,6 @@
             margin-bottom: 10px;
         }
 
-        /* ----- RESULT SECTION ----- */
         #result-section, #result-section-kp {
             display: none;
             width: 90%;
@@ -229,7 +227,6 @@
         }
         .chart-summary p { margin: 4px 0; font-size: 14px; }
 
-        /* Guna Table */
         table {
             width: 100%;
             margin-top: 20px;
@@ -271,7 +268,6 @@
             text-align: left;
         }
 
-        /* ----- PRINT MODE (used by the PDF/print button) ----- */
         @media print {
             body.printing .container,
             body.printing .button-group,
@@ -306,6 +302,10 @@
         <!-- Boy's Details -->
         <div class="card">
             <h2>Boy's Details</h2>
+            <div class="form-group profile-picker">
+                <label>Select Saved Profile (Janam Vivran):</label>
+                <select id="boy-profile-select"></select>
+            </div>
             <div class="form-group"><label>Name</label><input type="text" id="boy-name" placeholder="Enter Name"></div>
             <div class="form-group">
                 <label>Date of Birth (DD/MM/YYYY)</label>
@@ -333,6 +333,10 @@
         <!-- Girl's Details -->
         <div class="card">
             <h2>Girl's Details</h2>
+            <div class="form-group profile-picker">
+                <label>Select Saved Profile (Janam Vivran):</label>
+                <select id="girl-profile-select"></select>
+            </div>
             <div class="form-group"><label>Name</label><input type="text" id="girl-name" placeholder="Enter Name"></div>
             <div class="form-group">
                 <label>Date of Birth (DD/MM/YYYY)</label>
@@ -374,14 +378,11 @@
     <!-- Result Area : VEDIC -->
     <div id="result-section">
         <h2>Match Result (Vedic — Ashtakoot Guna Milan)</h2>
-
         <div class="chart-summary" id="chart-summary"></div>
-
         <p>Total Ashtakoot Guna Milan Score:</p>
         <div class="score" id="score-display">0 / 36</div>
         <p><strong>Conclusion:</strong> <span id="conclusion-text"></span></p>
 
-        <!-- Detailed Gunas Table -->
         <h3>Detailed Ashtakoot Breakdown</h3>
         <table>
             <thead>
@@ -397,42 +398,29 @@
         <div class="manglik-status" id="manglik-status"></div>
 
         <div class="disclaimer">
-            Disclaimer: Yeh ganana standard Vedic astrology reference tables aur khagoliya (astronomical) formulon par aadharit hai. Nadi/Bhakoot dosh cancellation ke kuch vishesh apwaad (exceptions) is calculator mein include nahi hain. Antim salaah ke liye kripaya Astrologer Vivek Nigam se sampark karein.
+            Disclaimer: Yeh ganana standard Vedic astrology reference tables aur khagoliya formulon par aadharit hai. Nadi/Bhakoot dosh cancellation ke kuch vishesh apwaad is calculator mein include nahi hain. Antim salaah ke liye kripaya Astrologer Vivek Nigam se sampark karein.
         </div>
     </div>
 
     <!-- Result Area : KP -->
     <div id="result-section-kp">
         <h2>Match Result (KP — Krishnamurti Paddhati)</h2>
-
         <div class="chart-summary" id="kp-chart-summary"></div>
-
         <h3>1. Aayu (Longevity) Vichar</h3>
         <div id="kp-age-box" class="manglik-status"></div>
-
         <h3>2. Finance (Ladke ki Kundli)</h3>
         <div id="kp-finance-box" class="manglik-status"></div>
-
         <h3>3. Vivah (Marriage) — 7th CSL, dono ki Kundli</h3>
         <div id="kp-marriage-box" class="manglik-status"></div>
-
         <h3>4. Santan (Children) — Ladki ki Kundli</h3>
         <div id="kp-children-box" class="manglik-status"></div>
-
         <h3>5. Chandra (Moon) Check</h3>
         <div id="kp-moon-box" class="manglik-status"></div>
     </div>
 
+    <script src="birth-profile.js"></script>
     <script>
     let currentMode = 'vedic';
-    /* ======================================================================
-       ASTRONOMY ENGINE
-       Geocentric ecliptic longitudes for Sun, Moon, Mars using standard
-       low-precision Keplerian elements (Paul Schlyter method), converted
-       to the Sidereal (Nirayana) zodiac using the Lahiri Ayanamsa.
-       Accurate to within a fraction of a degree - suitable for Nakshatra /
-       Rashi / Lagna determination.
-    ====================================================================== */
 
     function toRad(d){ return d*Math.PI/180; }
     function toDeg(r){ return r*180/Math.PI; }
@@ -557,16 +545,12 @@
         const eps = toRad(23.4393);
         const latr = toRad(latDeg);
         let asc = toDeg(Math.atan2(-Math.cos(RAMC), Math.sin(RAMC)*Math.cos(eps) + Math.tan(latr)*Math.sin(eps)));
-        return norm360(asc + 180); // the raw atan2 solution is the Descendant; Ascendant is always +180 from it
+        return norm360(asc + 180);
     }
 
     function lahiriAyanamsa(yearDecimal){
         return 23.85667 + (yearDecimal - 2000) * 0.013972;
     }
-
-    /* ======================================================================
-       VEDIC ASTROLOGY REFERENCE DATA
-    ====================================================================== */
 
     const RASHI = [
         {name:'Mesh (Aries)', hindi:'मेष', lord:'Mars', varna:3, vashya:'Chatushpada'},
@@ -613,8 +597,6 @@
         {name:'Revati', yoni:'Elephant', gender:'F', gana:'Deva', nadi:'Antya'}
     ];
 
-    // Exact Yoni Guna-Bodhak Chakra (14x14 published table), order:
-    // Horse, Elephant, Sheep, Serpent, Dog, Cat, Rat, Cow, Buffalo, Tiger, Deer, Monkey, Mongoose, Lion
     const YONI_ORDER = ['Horse','Elephant','Sheep','Serpent','Dog','Cat','Rat','Cow','Buffalo','Tiger','Deer','Monkey','Mongoose','Lion'];
     const YONI_MATRIX = [
         [4,2,3,2,2,3,3,3,0,1,3,2,2,1],
@@ -649,174 +631,12 @@
             {name:'Agra', lat:27.1767, lon:78.0081}, {name:'Varanasi', lat:25.3176, lon:82.9739},
             {name:'Prayagraj (Allahabad)', lat:25.4358, lon:81.8463}, {name:'Meerut', lat:28.9845, lon:77.7064},
             {name:'Ghaziabad', lat:28.6692, lon:77.4538}, {name:'Noida', lat:28.5355, lon:77.3910},
-            {name:'Bareilly', lat:28.3670, lon:79.4304}, {name:'Aligarh', lat:27.8974, lon:78.0880},
-            {name:'Moradabad', lat:28.8386, lon:78.7733}, {name:'Saharanpur', lat:29.9680, lon:77.5460},
-            {name:'Gorakhpur', lat:26.7606, lon:83.3732}, {name:'Faizabad (Ayodhya)', lat:26.7788, lon:82.1494},
-            {name:'Jhansi', lat:25.4484, lon:78.5685}, {name:'Muzaffarnagar', lat:29.4727, lon:77.7085},
-            {name:'Mathura', lat:27.4924, lon:77.6737}, {name:'Rampur', lat:28.8152, lon:79.0250},
-            {name:'Shahjahanpur', lat:27.8814, lon:79.9110}, {name:'Farrukhabad', lat:27.3927, lon:79.5803},
-            {name:'Mau', lat:25.9417, lon:83.5611}, {name:'Hapur', lat:28.7300, lon:77.7800},
-            {name:'Etawah', lat:26.7855, lon:79.0154}, {name:'Mirzapur', lat:25.1460, lon:82.5690},
-            {name:'Bulandshahr', lat:28.4041, lon:77.8498}, {name:'Sitapur', lat:27.5666, lon:80.6820},
-            {name:'Bahraich', lat:27.5742, lon:81.5949}, {name:'Unnao', lat:26.5464, lon:80.4879},
-            {name:'Jaunpur', lat:25.7479, lon:82.6837}, {name:'Ghazipur', lat:25.5833, lon:83.5833},
-            {name:'Basti', lat:26.8148, lon:82.7332}, {name:'Sultanpur', lat:26.2647, lon:82.0716},
-            {name:'Azamgarh', lat:26.0685, lon:83.1836}, {name:'Deoria', lat:26.5024, lon:83.7791},
-            {name:'Fatehpur', lat:25.9308, lon:80.8134}, {name:'Pratapgarh', lat:25.8969, lon:81.9457},
-            {name:'Kannauj', lat:27.0553, lon:79.9153}, {name:'Firozabad', lat:27.1592, lon:78.3957},
-            {name:'Orai', lat:25.9891, lon:79.4507}, {name:'Rae Bareli', lat:26.2309, lon:81.2337},
-            {name:'Lakhimpur Kheri', lat:27.9475, lon:80.7826}, {name:'Hardoi', lat:27.3966, lon:80.1308},
-            {name:'Ballia', lat:25.7600, lon:84.1500}, {name:'Banda', lat:25.4762, lon:80.3355}
-        ],
-        'Bihar': [
-            {name:'Patna', lat:25.5941, lon:85.1376}, {name:'Gaya', lat:24.7955, lon:85.0002},
-            {name:'Bhagalpur', lat:25.2445, lon:87.0108}, {name:'Muzaffarpur', lat:26.1225, lon:85.3906},
-            {name:'Darbhanga', lat:26.1542, lon:85.8918}, {name:'Purnia', lat:25.7771, lon:87.4753},
-            {name:'Arrah', lat:25.5541, lon:84.6636}, {name:'Begusarai', lat:25.4182, lon:86.1272},
-            {name:'Katihar', lat:25.5394, lon:87.5716}, {name:'Munger', lat:25.3747, lon:86.4735},
-            {name:'Chapra', lat:25.7810, lon:84.7470}, {name:'Motihari', lat:26.6485, lon:84.9161},
-            {name:'Bettiah', lat:26.8020, lon:84.5052}, {name:'Saharsa', lat:25.8804, lon:86.6008},
-            {name:'Siwan', lat:26.2183, lon:84.3542}, {name:'Sasaram', lat:24.9500, lon:84.0333},
-            {name:'Hajipur', lat:25.6862, lon:85.2094}, {name:'Bihar Sharif', lat:25.1988, lon:85.5236}
-        ],
-        'Madhya Pradesh': [
-            {name:'Bhopal', lat:23.2599, lon:77.4126}, {name:'Indore', lat:22.7196, lon:75.8577},
-            {name:'Jabalpur', lat:23.1815, lon:79.9864}, {name:'Gwalior', lat:26.2183, lon:78.1828},
-            {name:'Ujjain', lat:23.1765, lon:75.7885}, {name:'Sagar', lat:23.8388, lon:78.7378},
-            {name:'Rewa', lat:24.5364, lon:81.3037}, {name:'Satna', lat:24.6005, lon:80.8322},
-            {name:'Ratlam', lat:23.3315, lon:75.0367}, {name:'Dewas', lat:22.9676, lon:76.0534},
-            {name:'Murwara (Katni)', lat:23.8339, lon:80.3936}, {name:'Chhindwara', lat:22.0574, lon:78.9382},
-            {name:'Vidisha', lat:23.5251, lon:77.8080}, {name:'Shivpuri', lat:25.4231, lon:77.6592},
-            {name:'Singrauli', lat:24.1997, lon:82.6747}, {name:'Guna', lat:24.6470, lon:77.3110}
-        ],
-        'Rajasthan': [
-            {name:'Jaipur', lat:26.9124, lon:75.7873}, {name:'Jodhpur', lat:26.2389, lon:73.0243},
-            {name:'Kota', lat:25.2138, lon:75.8648}, {name:'Bikaner', lat:28.0229, lon:73.3119},
-            {name:'Ajmer', lat:26.4499, lon:74.6399}, {name:'Udaipur', lat:24.5854, lon:73.7125},
-            {name:'Bhilwara', lat:25.3407, lon:74.6313}, {name:'Alwar', lat:27.5530, lon:76.6346},
-            {name:'Bharatpur', lat:27.2173, lon:77.4901}, {name:'Sikar', lat:27.6094, lon:75.1399},
-            {name:'Pali', lat:25.7711, lon:73.3234}, {name:'Sri Ganganagar', lat:29.9094, lon:73.8800},
-            {name:'Kishangarh', lat:26.5833, lon:74.8500}, {name:'Churu', lat:28.3006, lon:74.9634},
-            {name:'Jhunjhunu', lat:28.1300, lon:75.4000}, {name:'Nagaur', lat:27.2000, lon:73.7333}
-        ],
-        'Maharashtra': [
-            {name:'Mumbai', lat:19.0760, lon:72.8777}, {name:'Pune', lat:18.5204, lon:73.8567},
-            {name:'Nagpur', lat:21.1458, lon:79.0882}, {name:'Nashik', lat:19.9975, lon:73.7898},
-            {name:'Aurangabad', lat:19.8762, lon:75.3433}, {name:'Solapur', lat:17.6599, lon:75.9064},
-            {name:'Kolhapur', lat:16.7050, lon:74.2433}, {name:'Amravati', lat:20.9374, lon:77.7796},
-            {name:'Nanded', lat:19.1383, lon:77.3210}, {name:'Sangli', lat:16.8524, lon:74.5815},
-            {name:'Akola', lat:20.7002, lon:77.0082}, {name:'Latur', lat:18.4088, lon:76.5604},
-            {name:'Dhule', lat:20.9042, lon:74.7749}, {name:'Ahmednagar', lat:19.0952, lon:74.7496},
-            {name:'Jalgaon', lat:21.0077, lon:75.5626}, {name:'Thane', lat:19.2183, lon:72.9781}
-        ],
-        'Gujarat': [
-            {name:'Ahmedabad', lat:23.0225, lon:72.5714}, {name:'Surat', lat:21.1702, lon:72.8311},
-            {name:'Vadodara', lat:22.3072, lon:73.1812}, {name:'Rajkot', lat:22.3039, lon:70.8022},
-            {name:'Bhavnagar', lat:21.7645, lon:72.1519}, {name:'Jamnagar', lat:22.4707, lon:70.0577},
-            {name:'Junagadh', lat:21.5222, lon:70.4579}, {name:'Gandhinagar', lat:23.2156, lon:72.6369},
-            {name:'Anand', lat:22.5645, lon:72.9289}, {name:'Bharuch', lat:21.7051, lon:72.9959}
-        ],
-        'West Bengal': [
-            {name:'Kolkata', lat:22.5726, lon:88.3639}, {name:'Asansol', lat:23.6739, lon:86.9524},
-            {name:'Siliguri', lat:26.7271, lon:88.3953}, {name:'Durgapur', lat:23.5204, lon:87.3119},
-            {name:'Howrah', lat:22.5958, lon:88.2636}, {name:'Bardhaman', lat:23.2324, lon:87.8615},
-            {name:'Malda', lat:25.0108, lon:88.1411}, {name:'Kharagpur', lat:22.3460, lon:87.2320}
-        ],
-        'Tamil Nadu': [
-            {name:'Chennai', lat:13.0827, lon:80.2707}, {name:'Coimbatore', lat:11.0168, lon:76.9558},
-            {name:'Madurai', lat:9.9252, lon:78.1198}, {name:'Tiruchirappalli', lat:10.7905, lon:78.7047},
-            {name:'Salem', lat:11.6643, lon:78.1460}, {name:'Tirunelveli', lat:8.7139, lon:77.7567},
-            {name:'Erode', lat:11.3410, lon:77.7172}, {name:'Vellore', lat:12.9165, lon:79.1325}
-        ],
-        'Karnataka': [
-            {name:'Bengaluru', lat:12.9716, lon:77.5946}, {name:'Mysuru', lat:12.2958, lon:76.6394},
-            {name:'Hubballi', lat:15.3647, lon:75.1240}, {name:'Mangaluru', lat:12.9141, lon:74.8560},
-            {name:'Belagavi', lat:15.8497, lon:74.4977}, {name:'Kalaburagi', lat:17.3297, lon:76.8343},
-            {name:'Davanagere', lat:14.4644, lon:75.9218}, {name:'Ballari', lat:15.1394, lon:76.9214}
-        ],
-        'Andhra Pradesh': [
-            {name:'Visakhapatnam', lat:17.6868, lon:83.2185}, {name:'Vijayawada', lat:16.5062, lon:80.6480},
-            {name:'Guntur', lat:16.3067, lon:80.4365}, {name:'Nellore', lat:14.4426, lon:79.9865},
-            {name:'Kurnool', lat:15.8281, lon:78.0373}, {name:'Tirupati', lat:13.6288, lon:79.4192},
-            {name:'Kadapa', lat:14.4673, lon:78.8242}, {name:'Rajahmundry', lat:17.0005, lon:81.8040}
-        ],
-        'Telangana': [
-            {name:'Hyderabad', lat:17.3850, lon:78.4867}, {name:'Warangal', lat:17.9689, lon:79.5941},
-            {name:'Nizamabad', lat:18.6725, lon:78.0941}, {name:'Karimnagar', lat:18.4386, lon:79.1288},
-            {name:'Khammam', lat:17.2473, lon:80.1514}
-        ],
-        'Kerala': [
-            {name:'Thiruvananthapuram', lat:8.5241, lon:76.9366}, {name:'Kochi', lat:9.9312, lon:76.2673},
-            {name:'Kozhikode', lat:11.2588, lon:75.7804}, {name:'Thrissur', lat:10.5276, lon:76.2144},
-            {name:'Kollam', lat:8.8932, lon:76.6141}, {name:'Kannur', lat:11.8745, lon:75.3704}
-        ],
-        'Punjab': [
-            {name:'Amritsar', lat:31.6340, lon:74.8723}, {name:'Ludhiana', lat:30.9010, lon:75.8573},
-            {name:'Jalandhar', lat:31.3260, lon:75.5762}, {name:'Patiala', lat:30.3398, lon:76.3869},
-            {name:'Bathinda', lat:30.2110, lon:74.9455}, {name:'Mohali', lat:30.7046, lon:76.7179},
-            {name:'Pathankot', lat:32.2643, lon:75.6421}
-        ],
-        'Haryana': [
-            {name:'Gurugram', lat:28.4595, lon:77.0266}, {name:'Faridabad', lat:28.4089, lon:77.3178},
-            {name:'Panipat', lat:29.3909, lon:76.9635}, {name:'Ambala', lat:30.3782, lon:76.7767},
-            {name:'Karnal', lat:29.6857, lon:76.9905}, {name:'Hisar', lat:29.1492, lon:75.7217},
-            {name:'Rohtak', lat:28.8955, lon:76.6066}, {name:'Panchkula', lat:30.6942, lon:76.8606}
+            {name:'Bareilly', lat:28.3670, lon:79.4304}, {name:'Aligarh', lat:27.8974, lon:78.0880}
         ],
         'Delhi': [
-            {name:'New Delhi', lat:28.6139, lon:77.2090}, {name:'North Delhi', lat:28.7041, lon:77.1025},
-            {name:'South Delhi', lat:28.5245, lon:77.1855}, {name:'East Delhi', lat:28.6279, lon:77.2951}
-        ],
-        'Uttarakhand': [
-            {name:'Dehradun', lat:30.3165, lon:78.0322}, {name:'Haridwar', lat:29.9457, lon:78.1642},
-            {name:'Haldwani', lat:29.2183, lon:79.5130}, {name:'Rudrapur', lat:28.9800, lon:79.4000},
-            {name:'Roorkee', lat:29.8543, lon:77.8880}, {name:'Nainital', lat:29.3803, lon:79.4636}
-        ],
-        'Himachal Pradesh': [
-            {name:'Shimla', lat:31.1048, lon:77.1734}, {name:'Dharamshala', lat:32.2190, lon:76.3234},
-            {name:'Mandi', lat:31.7080, lon:76.9319}, {name:'Solan', lat:30.9045, lon:77.0967}
-        ],
-        'Jammu & Kashmir': [
-            {name:'Srinagar', lat:34.0837, lon:74.7973}, {name:'Jammu', lat:32.7266, lon:74.8570}
-        ],
-        'Odisha': [
-            {name:'Bhubaneswar', lat:20.2961, lon:85.8245}, {name:'Cuttack', lat:20.4625, lon:85.8828},
-            {name:'Rourkela', lat:22.2604, lon:84.8536}, {name:'Berhampur', lat:19.3149, lon:84.7941},
-            {name:'Sambalpur', lat:21.4669, lon:83.9756}
-        ],
-        'Jharkhand': [
-            {name:'Ranchi', lat:23.3441, lon:85.3096}, {name:'Jamshedpur', lat:22.8046, lon:86.2029},
-            {name:'Dhanbad', lat:23.7957, lon:86.4304}, {name:'Bokaro', lat:23.6693, lon:86.1511},
-            {name:'Deoghar', lat:24.4823, lon:86.6961}
-        ],
-        'Chhattisgarh': [
-            {name:'Raipur', lat:21.2514, lon:81.6296}, {name:'Bhilai', lat:21.1938, lon:81.3509},
-            {name:'Bilaspur', lat:22.0797, lon:82.1409}, {name:'Durg', lat:21.1904, lon:81.2849},
-            {name:'Korba', lat:22.3595, lon:82.7501}
-        ],
-        'Assam': [
-            {name:'Guwahati', lat:26.1445, lon:91.7362}, {name:'Silchar', lat:24.8333, lon:92.7789},
-            {name:'Dibrugarh', lat:27.4728, lon:94.9120}, {name:'Jorhat', lat:26.7509, lon:94.2037}
-        ],
-        'Chandigarh': [
-            {name:'Chandigarh', lat:30.7333, lon:76.7794}
-        ],
-        'Goa': [
-            {name:'Panaji', lat:15.4909, lon:73.8278}, {name:'Margao', lat:15.2832, lon:73.9862}
-        ],
-        'Other Northeast (Manipur/Meghalaya/Mizoram/Nagaland/Tripura/Arunachal/Sikkim)': [
-            {name:'Imphal', lat:24.8170, lon:93.9368}, {name:'Shillong', lat:25.5788, lon:91.8933},
-            {name:'Aizawl', lat:23.7271, lon:92.7176}, {name:'Kohima', lat:25.6751, lon:94.1086},
-            {name:'Agartala', lat:23.8315, lon:91.2868}, {name:'Itanagar', lat:27.0844, lon:93.6053},
-            {name:'Gangtok', lat:27.3389, lon:88.6065}
+            {name:'New Delhi', lat:28.6139, lon:77.2090}, {name:'North Delhi', lat:28.7041, lon:77.1025}
         ]
     };
-
-    /* ======================================================================
-       KP (KRISHNAMURTI PADDHATI) ENGINE
-       Adds: Mercury/Venus/Jupiter/Saturn positions, Rahu/Ketu, Placidus
-       house cusps (1-12), KP Sub Lord (249-division) table, Star Lord,
-       and the significator + rule logic as specified by the astrologer.
-    ====================================================================== */
 
     function planetPositionGeneric(el, d, sun, iterations){
         const N = norm360(el.N0 + el.Nd*d);
@@ -889,7 +709,6 @@
         const gapDESC_MC = norm360(MC-DESC);
         const cusp9 = solveCusp(RAMCdeg, epsDeg, latDeg, 1, 1/3, norm360(DESC+gapDESC_MC*2/3));
         const cusp8 = solveCusp(RAMCdeg, epsDeg, latDeg, 1, 2/3, norm360(DESC+gapDESC_MC*1/3));
-        // index0..11 = house1..house12 cusp longitudes (tropical)
         return [ASC, norm360(cusp8-180), norm360(cusp9-180), IC, norm360(cusp11+180), norm360(cusp12+180),
                 DESC, cusp8, cusp9, MC, cusp11, cusp12];
     }
@@ -934,7 +753,6 @@
         const jupiter = planetPositionGeneric(JUPITER_EL, d, sun, 6);
         const saturn = planetPositionGeneric(SATURN_EL, d, sun, 6);
 
-        // RAMC: Greenwich sidereal time (deg) + east longitude
         const GMST = norm360(280.46061837 + 360.98564736629*(d - (2451545.0 - 2451543.5)));
         const RAMC = norm360(GMST + lon);
         const eps = 23.4393;
@@ -947,24 +765,20 @@
             Sun: sun.lon, Moon: moon.lon, Mars: mars.lon, Mercury: mercury.lon,
             Jupiter: jupiter.lon, Venus: venus.lon, Saturn: saturn.lon
         };
-        // Rahu = Moon's mean ascending node longitude (recompute directly, same formula used inside moonPosition)
         const rahuTropical = norm360(125.1228 - 0.0529538083*d);
         planetsTropical.Rahu = rahuTropical;
         planetsTropical.Ketu = norm360(rahuTropical + 180);
 
         const planetsSidereal = {};
         Object.keys(planetsTropical).forEach(k => { planetsSidereal[k] = norm360(planetsTropical[k]-ay); });
-
         const cuspsSidereal = cuspsTropical.map(c => norm360(c-ay));
-
         const houses = {};
         Object.keys(planetsSidereal).forEach(k => { houses[k] = houseOfLongitude(cuspsSidereal, planetsSidereal[k]); });
-
         const signOf = lon => Math.floor(lon/30);
         const signs = {};
         Object.keys(planetsSidereal).forEach(k => { signs[k] = signOf(planetsSidereal[k]); });
 
-        const houseCuspSign = h => signOf(cuspsSidereal[h-1]); // h = 1..12
+        const houseCuspSign = h => signOf(cuspsSidereal[h-1]);
         function housesOwnedBy(lordName){
             const result = [];
             for(let h=1; h<=12; h++){ if(RASHI[houseCuspSign(h)].lord === lordName) result.push(h); }
@@ -973,15 +787,12 @@
 
         function signification(planetName){
             const set = new Set();
-            set.add(houses[planetName]); // house the planet itself occupies
-
+            set.add(houses[planetName]);
             if(planetName === 'Rahu' || planetName === 'Ketu'){
-                // Rahu/Ketu own no sign themselves, so they borrow their dispositor (sign lord)
                 const signLord = RASHI[signs[planetName]].lord;
-                set.add(houses[signLord]);                      // house the dispositor occupies
-                housesOwnedBy(signLord).forEach(h => set.add(h)); // houses owned by the dispositor
+                set.add(houses[signLord]);
+                housesOwnedBy(signLord).forEach(h => set.add(h));
             } else {
-                // Regular planet: add every house whose cusp-sign is owned by this planet
                 housesOwnedBy(planetName).forEach(h => set.add(h));
             }
             return set;
@@ -993,7 +804,6 @@
         function cuspSubLord(idx){ return kpSubLord(cuspsSidereal[idx]).subLord; }
 
         const CSL = { h1: cuspSubLord(0), h2: cuspSubLord(1), h5: cuspSubLord(4), h7: cuspSubLord(6) };
-
         const lagnaSign = signOf(cuspsSidereal[0]);
         const signType = [0,3,6,9].includes(lagnaSign) ? 'movable' : ([1,4,7,10].includes(lagnaSign) ? 'fixed' : 'dual');
         const badhakHouse = signType==='movable' ? 11 : (signType==='fixed' ? 9 : 7);
@@ -1053,13 +863,10 @@
             const negCount = nums.filter(h=>negative.includes(h)).length;
             return { posCount, negCount, result: posCount>negCount?'good':(negCount>posCount?'bad':'neutral') };
         }
-
-        // Extra rule: 5th CSL or its NL placed in absolute Rashi 1,3,5,6 (Mesh, Mithun, Simha, Kanya) -> problem
         const targetRashi = [0,2,4,5];
         const cslRashi = chart.signs[chart.CSL.h5];
         const nlRashi = chart.signs[r.NL];
         const rashiRuleHit = targetRashi.includes(cslRashi) || targetRashi.includes(nlRashi);
-
         return {
             ...r, NLresult: evalLevel(r.nlNums), SLresult: evalLevel(r.slNums),
             rashiRuleHit,
@@ -1080,12 +887,9 @@
         };
     }
 
-    /* ======================================================================
-       UI SETUP
-    ====================================================================== */
-
     function populateStateDropdown(prefix){
         const sel = document.getElementById(prefix+'-state');
+        sel.innerHTML = '';
         const placeholder = document.createElement('option');
         placeholder.value = '';
         placeholder.textContent = '-- State chunein --';
@@ -1190,38 +994,62 @@
         }
     }
 
+    // Connect form inputs with BirthProfile list
+    function populateProfileSelectors(){
+        if(!window.BirthProfile) return;
+        var profiles = BirthProfile.getAll();
+        ['boy','girl'].forEach(prefix => {
+            var sel = document.getElementById(prefix+'-profile-select');
+            sel.innerHTML = '<option value="">-- Choose from saved profiles (or type fresh) --</option>';
+            profiles.forEach(p => {
+                var opt = document.createElement('option');
+                opt.value = p.id;
+                opt.textContent = p.name + ' (' + p.day + '/' + p.month + '/' + p.year + ')';
+                sel.appendChild(opt);
+            });
+            sel.onchange = function(){
+                var pid = this.value;
+                if(!pid) return;
+                var found = profiles.find(x => x.id === pid);
+                if(found) fillPersonFromProfile(prefix, found);
+            };
+        });
+    }
+
+    function fillPersonFromProfile(prefix, p){
+        document.getElementById(prefix+'-name').value = p.name || '';
+        document.getElementById(prefix+'-dob-day').value = String(p.day || '');
+        document.getElementById(prefix+'-dob-month').value = String(p.month || '');
+        document.getElementById(prefix+'-dob-year').value = String(p.year || '');
+        if(p.hour !== undefined && p.minute !== undefined){
+            var h = p.hour;
+            if(p.ampm === 'PM' && h < 12) h += 12;
+            if(p.ampm === 'AM' && h === 12) h = 0;
+            document.getElementById(prefix+'-time').value = String(h).padStart(2,'0') + ':' + String(p.minute).padStart(2,'0');
+        }
+        if(p.city || p.lat){
+            document.getElementById(prefix+'-state').value = '__other__';
+            populateCityForState(prefix, '__other__');
+            document.getElementById(prefix+'-lat').value = p.lat || '26.4499';
+            document.getElementById(prefix+'-lon').value = p.lon || '80.3319';
+        }
+    }
+
     populateStateDropdown('boy');
     populateStateDropdown('girl');
     populateCityForState('boy', '');
     populateCityForState('girl', '');
     populateDobDropdowns('boy');
     populateDobDropdowns('girl');
+    populateProfileSelectors();
     setMode('vedic');
 
-    // Event listeners (attached via JS instead of inline onclick, so this works
-    // even under strict Content-Security-Policy environments that block inline handlers)
     document.getElementById('mode-vedic-btn').addEventListener('click', () => setMode('vedic'));
     document.getElementById('mode-kp-btn').addEventListener('click', () => setMode('kp'));
     document.getElementById('match-kundli-btn').addEventListener('click', generateMatch);
     document.getElementById('reset-form-btn').addEventListener('click', resetForm);
     document.getElementById('pdf-download-btn').addEventListener('click', printReport);
 
-    /* ======================================================================
-       CHART COMPUTATION
-    ====================================================================== */
-
-    /* ----------------------------------------------------------------------
-       Manglik Dosh Parihar (cancellation) - as per Brihad Jyotish Shastra:
-       1) Mars in 1st house in Mesh, OR 4th house in Vrishchik, OR 7th house
-          in Makar -> parihar.
-       2) If Saturn sits in house 1, 4, 7, 9, or 12 (from Lagna) -> parihar,
-          regardless of which house triggered the Manglik dosh.
-       3) Guru (Jupiter) Mars ke saath baitha ho (conjunction), YA Guru ki
-          5th, 7th, ya 9th drishti Mars par pad rahi ho -> Mangal Dosh ka
-          PARTIAL parihar hota hai (dosh kam ho jata hai, lekin poori
-          tarah samapt nahi hota - is liye ise "cancelled" nahi balki
-          "partial" maana gaya hai).
-    ---------------------------------------------------------------------- */
     function marsParihar(marsRashiIdx, house, saturnHouseFromAsc, jupiterRashiIdx, jupiterHouseFromAsc){
         if (house === 1 && marsRashiIdx === 0) {
             return { cancelled:true, partial:false, reason:'Mars 1st ghar mein Mesh rashi mein hai (Brihad Jyotish Shastra ke anusaar parihar).' };
@@ -1235,13 +1063,9 @@
         if ([1,4,7,9,12].includes(saturnHouseFromAsc)) {
             return { cancelled:true, partial:false, reason:`Shani ${saturnHouseFromAsc}th ghar mein sthit hai (Brihad Jyotish Shastra ke anusaar Shani ke 1,4,7,9,12 bhaav mein hone se parihar).` };
         }
-
-        // Guru (Jupiter) ka Mars ke saath yog (conjunction)
         if (jupiterRashiIdx === marsRashiIdx) {
             return { cancelled:false, partial:true, reason:'Guru (Jupiter) Mars ke saath ek hi rashi/ghar mein baithe hain — is yog se Mangal Dosh ka parihar to ho jata hai, par poori tarah samapt nahi hota.' };
         }
-
-        // Guru ki 5th, 7th, 9th drishti Mars par
         const guru5 = ((jupiterHouseFromAsc - 1 + 4) % 12) + 1;
         const guru7 = ((jupiterHouseFromAsc - 1 + 6) % 12) + 1;
         const guru9 = ((jupiterHouseFromAsc - 1 + 8) % 12) + 1;
@@ -1249,13 +1073,12 @@
             const drishtiNum = house === guru5 ? '5th' : (house === guru7 ? '7th' : '9th');
             return { cancelled:false, partial:true, reason:`Guru (Jupiter) ki ${drishtiNum} drishti Mars par pad rahi hai — is drishti se Mangal Dosh ka parihar to ho jata hai, par poori tarah samapt nahi hota.` };
         }
-
         return { cancelled:false, partial:false, reason:'' };
     }
 
     function computeChart(y, m, day, hh, mm, lat, lon){
         const hourLocal = hh + mm/60;
-        const hourUT = hourLocal - 5.5; // IST assumption
+        const hourUT = hourLocal - 5.5;
         const jd = julianDay(y, m, day, hourUT);
         const d = jd - 2451543.5;
 
@@ -1327,12 +1150,25 @@
         const y = Number(dobYear);
         const [hh, mm] = tob.split(':').map(Number);
 
+        // Auto-save to Birth Profiles so history is maintained
+        if(window.BirthProfile){
+            BirthProfile.save({
+                name: name,
+                day: day,
+                month: m,
+                year: y,
+                hour: hh % 12 || 12,
+                minute: mm,
+                ampm: hh >= 12 ? 'PM' : 'AM',
+                state: stateSel.value,
+                city: citySel.value,
+                lat: lat,
+                lon: lon
+            });
+        }
+
         return { name, y, m, day, hh, mm, lat, lon };
     }
-
-    /* ======================================================================
-       ASHTAKOOT GUNA MILAN
-    ====================================================================== */
 
     function varnaKoota(boy, girl){
         const bV = RASHI[boy.rashiIdx].varna;
@@ -1340,7 +1176,6 @@
         return { max:1, score: bV >= gV ? 1 : 0 };
     }
 
-    // Exact Vashya Guna-Bodhak Chakra (5x5, directional: row=Var/boy, col=Kanya/girl)
     const VASHYA_ORDER = ['Chatushpad','Sarpa','Dwipad','Keeta','Jalachar'];
     const VASHYA_MATRIX = [
         [2,   1, 1.5, 1, 2],
@@ -1349,10 +1184,9 @@
         [1,   1, 0,   2, 1],
         [1,   1, 1,   1, 2]
     ];
-    // Rashi -> Vashya group. Dhanu and Makar are split signs (handled by degree in vashyaOf()).
     function vashyaOf(rashiIdx, degInSign){
-        if(rashiIdx === 8) return degInSign < 15 ? 'Dwipad' : 'Chatushpad';   // Dhanu (Sagittarius)
-        if(rashiIdx === 9) return degInSign < 15 ? 'Chatushpad' : 'Jalachar'; // Makar (Capricorn)
+        if(rashiIdx === 8) return degInSign < 15 ? 'Dwipad' : 'Chatushpad';
+        if(rashiIdx === 9) return degInSign < 15 ? 'Chatushpad' : 'Jalachar';
         const map = ['Chatushpad','Chatushpad','Dwipad','Keeta','Chatushpad','Dwipad','Dwipad','Sarpa',null,null,'Jalachar','Jalachar'];
         return map[rashiIdx];
     }
@@ -1432,7 +1266,7 @@
         const badPairs = ['6,8', '2,12', '5,9'];
         let dosha = badPairs.includes(pair);
         if(dosha && RASHI[boy.rashiIdx].lord === RASHI[girl.rashiIdx].lord){
-            dosha = false; // same-lord cancellation
+            dosha = false;
         }
         return { max:7, score: dosha ? 0 : 7 };
     }
@@ -1460,12 +1294,8 @@
         if(total >= 32) return 'Uttam Match (Excellent) — Highly Recommended.';
         if(total >= 24) return 'Achha Match (Good) — Recommended.';
         if(total >= 18) return 'Madhyam Match (Average) — Vichar kiya ja sakta hai, astrologer se salaah lein.';
-        return 'Score kam hai — is match ki vistrit samiksha (detailed review) astrologer se avashya karayein.';
+        return 'Score kam hai — is match ki vistrit samiksha astrologer se avashya karayein.';
     }
-
-    /* ======================================================================
-       MAIN ACTIONS
-    ====================================================================== */
 
     function showError(msg){
         const el = document.getElementById('error-msg');
@@ -1490,9 +1320,11 @@
         const girlInput = getPersonInput('girl');
 
         if(!boyInput || !girlInput){
-            showError('Kripaya dono ka naam, janm tithi, samay aur sthaan (ya lat/long) bharein!');
+            showError('Kripaya dono ka naam, janm tithi, samay aur sthaan bharein!');
             return;
         }
+
+        populateProfileSelectors(); // refresh dropdowns with newly added profiles
 
         if(currentMode === 'kp'){
             generateKPMatch(boyInput, girlInput);
@@ -1510,7 +1342,6 @@
         Object.values(gunas).forEach(g => total += g.score);
         total = Math.round(total*100)/100;
 
-        // ---- chart summary ----
         const chartSummary = document.getElementById('chart-summary');
         function chartHtml(label, personInput, chart){
             const nak = NAKSHATRA[chart.nakIdx];
@@ -1524,7 +1355,7 @@
                 <p><strong>Manglik:</strong> ${
                     !chart.manglik ? 'Nahi (No)' :
                     chart.parihar.cancelled ? 'Haan, lekin Parihar (Cancelled)' :
-                    chart.parihar.partial ? 'Haan, Guru yog/drishti se Partial Parihar (dosh kam, samapt nahi)' :
+                    chart.parihar.partial ? 'Haan, Guru yog/drishti se Partial Parihar' :
                     'Haan (Yes)'
                 }</p>
             </div>`;
@@ -1533,11 +1364,9 @@
             chartHtml('Boy', boyInput, boyChart) +
             chartHtml('Girl', girlInput, girlChart);
 
-        // ---- score ----
         document.getElementById('score-display').textContent = total + ' / 36';
         document.getElementById('conclusion-text').textContent = conclusionFor(total);
 
-        // ---- table ----
         const tbody = document.getElementById('guna-table-body');
         tbody.innerHTML = '';
         Object.entries(gunas).forEach(([name, g]) => {
@@ -1546,37 +1375,34 @@
             tbody.appendChild(tr);
         });
 
-        // ---- manglik status ----
         const manglikEl = document.getElementById('manglik-status');
-
         function personManglikLine(name, chart){
             const shaniInfo = `(Lagna se Shani: ${chart.saturnHouseFromAsc}. ghar, Guru: ${chart.jupiterHouseFromAsc}. ghar mein)`;
             if(!chart.manglik){
                 return `${name}: Lagna se Mars <strong>${chart.houseFromAsc}. ghar</strong> mein hai — <strong>Non-Manglik</strong>`;
             }
             if(chart.parihar.cancelled){
-                return `${name}: Lagna se Mars <strong>${chart.houseFromAsc}. ghar</strong> mein hai ${shaniInfo} — Manglik hai, <strong>lekin Parihar (dosh cancelled)</strong>. ${chart.parihar.reason}`;
+                return `${name}: Lagna se Mars <strong>${chart.houseFromAsc}. ghar</strong> mein hai ${shaniInfo} — Manglik hai, <strong>lekin Parihar</strong>. ${chart.parihar.reason}`;
             }
             if(chart.parihar.partial){
-                return `${name}: Lagna se Mars <strong>${chart.houseFromAsc}. ghar</strong> mein hai ${shaniInfo} — Manglik hai, <strong>Guru ke yog/drishti se Partial Parihar</strong> (dosh kam hua hai, poori tarah samapt nahi). ${chart.parihar.reason}`;
+                return `${name}: Lagna se Mars <strong>${chart.houseFromAsc}. ghar</strong> mein hai ${shaniInfo} — Manglik hai, <strong>Partial Parihar</strong>. ${chart.parihar.reason}`;
             }
-            return `${name}: Lagna se Mars <strong>${chart.houseFromAsc}. ghar</strong> mein hai ${shaniInfo} — <strong>Manglik</strong> (koi parihar lagu nahi hota)`;
+            return `${name}: Lagna se Mars <strong>${chart.houseFromAsc}. ghar</strong> mein hai ${shaniInfo} — <strong>Manglik</strong>`;
         }
 
         let manglikMsg;
         if(boyChart.effectiveManglik === girlChart.effectiveManglik){
             manglikMsg = boyChart.effectiveManglik
-                ? 'Dono hi (bina parihar ke) Manglik hain — is sthiti mein dosh ek doosre ko sanshamit (mutually cancel) kar deta hai, isliye samanya taur par baadhak nahi maana jaata.'
-                : 'Dono ka effective Manglik status same hai, isliye Manglik Dosh yahan baadhak nahi maana jaata.';
+                ? 'Dono hi Manglik hain — dosh aapas mein cancel hota hai.'
+                : 'Dono ka status same hai, dosh baadhak nahi hai.';
         } else {
-            manglikMsg = 'Ek vyakti effectively Manglik hai aur doosra nahi — Manglik Dosh vichaarniya hai. Kripaya remedies/dosh-parihar ki poori pushti ke liye Astrologer Vivek Nigam se sampark karein.';
+            manglikMsg = 'Ek vyakti effectively Manglik hai aur doosra nahi — astrologer se dosh-parihar ki salah lein.';
         }
 
         manglikEl.innerHTML = `<strong>Manglik Dosh Check:</strong><br>
             ${personManglikLine(boyInput.name, boyChart)}<br>
             ${personManglikLine(girlInput.name, girlChart)}<br><br>
-            ${manglikMsg}
-            <br><span style="font-size:12px;color:#8d6e63;">(Note: Parihar rules texts ke hisaab se kam-zyada ho sakte hain — umar-aadharit parihar is calculator mein shaamil nahi hai.)</span>`;
+            ${manglikMsg}`;
 
         const resultSection = document.getElementById('result-section');
         resultSection.style.display = 'block';
@@ -1587,7 +1413,6 @@
         const boyChart = computeKPChart(boyInput.y, boyInput.m, boyInput.day, boyInput.hh, boyInput.mm, boyInput.lat, boyInput.lon);
         const girlChart = computeKPChart(girlInput.y, girlInput.m, girlInput.day, girlInput.hh, girlInput.mm, girlInput.lat, girlInput.lon);
 
-        // ---- chart summary ----
         function kpChartHtml(label, personInput, chart){
             return `<div class="person-chart">
                 <h4>${personInput.name} (${label})</h4>
@@ -1600,18 +1425,16 @@
         document.getElementById('kp-chart-summary').innerHTML =
             kpChartHtml('Boy', boyInput, boyChart) + kpChartHtml('Girl', girlInput, girlChart);
 
-        // ---- 1. Age ----
         const boyAge = kpAgeCheck(boyChart), girlAge = kpAgeCheck(girlChart);
         function ageLine(name, chart, a){
             const concern = a.NLresult.concern || a.SLresult.concern;
             return `${name}: 1st CSL <strong>${chart.CSL.h1}</strong> [${a.ownNums.join(', ')}] &nbsp; NL=${a.NL} [${a.nlNums.join(', ')}] &nbsp; SL=${a.SL} [${a.slNums.join(', ')}]<br>
                     ${concern
-                        ? '<strong style="color:#c62828;">Kripaya ek baar Astrologer se salah avashya le lein</strong>'
+                        ? '<strong style="color:#c62828;">Kripaya Astrologer se salah lein</strong>'
                         : '<strong style="color:#2e7d32;">Aayu theek hai</strong>'}`;
         }
         document.getElementById('kp-age-box').innerHTML = `${ageLine(boyInput.name, boyChart, boyAge)}<br><br>${ageLine(girlInput.name, girlChart, girlAge)}`;
 
-        // ---- 2. Finance (boy only) ----
         const boyFin = kpFinanceCheck(boyChart);
         function financeVerdict(res){
             const pos = res.NLresult.posCount + res.SLresult.posCount;
@@ -1622,10 +1445,8 @@
         }
         const finV = financeVerdict(boyFin);
         document.getElementById('kp-finance-box').innerHTML =
-            `${boyInput.name}: 2nd CSL <strong>${boyChart.CSL.h2}</strong> [${boyFin.ownNums.join(', ')}] &nbsp; NL=${boyFin.NL} [${boyFin.nlNums.join(', ')}] &nbsp; SL=${boyFin.SL} [${boyFin.slNums.join(', ')}]<br>
-             <strong style="color:${finV.color};">${finV.text}</strong>`;
+            `${boyInput.name}: 2nd CSL <strong>${boyChart.CSL.h2}</strong> [${boyFin.ownNums.join(', ')}]<br><strong style="color:${finV.color};">${finV.text}</strong>`;
 
-        // ---- 3. Marriage (7th CSL, both) ----
         const boyMar = kpMarriageCheck(boyChart), girlMar = kpMarriageCheck(girlChart);
         function marriageVerdict(res){
             const good = res.NLresult.goodCount + res.SLresult.goodCount;
@@ -1636,12 +1457,10 @@
         }
         function marLine(name, chart, mres){
             const v = marriageVerdict(mres);
-            return `${name}: 7th CSL <strong>${chart.CSL.h7}</strong> [${mres.ownNums.join(', ')}] &nbsp; NL=${mres.NL} [${mres.nlNums.join(', ')}] &nbsp; SL=${mres.SL} [${mres.slNums.join(', ')}]<br>
-                    <strong style="color:${v.color};">${v.text}</strong>`;
+            return `${name}: 7th CSL <strong>${chart.CSL.h7}</strong> [${mres.ownNums.join(', ')}]<br><strong style="color:${v.color};">${v.text}</strong>`;
         }
         document.getElementById('kp-marriage-box').innerHTML = `${marLine(boyInput.name, boyChart, boyMar)}<br><br>${marLine(girlInput.name, girlChart, girlMar)}`;
 
-        // ---- 4. Children (girl only) ----
         const girlChild = kpChildrenCheck(girlChart);
         function childrenVerdict(res){
             const pos = res.NLresult.posCount + res.SLresult.posCount;
@@ -1652,15 +1471,14 @@
         }
         const childV = childrenVerdict(girlChild);
         document.getElementById('kp-children-box').innerHTML =
-            `${girlInput.name}: 5th CSL <strong>${girlChart.CSL.h5}</strong> [${girlChild.ownNums.join(', ')}] &nbsp; NL=${girlChild.NL} [${girlChild.nlNums.join(', ')}] &nbsp; SL=${girlChild.SL} [${girlChild.slNums.join(', ')}]<br>
+            `${girlInput.name}: 5th CSL <strong>${girlChart.CSL.h5}</strong> [${girlChild.ownNums.join(', ')}]<br>
              <strong style="color:${childV.color};">${childV.text}</strong><br>
              5th CSL Rashi: ${girlChild.cslRashiName} &nbsp; NL Rashi: ${girlChild.nlRashiName}
-             ${girlChild.rashiRuleHit ? '<strong style="color:#c62828;">— Mesh/Mithun/Simha/Kanya rashi mein hai: Child birth mein samasya aa sakti hai</strong>' : '— is niyam se koi samasya nahi'}`;
+             ${girlChild.rashiRuleHit ? '<strong style="color:#c62828;">— Mesh/Mithun/Simha/Kanya rashi: Child birth mein samasya aa sakti hai</strong>' : '— Koi samasya nahi'}`;
 
-        // ---- 5. Moon check (both) ----
         const boyMoon = kpMoonCheck(boyChart), girlMoon = kpMoonCheck(girlChart);
         function moonLine(name, mres){
-            return `${name}: Moon [${mres.ownNums.join(', ')}] &nbsp; NL=${mres.NL} [${mres.nlNums.join(', ')}] &nbsp; SL=${mres.SL} [${mres.slNums.join(', ')}]<br>
+            return `${name}: Moon [${mres.ownNums.join(', ')}] &nbsp; NL=${mres.NL} &nbsp; SL=${mres.SL}<br>
                     ${mres.problem
                         ? '<strong style="color:#c62828;">Chandra samasya de sakta hai</strong>'
                         : '<strong style="color:#2e7d32;">Chandra theek hai</strong>'}`;
@@ -1674,6 +1492,7 @@
 
     function resetForm(){
         ['boy','girl'].forEach(prefix => {
+            document.getElementById(prefix+'-profile-select').value = '';
             document.getElementById(prefix+'-name').value = '';
             document.getElementById(prefix+'-dob-day').value = '';
             document.getElementById(prefix+'-dob-month').value = '';
@@ -1696,11 +1515,10 @@
         const boyInput = getPersonInput('boy');
         const girlInput = getPersonInput('girl');
         if(!boyInput || !girlInput){
-            showError('Kripaya dono ka naam, janm tithi, samay aur sthaan (ya lat/long) bharein!');
+            showError('Kripaya dono ka naam, janm tithi, samay aur sthaan bharein!');
             return;
         }
 
-        // Compute BOTH Vedic and KP results regardless of which mode is currently showing
         generateVedicMatch(boyInput, girlInput);
         generateKPMatch(boyInput, girlInput);
 
@@ -1717,6 +1535,5 @@
         <p style="margin: 4px 0; font-size: 14px; color: #ffe0b2;">(Astrologer, Numerologist &amp; Vastu Expert)</p>
         <p style="margin: 4px 0 0 0; font-size: 16px;">Mob: +91 9450122288</p>
     </footer>
-
 </body>
 </html>
