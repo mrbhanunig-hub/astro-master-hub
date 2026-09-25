@@ -306,12 +306,7 @@
         <!-- Boy's Details -->
         <div class="card">
             <h2>Boy's Details</h2>
-            <div class="form-group"><label>Name</label>
-                <div style="display:flex; gap:6px;">
-                    <input type="text" id="boy-name" placeholder="Enter Name" style="flex:1;">
-                    <button type="button" id="boy-fill-btn" title="जन्म विवरण भरें" style="flex:0 0 auto;border:1px solid #cbd5e1;background:#f1f5f9;border-radius:8px;padding:0 12px;cursor:pointer;">👤</button>
-                </div>
-            </div>
+            <div class="form-group"><label>Name</label><input type="text" id="boy-name" placeholder="Enter Name"></div>
             <div class="form-group">
                 <label>Date of Birth (DD/MM/YYYY)</label>
                 <div style="display:flex; gap:8px;">
@@ -338,12 +333,7 @@
         <!-- Girl's Details -->
         <div class="card">
             <h2>Girl's Details</h2>
-            <div class="form-group"><label>Name</label>
-                <div style="display:flex; gap:6px;">
-                    <input type="text" id="girl-name" placeholder="Enter Name" style="flex:1;">
-                    <button type="button" id="girl-fill-btn" title="जन्म विवरण भरें" style="flex:0 0 auto;border:1px solid #cbd5e1;background:#f1f5f9;border-radius:8px;padding:0 12px;cursor:pointer;">👤</button>
-                </div>
-            </div>
+            <div class="form-group"><label>Name</label><input type="text" id="girl-name" placeholder="Enter Name"></div>
             <div class="form-group">
                 <label>Date of Birth (DD/MM/YYYY)</label>
                 <div style="display:flex; gap:8px;">
@@ -1226,21 +1216,41 @@
           in Makar -> parihar.
        2) If Saturn sits in house 1, 4, 7, 9, or 12 (from Lagna) -> parihar,
           regardless of which house triggered the Manglik dosh.
+       3) Guru (Jupiter) Mars ke saath baitha ho (conjunction), YA Guru ki
+          5th, 7th, ya 9th drishti Mars par pad rahi ho -> Mangal Dosh ka
+          PARTIAL parihar hota hai (dosh kam ho jata hai, lekin poori
+          tarah samapt nahi hota - is liye ise "cancelled" nahi balki
+          "partial" maana gaya hai).
     ---------------------------------------------------------------------- */
-    function marsParihar(marsRashiIdx, house, saturnHouseFromAsc){
+    function marsParihar(marsRashiIdx, house, saturnHouseFromAsc, jupiterRashiIdx, jupiterHouseFromAsc){
         if (house === 1 && marsRashiIdx === 0) {
-            return { cancelled:true, reason:'Mars 1st ghar mein Mesh rashi mein hai (Brihad Jyotish Shastra ke anusaar parihar).' };
+            return { cancelled:true, partial:false, reason:'Mars 1st ghar mein Mesh rashi mein hai (Brihad Jyotish Shastra ke anusaar parihar).' };
         }
         if (house === 4 && marsRashiIdx === 7) {
-            return { cancelled:true, reason:'Mars 4th ghar mein Vrishchik rashi mein hai (Brihad Jyotish Shastra ke anusaar parihar).' };
+            return { cancelled:true, partial:false, reason:'Mars 4th ghar mein Vrishchik rashi mein hai (Brihad Jyotish Shastra ke anusaar parihar).' };
         }
         if (house === 7 && marsRashiIdx === 9) {
-            return { cancelled:true, reason:'Mars 7th ghar mein Makar rashi mein hai (Brihad Jyotish Shastra ke anusaar parihar).' };
+            return { cancelled:true, partial:false, reason:'Mars 7th ghar mein Makar rashi mein hai (Brihad Jyotish Shastra ke anusaar parihar).' };
         }
         if ([1,4,7,9,12].includes(saturnHouseFromAsc)) {
-            return { cancelled:true, reason:`Shani ${saturnHouseFromAsc}th ghar mein sthit hai (Brihad Jyotish Shastra ke anusaar Shani ke 1,4,7,9,12 bhaav mein hone se parihar).` };
+            return { cancelled:true, partial:false, reason:`Shani ${saturnHouseFromAsc}th ghar mein sthit hai (Brihad Jyotish Shastra ke anusaar Shani ke 1,4,7,9,12 bhaav mein hone se parihar).` };
         }
-        return { cancelled:false, reason:'' };
+
+        // Guru (Jupiter) ka Mars ke saath yog (conjunction)
+        if (jupiterRashiIdx === marsRashiIdx) {
+            return { cancelled:false, partial:true, reason:'Guru (Jupiter) Mars ke saath ek hi rashi/ghar mein baithe hain — is yog se Mangal Dosh ka parihar to ho jata hai, par poori tarah samapt nahi hota.' };
+        }
+
+        // Guru ki 5th, 7th, 9th drishti Mars par
+        const guru5 = ((jupiterHouseFromAsc - 1 + 4) % 12) + 1;
+        const guru7 = ((jupiterHouseFromAsc - 1 + 6) % 12) + 1;
+        const guru9 = ((jupiterHouseFromAsc - 1 + 8) % 12) + 1;
+        if (house === guru5 || house === guru7 || house === guru9) {
+            const drishtiNum = house === guru5 ? '5th' : (house === guru7 ? '7th' : '9th');
+            return { cancelled:false, partial:true, reason:`Guru (Jupiter) ki ${drishtiNum} drishti Mars par pad rahi hai — is drishti se Mangal Dosh ka parihar to ho jata hai, par poori tarah samapt nahi hota.` };
+        }
+
+        return { cancelled:false, partial:false, reason:'' };
     }
 
     function computeChart(y, m, day, hh, mm, lat, lon){
@@ -1253,6 +1263,7 @@
         const moon = moonPosition(d, sun);
         const mars = marsPosition(d, sun);
         const saturn = planetPositionGeneric(SATURN_EL, d, sun, 6);
+        const jupiter = planetPositionGeneric(JUPITER_EL, d, sun, 6);
         const asc = ascendantLongitude(d, lat, lon);
 
         const yearDecimal = y + (m-1)/12 + day/365.25;
@@ -1261,6 +1272,7 @@
         const moonSid = norm360(moon.lon - ay);
         const marsSid = norm360(mars.lon - ay);
         const saturnSid = norm360(saturn.lon - ay);
+        const jupiterSid = norm360(jupiter.lon - ay);
         const ascSid = norm360(asc - ay);
 
         const nakSpan = 360/27;
@@ -1270,16 +1282,18 @@
         const ascRashiIdx = Math.floor(ascSid / 30);
         const marsRashiIdx = Math.floor(marsSid / 30);
         const saturnRashiIdx = Math.floor(saturnSid / 30);
+        const jupiterRashiIdx = Math.floor(jupiterSid / 30);
 
         const houseFromAsc = ((marsRashiIdx - ascRashiIdx + 12) % 12) + 1;
         const saturnHouseFromAsc = ((saturnRashiIdx - ascRashiIdx + 12) % 12) + 1;
+        const jupiterHouseFromAsc = ((jupiterRashiIdx - ascRashiIdx + 12) % 12) + 1;
         const manglik = [1,4,7,8,12].includes(houseFromAsc);
-        const parihar = manglik ? marsParihar(marsRashiIdx, houseFromAsc, saturnHouseFromAsc) : { cancelled:false, reason:'' };
+        const parihar = manglik ? marsParihar(marsRashiIdx, houseFromAsc, saturnHouseFromAsc, jupiterRashiIdx, jupiterHouseFromAsc) : { cancelled:false, partial:false, reason:'' };
         const effectiveManglik = manglik && !parihar.cancelled;
 
         return {
-            moonSid, nakIdx, pada, rashiIdx, ascRashiIdx, marsRashiIdx, saturnRashiIdx,
-            houseFromAsc, saturnHouseFromAsc, manglik, parihar, effectiveManglik
+            moonSid, nakIdx, pada, rashiIdx, ascRashiIdx, marsRashiIdx, saturnRashiIdx, jupiterRashiIdx,
+            houseFromAsc, saturnHouseFromAsc, jupiterHouseFromAsc, manglik, parihar, effectiveManglik
         };
     }
 
@@ -1510,6 +1524,7 @@
                 <p><strong>Manglik:</strong> ${
                     !chart.manglik ? 'Nahi (No)' :
                     chart.parihar.cancelled ? 'Haan, lekin Parihar (Cancelled)' :
+                    chart.parihar.partial ? 'Haan, Guru yog/drishti se Partial Parihar (dosh kam, samapt nahi)' :
                     'Haan (Yes)'
                 }</p>
             </div>`;
@@ -1535,12 +1550,15 @@
         const manglikEl = document.getElementById('manglik-status');
 
         function personManglikLine(name, chart){
-            const shaniInfo = `(Lagna se Shani: ${chart.saturnHouseFromAsc}. ghar mein)`;
+            const shaniInfo = `(Lagna se Shani: ${chart.saturnHouseFromAsc}. ghar, Guru: ${chart.jupiterHouseFromAsc}. ghar mein)`;
             if(!chart.manglik){
                 return `${name}: Lagna se Mars <strong>${chart.houseFromAsc}. ghar</strong> mein hai — <strong>Non-Manglik</strong>`;
             }
             if(chart.parihar.cancelled){
                 return `${name}: Lagna se Mars <strong>${chart.houseFromAsc}. ghar</strong> mein hai ${shaniInfo} — Manglik hai, <strong>lekin Parihar (dosh cancelled)</strong>. ${chart.parihar.reason}`;
+            }
+            if(chart.parihar.partial){
+                return `${name}: Lagna se Mars <strong>${chart.houseFromAsc}. ghar</strong> mein hai ${shaniInfo} — Manglik hai, <strong>Guru ke yog/drishti se Partial Parihar</strong> (dosh kam hua hai, poori tarah samapt nahi). ${chart.parihar.reason}`;
             }
             return `${name}: Lagna se Mars <strong>${chart.houseFromAsc}. ghar</strong> mein hai ${shaniInfo} — <strong>Manglik</strong> (koi parihar lagu nahi hota)`;
         }
@@ -1558,7 +1576,7 @@
             ${personManglikLine(boyInput.name, boyChart)}<br>
             ${personManglikLine(girlInput.name, girlChart)}<br><br>
             ${manglikMsg}
-            <br><span style="font-size:12px;color:#8d6e63;">(Note: Parihar rules texts ke hisaab se kam-zyada ho sakte hain — Jupiter ki drishti aur umar-aadharit parihar is calculator mein shaamil nahi hain.)</span>`;
+            <br><span style="font-size:12px;color:#8d6e63;">(Note: Parihar rules texts ke hisaab se kam-zyada ho sakte hain — umar-aadharit parihar is calculator mein shaamil nahi hai.)</span>`;
 
         const resultSection = document.getElementById('result-section');
         resultSection.style.display = 'block';
@@ -1700,37 +1718,5 @@
         <p style="margin: 4px 0 0 0; font-size: 16px;">Mob: +91 9450122288</p>
     </footer>
 
-
-<script src="birth-profile.js"></script>
-<script>
-  window.addEventListener("DOMContentLoaded", function () {
-    if (!window.BirthProfile) return;
-    function adapterFor(prefix) {
-      return {
-        name: prefix + '-name',
-        dob: { day: prefix + '-dob-day', month: prefix + '-dob-month', year: prefix + '-dob-year' },
-        tob: { mode: 'time24', id: prefix + '-time' },
-        place: {
-          mode: 'state_city_manual',
-          stateSelect: prefix + '-state',
-          manualStateValue: '__other__',
-          citySelect: prefix + '-city',
-          manualCityValue: '__other__',
-          lat: prefix + '-lat', lon: prefix + '-lon'
-        }
-      };
-    }
-    var boyBtn = document.getElementById('boy-fill-btn');
-    var girlBtn = document.getElementById('girl-fill-btn');
-    if (boyBtn) boyBtn.addEventListener('click', function () {
-      if (!BirthProfile.apply(adapterFor('boy'))) BirthProfile.open();
-    });
-    if (girlBtn) girlBtn.addEventListener('click', function () {
-      if (!BirthProfile.apply(adapterFor('girl'))) BirthProfile.open();
-    });
-    BirthProfile.init({ autoApply: false }); // just adds the 👤 floating button
-  });
-</script>
-<script src="hub-nav.js"></script>
 </body>
 </html>
