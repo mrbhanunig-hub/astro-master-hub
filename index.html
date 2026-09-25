@@ -349,11 +349,11 @@
       <div class="card-desc">Planet & Cusp Hit थ्योरी व वास्तु दिशा</div>
     </a>
 
-    <!-- 18. Astro Vastu -->
-    <a href="#" class="card" onclick="openApp('Astro Vastu')">
+    <!-- 18. 81 पद वास्तु शक्ति चक्र -->
+    <a href="./vastu_81_pada_grid.html" class="card">
       <div class="card-icon">📐</div>
-      <div class="card-title">Astro Vastu</div>
-      <div class="card-desc">जल्द आ रहा है</div>
+      <div class="card-title">81 पद वास्तु ग्रिड</div>
+      <div class="card-desc">विश्वकर्मा प्रकाश आधारित 45 देवता चक्र</div>
     </a>
   </main>
 
@@ -401,54 +401,39 @@
     window.addEventListener('appinstalled', () => {
       installContainer.style.display = 'none';
     });
-
-    function openApp(name) {
-      var t = document.createElement('div');
-      t.textContent = '✨ ' + name + ' जल्द आ रहा है!';
-      t.style.cssText = 'position:fixed;left:50%;bottom:30px;transform:translateX(-50%);' +
-        'background:#111827;color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;' +
-        'font-family:system-ui,sans-serif;z-index:999999;box-shadow:0 6px 20px rgba(0,0,0,.35);' +
-        'opacity:0;transition:opacity .25s;';
-      document.body.appendChild(t);
-      requestAnimationFrame(function(){ t.style.opacity = '1'; });
-      setTimeout(function(){
-        t.style.opacity = '0';
-        setTimeout(function(){ t.remove(); }, 300);
-      }, 2200);
-    }
   </script>
-<script src="birth-profile.js"></script>
-<script>
-  window.addEventListener("DOMContentLoaded", function () {
-    if (window.BirthProfile) BirthProfile.init({}); // adds the 👤 floating button on the hub too
+  <script src="birth-profile.js"></script>
+  <script>
+    window.addEventListener("DOMContentLoaded", function () {
+      if (window.BirthProfile) BirthProfile.init();
 
-    function buildNumerologyUrl(baseUrl) {
-      var p = window.BirthProfile ? BirthProfile.get() : null;
-      if (!p) return baseUrl;
-      var nameParts = (p.name || "").trim().split(/\s+/).filter(Boolean);
-      var first = nameParts[0] || "";
-      var middle = nameParts.length > 2 ? nameParts.slice(1, -1).join(" ") : "";
-      var last = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
-      var dobIso = p.year + "-" + String(p.month).padStart(2, "0") + "-" + String(p.day).padStart(2, "0");
-      var dobDdmmyyyy = String(p.day).padStart(2, "0") + "/" + String(p.month).padStart(2, "0") + "/" + p.year;
-      var params = new URLSearchParams({
-        first: first, middle: middle, last: last,
-        dob_iso: dobIso, dob_ddmmyyyy: dobDdmmyyyy
-      });
-      return baseUrl + "?" + params.toString();
-    }
+      function buildNumerologyUrl(baseUrl) {
+        var p = window.BirthProfile ? BirthProfile.get() : null;
+        if (!p) return baseUrl;
+        var nameParts = (p.name || "").trim().split(/\s+/).filter(Boolean);
+        var first = nameParts[0] || "";
+        var middle = nameParts.length > 2 ? nameParts.slice(1, -1).join(" ") : "";
+        var last = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
+        var dobIso = p.year + "-" + String(p.month).padStart(2, "0") + "-" + String(p.day).padStart(2, "0");
+        var dobDdmmyyyy = String(p.day).padStart(2, "0") + "/" + String(p.month).padStart(2, "0") + "/" + p.year;
+        var params = new URLSearchParams({
+          first: first, middle: middle, last: last,
+          dob_iso: dobIso, dob_ddmmyyyy: dobDdmmyyyy
+        });
+        return baseUrl + "?" + params.toString();
+      }
 
-    ["nameNumerologyCard", "mobileNumerologyCard"].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (!el) return;
-      var base = el.getAttribute("href");
-      el.addEventListener("click", function (e) {
-        e.preventDefault();
-        window.open(buildNumerologyUrl(base), "_blank", "noopener,noreferrer");
+      ["nameNumerologyCard", "mobileNumerologyCard"].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        var base = el.getAttribute("href");
+        el.addEventListener("click", function (e) {
+          e.preventDefault();
+          window.open(buildNumerologyUrl(base), "_blank", "noopener,noreferrer");
+        });
       });
     });
-  });
-</script>
+  </script>
 </body>
 </html>
-<!-- v20 -->
+<!-- v21 -->
