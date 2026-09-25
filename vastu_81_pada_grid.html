@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>81 Pada Vastu Shakti Chakra</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Cinzel:wght@600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBF3E3; --panel:#FFFDF7; --ink:#2E1C10; --ink-soft:#6B5744;
+    --vermillion:#A6291B; --vermillion-dark:#7C1D12; --gold:#B8860B; --gold-light:#E8C468; --line:#E3D2AE;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Poppins','Noto Sans Devanagari',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding:28px 14px 80px;}
+  .wrap{max-width:820px;margin:0 auto;}
+  .arch{
+    position:relative;text-align:center;padding:32px 20px 24px;background:var(--panel);
+    border:1px solid var(--line);border-top-left-radius:200px;border-top-right-radius:200px;
+    border-bottom-left-radius:18px;border-bottom-right-radius:18px;margin-bottom:22px;
+  }
+  .arch::before{content:"";position:absolute;top:12px;left:50%;transform:translateX(-50%);width:48px;height:48px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--gold-light), var(--gold));box-shadow:0 0 0 4px var(--bg),0 0 0 5px var(--line);}
+  .arch h1{font-family:'Cinzel',serif;font-size:22px;margin:28px 0 6px;color:var(--vermillion-dark);}
+  .arch p.sub{font-size:13px;color:var(--ink-soft);margin:0;}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px;}
+  .card h2{font-family:'Cinzel',serif;font-size:16px;color:var(--vermillion-dark);margin:0 0 12px;display:flex;align-items:center;gap:10px;}
+  .card h2 .num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;
+    background:var(--vermillion);color:#fff;font-size:11px;font-weight:600;}
+  .card p.hint{font-size:12.5px;color:var(--ink-soft);margin:0 0 12px;line-height:1.5;}
+
+  input[type=file]{
+    width:100%;padding:10px;border:1.5px dashed var(--line);border-radius:10px;background:#fff;font-size:13px;
+  }
+  .canvas-wrap{position:relative;width:100%;background:#EFE4C8;border-radius:12px;overflow:hidden;touch-action:none;}
+  canvas{display:block;width:100%;height:auto;cursor:crosshair;touch-action:none;}
+
+  .btn-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
+  button.nav{
+    flex:1;min-width:120px;padding:11px;border-radius:10px;border:1.5px solid var(--line);
+    background:#fff;color:var(--ink-soft);font-family:inherit;font-size:13.5px;font-weight:500;cursor:pointer;
+  }
+  button.nav.primary{background:var(--vermillion);border-color:var(--vermillion);color:#fff;}
+  button.nav:disabled{opacity:0.4;cursor:not-allowed;}
+
+  .empty-hint{font-size:13px;color:var(--ink-soft);padding:14px;background:#F4ECD8;border-radius:10px;text-align:center;}
+  .note{font-size:12px;color:var(--ink-soft);background:#F4ECD8;border-radius:8px;padding:10px 12px;margin-top:12px;}
+  .note.warn{background:#FBEAF0;color:#72243E;}
+  .legend{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-soft);}
+  .legend span{display:inline-flex;align-items:center;gap:5px;}
+  .swatch{width:10px;height:10px;border-radius:3px;display:inline-block;}
+  button.reset{display:block;margin:20px auto 0;background:none;border:none;color:var(--ink-soft);font-size:13px;text-decoration:underline;cursor:pointer;font-family:inherit;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="arch">
+    <h1>81 पद वास्तु शक्ति चक्र</h1>
+    <p class="sub">Apne ghar ka map upload karein, plot ki boundary trace karein, North wall set karein — 81-pada Devata grid overlay ho jayega</p>
+  </div>
+
+  <div id="step1" class="card">
+    <h2><span class="num">1</span>Ghar ka Map / Plan Upload Karein</h2>
+    <p class="hint">Photo, scanned drawing ya floor plan — koi bhi image chalegi.</p>
+    <input type="file" id="fileInput" accept="image/*">
+  </div>
+
+  <div id="step2" class="card" style="display:none;">
+    <h2><span class="num">2</span>Plot ki Boundary Trace Karein</h2>
+    <p class="hint">Apne plot ke saare corners par tap/click karein — 4 ho ya usse zyada (L-shape ya koi bhi irregular plot bhi chalega). Order mein, boundary ke around ghoomte hue click karein. Khatam hone par "Boundary Complete" dabayein.</p>
+    <div class="canvas-wrap">
+      <canvas id="mainCanvas"></canvas>
+    </div>
+    <div id="cornerStatus" class="note">Corners: 0</div>
+    <div class="btn-row">
+      <button class="nav" id="undoCorner">Peeche (undo point)</button>
+      <button class="nav primary" id="toStep3" disabled>Boundary Complete</button>
+    </div>
+  </div>
+
+  <div id="step3" class="card" style="display:none;">
+    <h2><span class="num">3</span>North Wall Chunein</h2>
+    <p class="hint">Jo <b>wall (deewar) North ki taraf</b> hai, uske dono corners (dono end-points) par click karein. Isse wall ki exact direction ke hisaab se grid seedha (bina tirछा) align hoga.</p>
+    <div class="canvas-wrap">
+      <canvas id="northCanvas"></canvas>
+    </div>
+    <div id="northStatus" class="note">Abhi North wall set nahi ki gayi.</div>
+    <div class="btn-row">
+      <button class="nav" id="undoNorth">Peeche (undo point)</button>
+      <button class="nav" id="backTo2">Peeche</button>
+      <button class="nav primary" id="generateGrid" disabled>81-Pada Grid Banayein</button>
+    </div>
+  </div>
+
+  <div id="step4" class="card" style="display:none;">
+    <h2><span class="num">4</span>Shakti Chakra (81 Pada)</h2>
+    <div class="canvas-wrap">
+      <canvas id="resultCanvas"></canvas>
+    </div>
+    <div class="legend">
+      <span><span class="swatch" style="background:#A6291B;"></span>Outer 32 Devata</span>
+      <span><span class="swatch" style="background:#4B6043;"></span>Brahmasthan (9 pada)</span>
+      <span><span class="swatch" style="background:#B8860B;"></span>Inner Devata (arms + corner padas)</span>
+    </div>
+    <div class="note">Hara outline aapke <b>asli plot</b> ki boundary hai. 81-pada grid us plot ko North-South ke hisaab se sabse chhote <b>complete rectangle</b> mein fit karke banaya gaya hai — jo pada is hare outline se bahar hain, wo "extension" hain; jo area grid ke bahar hai lekin plot ke andar tha, wo "cut" hai. Agar aapka plot pehle se hi rectangle hai, to hara outline grid ke corners se hi match karega.</div>
+  </div>
+
+  <button class="reset" id="resetBtn">Naye sirey se shuru karein</button>
+</div>
+
+<script>
+// ---------- Devata grid data (9x9, row0=North edge, row8=South edge, col0=West edge, col8=East edge) ----------
+const GRID_NAMES = Array.from({length:9},()=>Array(9).fill(null));
+const GRID_TIER = Array.from({length:9},()=>Array(9).fill(null)); // 'outer' | 'inner' | 'brahma' | 'unspecified'
+
+// Outer ring - verified sequence (clockwise from NE corner)
+const outer = [
+  [0,8,"दिति"],     // NE corner
+  [1,8,"ईश"],
+  [2,8,"पर्जन्य"],
+  [3,8,"जयंत"],
+  [4,8,"महेंद्र"],
+  [5,8,"सूर्य"],
+  [6,8,"सत्य"],
+  [7,8,"भृश"],
+  [8,8,"आकाश"],    // SE corner
+  [8,7,"अनिल"],
+  [8,6,"पूषा"],
+  [8,5,"वितथ"],
+  [8,4,"गृहक्षत"],
+  [8,3,"यम"],
+  [8,2,"गंधर्व"],
+  [8,1,"भृंगराज"],
+  [8,0,"मृग"],     // SW corner
+  [7,0,"पितृ"],
+  [6,0,"दौवारिक"],
+  [5,0,"सुग्रीव"],
+  [4,0,"पुष्पदंत"],
+  [3,0,"वरुण"],
+  [2,0,"असुर"],
+  [1,0,"शोष"],
+  [0,0,"पाप्यक्ष्मा"], // NW corner
+  [0,1,"रोग"],
+  [0,2,"नाग"],
+  [0,3,"मुख्य"],
+  [0,4,"भल्लाट"],
+  [0,5,"सोम"],
+  [0,6,"भुजंग"],
+  [0,7,"अदिति"]
+];
+outer.forEach(([r,c,name])=>{ GRID_NAMES[r][c]=name; GRID_TIER[r][c]='outer'; });
+
+// Brahmasthan - center 3x3 (rows3-5, cols3-5) - confirmed 9 padas
+for(let r=3;r<=5;r++){ for(let c=3;c<=5;c++){ GRID_NAMES[r][c]="ब्रह्मा"; GRID_TIER[r][c]='brahma'; } }
+
+// Four arms (6 padas each) around Brahmasthan - confirmed by user
+// North arm = Prithvidhar/Bhudhar, South arm = Vivasvan, East arm = Aryama, West arm = Mitra
+for(let c=3;c<=5;c++){ GRID_NAMES[1][c]="पृथ्वीधर"; GRID_TIER[1][c]='inner';
+                        GRID_NAMES[2][c]="पृथ्वीधर"; GRID_TIER[2][c]='inner'; }
+for(let c=3;c<=5;c++){ GRID_NAMES[6][c]="विवस्वान"; GRID_TIER[6][c]='inner';
+                        GRID_NAMES[7][c]="विवस्वान"; GRID_TIER[7][c]='inner'; }
+for(let r=3;r<=5;r++){ GRID_NAMES[r][6]="अर्यमा"; GRID_TIER[r][6]='inner';
+                        GRID_NAMES[r][7]="अर्यमा"; GRID_TIER[r][7]='inner'; }
+for(let r=3;r<=5;r++){ GRID_NAMES[r][1]="मित्र"; GRID_TIER[r][1]='inner';
+                        GRID_NAMES[r][2]="मित्र"; GRID_TIER[r][2]='inner'; }
+
+// Four corner zones - CONFIRMED: each of these 8 devata spans 2 padas (fills the full row-width
+// of its half of the 2x2 corner zone), so all 81 padas are accounted for with no gaps.
+const cornerAssign = [
+  [1,1,"रुद्रजय"], [1,2,"रुद्रजय"], [2,1,"रुद्र"],   [2,2,"रुद्र"],     // NW zone (Vayavya)
+  [1,6,"आपः"],   [1,7,"आपः"],   [2,6,"आपवत्स"], [2,7,"आपवत्स"],   // NE zone (Ishan)
+  [6,1,"जय"],    [6,2,"जय"],    [7,1,"इंद्र"],   [7,2,"इंद्र"],      // SW zone (Nairutya)
+  [6,6,"सविता"], [6,7,"सविता"], [7,6,"सावित्र"], [7,7,"सावित्र"]     // SE zone (Aagneya)
+];
+cornerAssign.forEach(([r,c,name])=>{ GRID_NAMES[r][c]=name; GRID_TIER[r][c]='inner'; });
+
+// ---------- App state ----------
+let img = null;
+let corners = []; // traced polygon points in image-natural coordinates {x,y}, any count >=3
+
+const fileInput = document.getElementById('fileInput');
+const mainCanvas = document.getElementById('mainCanvas');
+const mctx = mainCanvas.getContext('2d');
+const resultCanvas = document.getElementById('resultCanvas');
+const rctx = resultCanvas.getContext('2d');
+
+let displayScale = 1;
+
+fileInput.addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    img = new Image();
+    img.onload = ()=>{
+      document.getElementById('step2').style.display='block';
+      corners = [];
+      updateStep2Btn();
+      requestAnimationFrame(()=>{ requestAnimationFrame(setupCanvas); });
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+function setupCanvas(){
+  const maxW = mainCanvas.parentElement.clientWidth || 700;
+  displayScale = Math.min(1, maxW / img.naturalWidth);
+  mainCanvas.width = img.naturalWidth * displayScale;
+  mainCanvas.height = img.naturalHeight * displayScale;
+  redrawMain();
+}
+
+function redrawMain(){
+  mctx.clearRect(0,0,mainCanvas.width,mainCanvas.height);
+  mctx.drawImage(img,0,0,mainCanvas.width,mainCanvas.height);
+  corners.forEach((p,i)=>{
+    const x = p.x*displayScale, y = p.y*displayScale;
+    mctx.beginPath();
+    mctx.arc(x,y,7,0,2*Math.PI);
+    mctx.fillStyle = '#A6291B';
+    mctx.fill();
+    mctx.strokeStyle = '#fff';
+    mctx.lineWidth = 2;
+    mctx.stroke();
+    mctx.fillStyle = '#fff';
+    mctx.font = 'bold 11px sans-serif';
+    mctx.textAlign='center';
+    mctx.fillText(String(i+1), x, y+4);
+  });
+  if(corners.length>1){
+    mctx.beginPath();
+    corners.forEach((p,i)=>{
+      const x=p.x*displayScale,y=p.y*displayScale;
+      if(i===0) mctx.moveTo(x,y); else mctx.lineTo(x,y);
+    });
+    if(corners.length>=3) mctx.closePath();
+    mctx.strokeStyle = '#B8860B';
+    mctx.lineWidth = 2;
+    mctx.setLineDash([6,4]);
+    mctx.stroke();
+    mctx.setLineDash([]);
+  }
+}
+
+mainCanvas.addEventListener('pointerdown', (e)=>{
+  const rect = mainCanvas.getBoundingClientRect();
+  const scaleX = mainCanvas.width/rect.width;
+  const scaleY = mainCanvas.height/rect.height;
+  const cx = (e.clientX-rect.left)*scaleX;
+  const cy = (e.clientY-rect.top)*scaleY;
+  corners.push({x: cx/displayScale, y: cy/displayScale});
+  redrawMain();
+  updateStep2Btn();
+});
+
+document.getElementById('undoCorner').addEventListener('click', ()=>{
+  corners.pop();
+  redrawMain();
+  updateStep2Btn();
+});
+
+function updateStep2Btn(){
+  document.getElementById('cornerStatus').textContent = `Corners: ${corners.length}`;
+  document.getElementById('toStep3').disabled = corners.length < 3;
+}
+
+document.getElementById('toStep3').addEventListener('click', ()=>{
+  document.getElementById('step2').style.display='none';
+  document.getElementById('step3').style.display='block';
+  requestAnimationFrame(()=>{ requestAnimationFrame(setupNorthCanvas); });
+});
+document.getElementById('backTo2').addEventListener('click', ()=>{
+  document.getElementById('step3').style.display='none';
+  document.getElementById('step2').style.display='block';
+});
+
+// ---------- North wall picker (2 endpoints of the north-facing wall) ----------
+const northCanvas = document.getElementById('northCanvas');
+const nctx = northCanvas.getContext('2d');
+let northLinePts = []; // [wallEndpoint1, wallEndpoint2] in image-natural coords
+let northDisplayScale = 1;
+
+function setupNorthCanvas(){
+  const maxW = northCanvas.parentElement.clientWidth || 700;
+  northDisplayScale = Math.min(1, maxW / img.naturalWidth);
+  northCanvas.width = img.naturalWidth * northDisplayScale;
+  northCanvas.height = img.naturalHeight * northDisplayScale;
+  redrawNorthCanvas();
+}
+
+function redrawNorthCanvas(){
+  nctx.clearRect(0,0,northCanvas.width,northCanvas.height);
+  nctx.drawImage(img,0,0,northCanvas.width,northCanvas.height);
+  corners.forEach((p)=>{
+    const x=p.x*northDisplayScale, y=p.y*northDisplayScale;
+    nctx.beginPath(); nctx.arc(x,y,5,0,2*Math.PI);
+    nctx.fillStyle='rgba(166,41,27,0.35)'; nctx.fill();
+  });
+  if(corners.length>=3){
+    nctx.beginPath();
+    corners.forEach((p,i)=>{
+      const x=p.x*northDisplayScale,y=p.y*northDisplayScale;
+      if(i===0) nctx.moveTo(x,y); else nctx.lineTo(x,y);
+    });
+    nctx.closePath();
+    nctx.strokeStyle='rgba(184,134,11,0.4)';
+    nctx.lineWidth=1.5;
+    nctx.stroke();
+  }
+  const labels = ['1','2'];
+  northLinePts.forEach((p,i)=>{
+    const x=p.x*northDisplayScale, y=p.y*northDisplayScale;
+    nctx.beginPath(); nctx.arc(x,y,8,0,2*Math.PI);
+    nctx.fillStyle='#A6291B'; nctx.fill();
+    nctx.strokeStyle='#fff'; nctx.lineWidth=2; nctx.stroke();
+    nctx.fillStyle='#fff'; nctx.font='bold 12px sans-serif'; nctx.textAlign='center';
+    nctx.fillText(labels[i], x, y+4);
+  });
+  if(northLinePts.length===2){
+    const [a,b] = northLinePts;
+    nctx.beginPath();
+    nctx.moveTo(a.x*northDisplayScale, a.y*northDisplayScale);
+    nctx.lineTo(b.x*northDisplayScale, b.y*northDisplayScale);
+    nctx.strokeStyle='#A6291B';
+    nctx.lineWidth=2.5;
+    nctx.stroke();
+  }
+}
+
+northCanvas.addEventListener('pointerdown', (e)=>{
+  if(northLinePts.length>=2) return;
+  const rect = northCanvas.getBoundingClientRect();
+  const scaleX = northCanvas.width/rect.width;
+  const scaleY = northCanvas.height/rect.height;
+  const cx = (e.clientX-rect.left)*scaleX;
+  const cy = (e.clientY-rect.top)*scaleY;
+  northLinePts.push({x: cx/northDisplayScale, y: cy/northDisplayScale});
+  redrawNorthCanvas();
+  const statusEl = document.getElementById('northStatus');
+  if(northLinePts.length===1){
+    statusEl.textContent = 'North wall ka pehla corner set ho gaya. Ab doosra corner (isi wall ka) par click karein.';
+    statusEl.classList.remove('warn');
+  } else {
+    statusEl.textContent = 'North wall set ho gayi. Aap "undo" karke dobara set kar sakte hain.';
+    statusEl.classList.remove('warn');
+    document.getElementById('generateGrid').disabled = false;
+  }
+});
+
+document.getElementById('undoNorth').addEventListener('click', ()=>{
+  northLinePts.pop();
+  redrawNorthCanvas();
+  document.getElementById('generateGrid').disabled = true;
+  document.getElementById('northStatus').textContent = northLinePts.length===0
+    ? 'Abhi North wall set nahi ki gayi.'
+    : 'North wall ka pehla corner set ho gaya. Ab doosra corner (isi wall ka) par click karein.';
+});
+
+// ---------- Generate grid ----------
+document.getElementById('generateGrid').addEventListener('click', ()=>{
+  document.getElementById('step3').style.display='none';
+  document.getElementById('step4').style.display='block';
+  requestAnimationFrame(()=>{ requestAnimationFrame(buildGrid); });
+});
+
+function classifyCorners(){
+  // pivot = centroid of traced polygon
+  const cx = corners.reduce((s,p)=>s+p.x,0)/corners.length;
+  const cy = corners.reduce((s,p)=>s+p.y,0)/corners.length;
+  let angleOfNorth = 0;
+  if(northLinePts.length===2){
+    const [w1,w2] = northLinePts;
+    // wall direction vector (this IS the East-West axis, since a north wall runs E-W)
+    const wdx = w2.x-w1.x, wdy = w2.y-w1.y;
+    const perp1 = {x:-wdy, y:wdx};
+    const perp2 = {x:wdy, y:-wdx};
+    const mx = (w1.x+w2.x)/2, my = (w1.y+w2.y)/2;
+    const toWall = {x: mx-cx, y: my-cy};
+    const north = (perp1.x*toWall.x + perp1.y*toWall.y) >= (perp2.x*toWall.x + perp2.y*toWall.y) ? perp1 : perp2;
+    angleOfNorth = Math.atan2(north.x, -north.y)*180/Math.PI;
+  }
+  const theta = angleOfNorth * Math.PI/180;
+  const cosT = Math.cos(theta), sinT = Math.sin(theta);
+
+  let minXp=Infinity, maxXp=-Infinity, minYp=Infinity, maxYp=-Infinity;
+  corners.forEach(p=>{
+    const dx = p.x-cx, dy = p.y-cy;
+    const dxp = dx*cosT + dy*sinT;
+    const dyp = -dx*sinT + dy*cosT;
+    if(dxp<minXp) minXp=dxp;
+    if(dxp>maxXp) maxXp=dxp;
+    if(dyp<minYp) minYp=dyp;
+    if(dyp>maxYp) maxYp=dyp;
+  });
+
+  const rectRot = {
+    NW: {x:minXp, y:minYp},
+    NE: {x:maxXp, y:minYp},
+    SE: {x:maxXp, y:maxYp},
+    SW: {x:minXp, y:maxYp}
+  };
+  const classified = {};
+  Object.keys(rectRot).forEach(k=>{
+    const dxp = rectRot[k].x, dyp = rectRot[k].y;
+    const dx = dxp*cosT - dyp*sinT;
+    const dy = dxp*sinT + dyp*cosT;
+    classified[k] = {x: cx+dx, y: cy+dy};
+  });
+  return classified;
+}
+
+function bilinear(u,v, NW,NE,SW,SE){
+  const x = (1-u)*(1-v)*NW.x + u*(1-v)*NE.x + (1-u)*v*SW.x + u*v*SE.x;
+  const y = (1-u)*(1-v)*NW.y + u*(1-v)*NE.y + (1-u)*v*SW.y + u*v*SE.y;
+  return {x,y};
+}
+
+function buildGrid(){
+  const maxW = resultCanvas.parentElement.clientWidth || 700;
+  const scale = Math.min(1, maxW / img.naturalWidth);
+  resultCanvas.width = img.naturalWidth * scale;
+  resultCanvas.height = img.naturalHeight * scale;
+  rctx.clearRect(0,0,resultCanvas.width,resultCanvas.height);
+  rctx.drawImage(img,0,0,resultCanvas.width,resultCanvas.height);
+
+  const cls = classifyCorners();
+  if(!cls.NE || !cls.NW || !cls.SE || !cls.SW){
+    rctx.fillStyle='rgba(255,255,255,0.9)';
+    rctx.fillRect(10,10,resultCanvas.width-20,60);
+    rctx.fillStyle='#72243E';
+    rctx.font='13px sans-serif';
+    rctx.fillText('Boundary ya North wall dobara set karein.', 20, 40);
+    return;
+  }
+  const NWs = {x: cls.NW.x*scale, y: cls.NW.y*scale};
+  const NEs = {x: cls.NE.x*scale, y: cls.NE.y*scale};
+  const SWs = {x: cls.SW.x*scale, y: cls.SW.y*scale};
+  const SEs = {x: cls.SE.x*scale, y: cls.SE.y*scale};
+
+  const pts = [];
+  for(let i=0;i<=9;i++){
+    const row=[];
+    for(let j=0;j<=9;j++){
+      const u=j/9, v=i/9;
+      row.push(bilinear(u,v,NWs,NEs,SWs,SEs));
+    }
+    pts.push(row);
+  }
+
+  rctx.strokeStyle = 'rgba(46,28,16,0.55)';
+  rctx.lineWidth = 1;
+  for(let i=0;i<=9;i++){
+    rctx.beginPath();
+    for(let j=0;j<=9;j++){
+      const p = pts[i][j];
+      if(j===0) rctx.moveTo(p.x,p.y); else rctx.lineTo(p.x,p.y);
+    }
+    rctx.stroke();
+  }
+  for(let j=0;j<=9;j++){
+    rctx.beginPath();
+    for(let i=0;i<=9;i++){
+      const p = pts[i][j];
+      if(i===0) rctx.moveTo(p.x,p.y); else rctx.lineTo(p.x,p.y);
+    }
+    rctx.stroke();
+  }
+
+  for(let r=0;r<9;r++){
+    for(let c=0;c<9;c++){
+      const p1=pts[r][c], p2=pts[r][c+1], p3=pts[r+1][c+1], p4=pts[r+1][c];
+      const cx=(p1.x+p2.x+p3.x+p4.x)/4, cy=(p1.y+p2.y+p3.y+p4.y)/4;
+      const tier = GRID_TIER[r][c];
+      let fill = 'rgba(166,41,27,0.10)';
+      if(tier==='inner') fill='rgba(184,134,11,0.14)';
+      if(tier==='brahma') fill='rgba(75,96,67,0.16)';
+      if(tier==='unspecified') fill='rgba(120,120,120,0.20)';
+      rctx.beginPath();
+      rctx.moveTo(p1.x,p1.y); rctx.lineTo(p2.x,p2.y); rctx.lineTo(p3.x,p3.y); rctx.lineTo(p4.x,p4.y);
+      rctx.closePath();
+      rctx.fillStyle = fill;
+      rctx.fill();
+
+      const name = GRID_NAMES[r][c];
+      if(name){
+        const cellW = Math.hypot(p2.x-p1.x,p2.y-p1.y);
+        const fontSize = Math.max(7, Math.min(11, cellW*0.32));
+        rctx.font = `${fontSize}px 'Noto Sans Devanagari', sans-serif`;
+        rctx.fillStyle = '#2E1C10';
+        rctx.textAlign='center';
+        rctx.textBaseline='middle';
+        rctx.fillText(name, cx, cy);
+      } else if(tier==='unspecified'){
+        rctx.font = '11px sans-serif';
+        rctx.fillStyle = 'rgba(80,80,80,0.7)';
+        rctx.textAlign='center';
+        rctx.textBaseline='middle';
+        rctx.fillText('?', cx, cy);
+      }
+    }
+  }
+
+  rctx.fillStyle='#A6291B';
+  rctx.font='bold 13px sans-serif';
+  rctx.textAlign='center';
+  const topMid = bilinear(0.5,0,NWs,NEs,SWs,SEs);
+  rctx.fillText('N ↑', topMid.x, Math.max(14, topMid.y-10));
+
+  rctx.beginPath();
+  corners.forEach((p,i)=>{
+    const x=p.x*scale, y=p.y*scale;
+    if(i===0) rctx.moveTo(x,y); else rctx.lineTo(x,y);
+  });
+  rctx.closePath();
+  rctx.strokeStyle = '#1B5E20';
+  rctx.lineWidth = 2.5;
+  rctx.stroke();
+}
+
+document.getElementById('resetBtn').addEventListener('click', ()=>location.reload());
+</script>
+</body>
+</html>
