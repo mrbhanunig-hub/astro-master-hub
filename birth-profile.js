@@ -1,4 +1,4 @@
-// birth-profile.js — Comprehensive Location, Gender & Multi-Profile Transfer Engine
+// birth-profile.js — Comprehensive Location, Detailed Districts, Gender & Multi-Profile Transfer Engine
 // The Cosmic Counsellor — Astrologer Vivek Nigam
 (function (window) {
   var STORAGE_KEY = "cc_birth_profiles_list";
@@ -725,7 +725,7 @@
     }
   };
 
-  // --- Storage Helper Functions ---
+  // --- Storage Functions ---
   function getProfiles() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
@@ -1016,10 +1016,43 @@
       genderEl.dispatchEvent(new Event("change", { bubbles: true }));
     }
 
+    // Cascading Location Dropdowns Auto-selection
+    var countryEl = document.getElementById("countrySelect") || document.getElementById("pobCountry");
+    var stateEl = document.getElementById("stateSelect") || document.getElementById("pobState") || document.getElementById("birth-state");
+    var cityEl = document.getElementById("citySelect") || document.getElementById("pobCity") || document.getElementById("birth-city");
+    var customCityEl = document.getElementById("customCityInput") || document.getElementById("cc-in-custom-city");
+
+    if (countryEl && p.country) {
+      countryEl.value = p.country;
+      countryEl.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    if (stateEl && p.state) {
+      stateEl.value = p.state;
+      stateEl.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    if (cityEl && p.city) {
+      var cityExists = false;
+      for (var i = 0; i < cityEl.options.length; i++) {
+        if (cityEl.options[i].value === p.city || cityEl.options[i].text === p.city) {
+          cityEl.selectedIndex = i;
+          cityExists = true;
+          break;
+        }
+      }
+
+      if (!cityExists) {
+        cityEl.value = "__other__";
+        if (customCityEl) {
+          customCityEl.style.display = "block";
+          customCityEl.value = p.city;
+        }
+      }
+      cityEl.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
     // Coordinates and Locations
-    setVal("countrySelect", p.country || "India");
-    setVal("stateSelect", p.state);
-    setVal("citySelect", p.city);
     setVal("latInput", p.lat);
     setVal("lonInput", p.lon);
     setVal("tzInput", p.tz || 5.5);
@@ -1070,7 +1103,7 @@
 
     var profiles = getProfiles();
     var selectHtml = '<div style="margin-bottom:14px;background:rgba(242,200,121,0.1);padding:10px 12px;border-radius:8px;border:1px dashed #f2c879;">' +
-      '<label style="margin:0 0 6px 0;font-size:12px;color:#f2c879;display:block;font-weight:600;">👤 Saved Birth Profile चुनें:</label>' +
+      '<label style="margin:0 0 6px 0;font-size:12px;color:#f2c879;display:block;font-weight:600;">👤 Saved Birth Profile chunein:</label>' +
       '<select id="cc-app-profile-picker" style="width:100%;padding:8px 10px;border-radius:6px;background:rgba(15,23,42,0.9);color:#f2ead9;border:1px solid #f2c879;font-family:inherit;font-size:13.5px;">' +
       '<option value="">-- Choose from saved profiles --</option>';
 
