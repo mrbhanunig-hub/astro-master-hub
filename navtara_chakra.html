@@ -136,7 +136,8 @@
     <p>अपने जन्म नक्षत्र से किसी भी दिन का तारा जानें — शुभ या अशुभ</p>
   </header>
 
-  <div class="panel">
+  <!-- Attached id="inputPanelWrapper" for Profile Selector -->
+  <div class="panel" id="inputPanelWrapper">
     <h2>जन्म नक्षत्र व तारीख</h2>
     <div class="field">
       <label for="janmaNak">आपका जन्म नक्षत्र चुनें</label>
@@ -150,9 +151,9 @@
       </div>
       <div class="row">
         <div><label for="bLat">Latitude</label><input type="number" id="bLat" step="0.0001" value="26.4667"></div>
-        <div><label for="bLon">Longitude</label><input type="number" id="bLon" step="0.0001" value="80.6833"></div>
+        <div><label for="bLon">Longitude</label><input type="number" step="0.0001" value="80.6833"></div>
       </div>
-      <div style="font-size:12.5px;color:var(--text-muted);">डिफ़ॉल्ट स्थान: कानपुर — ज़रूरत हो तो बदल दें। तारीख भरते ही जन्म नक्षत्र ऊपर अपने आप चुन जाएगा।</div>
+      <div style="font-size:12.5px;color:var(--text-muted);">तारीख व समय भरते ही जन्म नक्षत्र ऊपर अपने आप चुन जाएगा।</div>
     </div>
 
     <div class="divider"></div>
@@ -244,7 +245,6 @@ const JATAK_DETAIL = [
 ];
 
 const TARA_NAMES = ["जन्म","सम्पत","विपत","क्षेम","प्रत्यरि","साधक","वध","मित्र","परम मित्र"];
-// 'neutral' | 'good' | 'bad'
 const TARA_STATUS = ["neutral","good","bad","good","bad","good","bad","good","good"];
 const TARA_MEANING = [
   "स्वयं की स्थिति — यह तारा शुभ या अशुभ नहीं, सामान्य माना जाता है।",
@@ -271,7 +271,6 @@ function fillTaraRef(){
   ).join('');
 }
 
-// ---------- Simplified lunar longitude (Meeus low-precision periodic series) ----------
 function normDeg(d){ d = d % 360; if(d<0) d+=360; return d; }
 
 function moonEclipticLongitude(date){
@@ -348,7 +347,6 @@ function isoToLocalNoonDate(iso){
 function getJanmaIdxOrAlert(){
   let jSel = document.getElementById('janmaNak').value;
   if(jSel===''){
-    // fall back: try deriving it from DOB right now, in case the earlier auto-fill didn't fire
     autoCalcJanmaNak();
     jSel = document.getElementById('janmaNak').value;
   }
@@ -382,7 +380,6 @@ document.getElementById('toggleBirthCalc').addEventListener('click', ()=>{
   document.getElementById('birthCalcBlock').classList.toggle('open');
 });
 
-// dd/mm/yyyy auto-slash formatting
 function formatDDMMYYYY(el){
   let digits = el.value.replace(/\D/g,'').slice(0,8);
   let out = digits;
@@ -401,7 +398,7 @@ function parseDDMMYYYY(str){
 function autoCalcJanmaNak(){
   const bd = document.getElementById('bDate').value;
   const parsed = parseDDMMYYYY(bd);
-  if(!parsed) return; // wait till a full valid date is typed
+  if(!parsed) return;
   const bt = document.getElementById('bTime').value || '12:00';
   const [hh,mm] = bt.split(':').map(Number);
   const localDate = new Date(Date.UTC(parsed.yyyy, parsed.mm-1, parsed.dd, hh, mm, 0));
@@ -417,9 +414,6 @@ bDateEl.addEventListener('keyup', autoCalcJanmaNak);
 document.getElementById('bTime').addEventListener('change', autoCalcJanmaNak);
 document.getElementById('bLat').addEventListener('change', autoCalcJanmaNak);
 document.getElementById('bLon').addEventListener('change', autoCalcJanmaNak);
-
-// pre-filled default DOB should also auto-fill Janma Nakshatra right away
-autoCalcJanmaNak();
 
 document.getElementById('useToday').addEventListener('click', ()=>{
   const t = new Date();
@@ -507,13 +501,10 @@ document.getElementById('btnCal').addEventListener('click', function(){
   toggleSection(document.getElementById('secCal'), this, refreshCal);
 });
 
-// Tara reference
 document.getElementById('btnTaraRef').addEventListener('click', function(){
   toggleSection(document.getElementById('secTaraRef'), this, null);
 });
 
-// Keep already-open sections (and the main result, if shown) live-synced
-// whenever the Janma Nakshatra or target date changes.
 document.getElementById('janmaNak').addEventListener('change', ()=>{
   if(document.getElementById('resultPanel').style.display==='block') computeResult();
   if(document.getElementById('secNavtaraTable').classList.contains('open')) refreshNavtaraTable();
@@ -526,20 +517,51 @@ document.getElementById('targetDate').addEventListener('change', ()=>{
 </script>
 
 <script src="birth-profile.js"></script>
+<script src="hub-nav.js"></script>
 <script>
   window.addEventListener("DOMContentLoaded", function () {
     if (window.BirthProfile) {
-      BirthProfile.init({
-        dob: { mode: 'text_ddmmyyyy', id: 'bDate' },
-        tob: { mode: 'time24', id: 'bTime' },
-        place: { mode: 'direct_latlon', lat: 'bLat', lon: 'bLon' },
-        afterApply: function () {
-          if (typeof autoCalcJanmaNak === 'function') autoCalcJanmaNak();
+      BirthProfile.init();
+
+      // Attach Saved Profile Selector at the top of input panel
+      if (BirthProfile.attachProfileSelector) {
+        BirthProfile.attachProfileSelector("inputPanelWrapper");
+      }
+
+      // Check if profile was loaded, sync nakshatra and calculate result
+      function syncFromProfile() {
+        var p = BirthProfile.get();
+        if (p) {
+          if (p.day && p.month && p.year) {
+            document.getElementById('bDate').value = 
+              String(p.day).padStart(2, '0') + '/' + String(p.month).padStart(2, '0') + '/' + p.year;
+          }
+          if (p.hour !== undefined && p.minute !== undefined) {
+            var h24 = p.hour;
+            if (p.ampm === 'PM' && h24 < 12) h24 += 12;
+            if (p.ampm === 'AM' && h24 === 12) h24 = 0;
+            document.getElementById('bTime').value = 
+              String(h24).padStart(2, '0') + ':' + String(p.minute).padStart(2, '0');
+          }
+          if (p.lat) document.getElementById('bLat').value = p.lat;
+          if (p.lon) document.getElementById('bLon').value = p.lon;
+          
+          autoCalcJanmaNak();
+          computeResult();
         }
-      });
+      }
+
+      syncFromProfile();
+
+      // Listen to profile changes from picker
+      var picker = document.getElementById("cc-app-profile-picker");
+      if (picker) {
+        picker.addEventListener("change", function () {
+          setTimeout(syncFromProfile, 50);
+        });
+      }
     }
   });
 </script>
-<script src="hub-nav.js"></script>
 </body>
 </html>
