@@ -124,7 +124,8 @@
   <h1>Fortuna Point</h1>
   <div class="subtitle">KP astrology — Asc + Moon − Sun, from birth details</div>
 
-  <div class="card">
+  <!-- Profile selector will attach here inside inputCardWrapper -->
+  <div class="card" id="inputCardWrapper">
     <label>Date of birth</label>
     <input id="dateInput" placeholder="DD/MM/YYYY" />
 
@@ -485,7 +486,7 @@ function renderMuhurat() {
     ? formatDateTime(moonWin.enterJd, s.tzN) + " \u2192 " + formatDateTime(moonWin.exitJd, s.tzN) + "  (" + moonWin.nakshatra + ")"
     : "\u2014";
   document.getElementById("mAsc").textContent = (ascWin.enterJd && ascWin.exitJd)
-    ? formatDate(ascWin.enterJd, s.tzN) + " \u00B7 " + formatTime(ascWin.enterJd, s.tzN) + " \u2192 " + formatTime(ascWin.exitJd, s.tzN) + "  (" + ascWin.nakshatra + ")"
+    ? formatDate(ascWin.enterJd, s.tzN) + " \u00B7 " + formatTime(ascWin.enterJd, s.tzN) + "  (" + ascWin.nakshatra + ")"
     : "\u2014";
 
   document.getElementById("mSunNext").disabled = !sunWin.exitJd;
@@ -628,6 +629,10 @@ setNow();
         BirthProfile.bindLocations(countrySelect, stateSelect, citySelect, latInput, lonInput, tzInput, customCityInput);
       }
       BirthProfile.init();
+      // Attach Profile Picker at the top of the input card
+      if (BirthProfile.attachProfileSelector) {
+        BirthProfile.attachProfileSelector("inputCardWrapper");
+      }
     }
   });
 </script>
