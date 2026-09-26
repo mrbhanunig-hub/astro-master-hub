@@ -106,6 +106,9 @@
       <span><span class="swatch" style="background:#B8860B;"></span>Inner Devata (arms + corner padas)</span>
     </div>
     <div class="note">Hara outline aapke <b>asli plot</b> ki boundary hai. 81-pada grid us plot ko North-South ke hisaab se sabse chhote <b>complete rectangle</b> mein fit karke banaya gaya hai — jo pada is hare outline se bahar hain, wo "extension" hain; jo area grid ke bahar hai lekin plot ke andar tha, wo "cut" hai. Agar aapka plot pehle se hi rectangle hai, to hara outline grid ke corners se hi match karega.</div>
+    <div class="btn-row">
+      <a id="downloadBtn" class="nav primary" style="text-decoration:none;text-align:center;display:inline-block;" download="vastu_81_pada_shakti_chakra.png">Map Download Karein</a>
+    </div>
   </div>
 
   <button class="reset" id="resetBtn">Naye sirey se shuru karein</button>
@@ -519,6 +522,9 @@ function buildGrid(){
   rctx.strokeStyle = '#1B5E20';
   rctx.lineWidth = 2.5;
   rctx.stroke();
+
+  const downloadBtn = document.getElementById('downloadBtn');
+  downloadBtn.href = resultCanvas.toDataURL('image/png');
 }
 
 document.getElementById('resetBtn').addEventListener('click', ()=>location.reload());
