@@ -683,5 +683,14 @@ resetAll();
   });
 </script>
 <script src="hub-nav.js"></script>
+<!-- Birth Profile Script aur Auto-fill -->
+<script src="birth-profile.js"></script>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    if (window.BirthProfile) {
+      BirthProfile.init();
+    }
+  });
+</script>
 </body>
 </html>
