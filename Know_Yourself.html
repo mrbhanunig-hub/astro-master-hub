@@ -135,7 +135,8 @@
     <div class="divider"></div>
   </header>
 
-  <div class="card">
+  <!-- Attached id="birthDetailsCard" for Saved Profile Selector -->
+  <div class="card" id="birthDetailsCard">
     <h2 class="section-title" id="txtBirthDetails"></h2>
 
     <div class="field">
@@ -518,7 +519,7 @@ const OTHER_COUNTRIES = {
  "ऑस्ट्रेलिया - पश्चिमी":{en:"Australia - Western", cities:[["पर्थ","Perth",-31.9523,115.8613,8]]},
  "न्यूज़ीलैंड":{en:"New Zealand", cities:[["ऑकलैंड","Auckland",-36.8485,174.7633,12]]},
  "सिंगापुर":{en:"Singapore", cities:[["सिंगापुर","Singapore",1.3521,103.8198,8]]},
- "मलेशिया":{en:"Malaysia", cities:[["कुआलालंपुर","Kuala Lumpur",3.1390,101.6869,8]]},
+ "मलेशिया":{en:"Malaysia", cities:[["कुआलालंपपुर","Kuala Lumpur",3.1390,101.6869,8]]},
  "थाईलैंड":{en:"Thailand", cities:[["बैंकॉक","Bangkok",13.7563,100.5018,7]]},
  "इंडोनेशिया":{en:"Indonesia", cities:[["जकार्ता","Jakarta",-6.2088,106.8456,7]]},
  "जापान":{en:"Japan", cities:[["टोक्यो","Tokyo",35.6762,139.6503,9]]},
@@ -561,8 +562,7 @@ function initPlace(){
     .concat([{value:"__manual__",label:currentLang==='hi' ? "अन्य / मैन्युअल (Manual)" : "Other / Manual"}]);
   fillSelect($('pobCountry'), countries);
   updateStateOptions();
-  $('pobCountry').addEventListener('change', ()=>{updateStateOptions(); updateCityOptions();});
-  $('pobState').addEventListener('change', updateCityOptions);
+  $('pobCountry').addEventListener('change', ()=>{updateStateOptions(); updateCityOptions();});$('pobState').addEventListener('change', updateCityOptions);
 }
 
 function updateStateOptions(){
@@ -637,8 +637,6 @@ function digitalRoot(n){
   return n;
 }
 
-/* Corrected: use geocentric equatorial Moon vector -> true ecliptic-of-date longitude.
-   (Astronomy.EclipticLongitude is HELIOCENTRIC and must not be used for the Moon.) */
 function getSiderealMoonLongitude(utcDate){
   const time = Astronomy.MakeTime(utcDate);
   const geoVec = Astronomy.GeoVector(Astronomy.Body.Moon, time, true);
@@ -712,34 +710,26 @@ function renderResult(){
   if(!lastResult) return;
   const {rashiIdx, nakIdx, pada, moolank, bhagyank} = lastResult;
   const S = STRINGS[currentLang];
-  const name = $('nameInput').value.trim();
-  $('resultHeading').textContent = name ? S.resultHeadingName(name) : S.resultHeading;
+  const name = $('nameInput').value.trim();$('resultHeading').textContent = name ? S.resultHeadingName(name) : S.resultHeading;
 
   const r = RASHI[rashiIdx];
   const n = NAKSHATRA[nakIdx];
   const m = ANK[moolank];
   const b = ANK[bhagyank];
 
-  $('sumRashi').textContent = r.name[currentLang];
-  $('sumRashiSub').textContent = S.lordPrefix + r.lord[currentLang];
-  $('sumNak').textContent = n.name[currentLang];
-  $('sumNakSub').textContent = S.padaPrefix + pada;
+  $('sumRashi').textContent = r.name[currentLang];$('sumRashiSub').textContent = S.lordPrefix + r.lord[currentLang];
+  $('sumNak').textContent = n.name[currentLang];$('sumNakSub').textContent = S.padaPrefix + pada;
   $('sumMool').textContent = moolank;
-  $('sumMoolSub').textContent = m.planet[currentLang];
-  $('sumBhagya').textContent = bhagyank;
+  $('sumMoolSub').textContent = m.planet[currentLang];$('sumBhagya').textContent = bhagyank;
   $('sumBhagyaSub').textContent = b.planet[currentLang];
 
-  $('rashiMeta').textContent = S.metaRashi(r.lord[currentLang], r.element[currentLang], r.symbol[currentLang]);
-  $('rashiDesc').textContent = r.desc[currentLang];
+  $('rashiMeta').textContent = S.metaRashi(r.lord[currentLang], r.element[currentLang], r.symbol[currentLang]);$('rashiDesc').textContent = r.desc[currentLang];
 
-  $('nakMeta').textContent = S.metaNak(n.lord[currentLang], n.deity[currentLang], n.symbol[currentLang], pada);
-  $('nakDesc').textContent = n.desc[currentLang];
+  $('nakMeta').textContent = S.metaNak(n.lord[currentLang], n.deity[currentLang], n.symbol[currentLang], pada);$('nakDesc').textContent = n.desc[currentLang];
 
-  $('moolMeta').textContent = S.metaMool(moolank, m.planet[currentLang]);
-  $('moolDesc').textContent = m.desc[currentLang];
+  $('moolMeta').textContent = S.metaMool(moolank, m.planet[currentLang]);$('moolDesc').textContent = m.desc[currentLang];
 
-  $('bhagyaMeta').textContent = S.metaBhagya(bhagyank, b.planet[currentLang]);
-  $('bhagyaDesc').textContent = b.desc[currentLang];
+  $('bhagyaMeta').textContent = S.metaBhagya(bhagyank, b.planet[currentLang]);$('bhagyaDesc').textContent = b.desc[currentLang];
 
   $('result').style.display = 'block';
 }
@@ -771,8 +761,7 @@ function applyStaticText(){
   $('lblBoxMool').textContent = S.boxMool;
   $('lblBoxBhagya').textContent = S.boxBhagya;
   $('txtFooter').textContent = S.footer;
-  $('btnHi').classList.toggle('active', currentLang==='hi');
-  $('btnEn').classList.toggle('active', currentLang==='en');
+  $('btnHi').classList.toggle('active', currentLang==='hi');$('btnEn').classList.toggle('active', currentLang==='en');
 }
 
 function setLang(lang){
@@ -787,16 +776,14 @@ function resetForm(){
   $('nameInput').value = '';
   initDateTime(false);
   initPlace();
-  $('manLat').value=''; $('manLon').value=''; $('manUtc').value='';
+  $('manLat').value=''; $('manLon').value='';$('manUtc').value='';
   showError('');
   lastResult = null;
   $('result').style.display = 'none';
 }
 
-$('calcBtn').addEventListener('click', calculate);
-$('resetBtn').addEventListener('click', resetForm);
-$('btnHi').addEventListener('click', ()=>setLang('hi'));
-$('btnEn').addEventListener('click', ()=>setLang('en'));
+$('calcBtn').addEventListener('click', calculate);$('resetBtn').addEventListener('click', resetForm);
+$('btnHi').addEventListener('click', ()=>setLang('hi'));$('btnEn').addEventListener('click', ()=>setLang('en'));
 
 applyStaticText();
 initDateTime(false);
@@ -804,23 +791,60 @@ initPlace();
 </script>
 
 <script src="birth-profile.js"></script>
+<script src="hub-nav.js"></script>
 <script>
   window.addEventListener("DOMContentLoaded", function () {
     if (window.BirthProfile) {
-      BirthProfile.init({
-        name: 'nameInput',
-        dob: { day: 'dobDay', month: 'dobMonth', year: 'dobYear' },
-        tob: { hour: 'tobHour', minute: 'tobMin', ampm: 'tobAmpm' },
-        place: {
-          mode: 'country_manual',
-          countrySelect: 'pobCountry',
-          manualValue: '__manual__',
-          lat: 'manLat', lon: 'manLon', tz: 'manUtc'
+      // 1. Initialize Profile Engine
+      BirthProfile.init();
+
+      // 2. Attach Profile Picker Dropdown at top of the form card
+      if (BirthProfile.attachProfileSelector) {
+        BirthProfile.attachProfileSelector("birthDetailsCard");
+      }
+
+      // 3. Sync from Active Profile on load and calculate
+      function syncFromProfile() {
+        var p = BirthProfile.get();
+        if (p) {
+          if (p.name) $('nameInput').value = p.name;
+          if (p.day) $('dobDay').value = p.day;
+          if (p.month) $('dobMonth').value = p.month;
+          if (p.year) $('dobYear').value = p.year;
+
+          if (p.hour !== undefined) {
+            var h12 = p.hour % 12 || 12;
+            $('tobHour').value = h12;
+          }
+          if (p.minute !== undefined) {
+            $('tobMin').value = p.minute;
+          }
+          if (p.ampm) {
+            $('tobAmpm').value = p.ampm;
+          }
+
+          // Trigger manual coords to ensure exact match with profile
+          $('pobCountry').value = "__manual__";
+          updateStateOptions();
+          if (p.lat) $('manLat').value = p.lat;
+          if (p.lon) $('manLon').value = p.lon;
+          if (p.tz) $('manUtc').value = p.tz || 5.5;
+
+          calculate();
         }
-      });
+      }
+
+      syncFromProfile();
+
+      // Listen to profile picker changes
+      var picker = document.getElementById("cc-app-profile-picker");
+      if (picker) {
+        picker.addEventListener("change", function () {
+          setTimeout(syncFromProfile, 50);
+        });
+      }
     }
   });
 </script>
-<script src="hub-nav.js"></script>
 </body>
 </html>
