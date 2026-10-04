@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>वास्तु उपाय</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#2b1c12;
+    --ink-soft:#5a4433;
+    --paper:#f6ede0;
+    --paper-2:#efe1cc;
+    --line: #c9ad82;
+    --saffron:#b5651d;
+    --saffron-deep:#8a3d1e;
+    --gold:#9c7a2e;
+    --ok-bg:#eee3c8;
+    --accent-a:#6b3f2a;
+    --accent-b:#3f5d4a;
+    --maroon:#6e1f1f;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#f1e6d3;
+      --ink-soft:#cdb99a;
+      --paper:#20140d;
+      --paper-2:#2b1c12;
+      --line:#5a4126;
+      --saffron:#e08a3e;
+      --saffron-deep:#e6a15c;
+      --gold:#d4b25c;
+      --ok-bg:#3a2a17;
+      --accent-a:#e0b48a;
+      --accent-b:#8fbf9f;
+      --maroon:#c96b6b;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#f1e6d3;
+    --ink-soft:#cdb99a;
+    --paper:#20140d;
+    --paper-2:#2b1c12;
+    --line:#5a4126;
+    --saffron:#e08a3e;
+    --saffron-deep:#e6a15c;
+    --gold:#d4b25c;
+    --ok-bg:#3a2a17;
+    --accent-a:#e0b48a;
+    --accent-b:#8fbf9f;
+    --maroon:#c96b6b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Noto Sans Devanagari','Noto Sans',sans-serif;
+    line-height:1.5;
+    min-height:100vh;
+  }
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:40px 20px 80px;
+  }
+  header{
+    text-align:center;
+    margin-bottom:34px;
+    position:relative;
+  }
+  .lang-toggle{
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .lang-btn{
+    padding:6px 16px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:14px;
+    color:var(--ink-soft);
+    font-family:inherit;
+    font-size:.82rem;
+    cursor:pointer;
+  }
+  .lang-btn.active{
+    background:var(--saffron);
+    border-color:var(--saffron);
+    color:#fff8ef;
+    font-weight:600;
+  }
+  .yantra{
+    width:56px;height:56px;margin:0 auto 10px;
+    border:2px solid var(--saffron);
+    transform:rotate(45deg);
+    position:relative;
+  }
+  .yantra::after{
+    content:"";
+    position:absolute;inset:8px;
+    border:2px solid var(--gold);
+  }
+  h1{
+    font-family:'Rozha One', serif;
+    font-size:2.5rem;
+    margin:0 0 6px;
+    color:var(--saffron-deep);
+    letter-spacing:.5px;
+  }
+  header p{
+    color:var(--ink-soft);
+    font-size:1rem;
+    max-width:560px;
+    margin:0 auto;
+  }
+  .panel{
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:26px 24px;
+    margin-bottom:30px;
+  }
+  .panel h2{
+    font-size:1.05rem;
+    margin:0 0 18px;
+    color:var(--saffron-deep);
+    font-weight:600;
+    border-bottom:1px solid var(--line);
+    padding-bottom:10px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+  }
+  @media (max-width:640px){ .grid{grid-template-columns:1fr;} }
+  label{
+    display:block;
+    font-size:.88rem;
+    color:var(--ink-soft);
+    margin-bottom:6px;
+  }
+  select{
+    width:100%;
+    padding:11px 12px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:3px;
+    color:var(--ink);
+    font-family:inherit;
+    font-size:1rem;
+    appearance:none;
+  }
+  .toggle-row{
+    display:flex;
+    gap:10px;
+  }
+  .toggle-btn{
+    flex:1;
+    padding:11px 12px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:3px;
+    color:var(--ink-soft);
+    font-family:inherit;
+    font-size:1rem;
+    cursor:pointer;
+    transition:background .15s, color .15s, border-color .15s;
+  }
+  .toggle-btn.active{
+    background:var(--saffron);
+    border-color:var(--saffron);
+    color:#fff8ef;
+    font-weight:600;
+  }
+  .full{grid-column:1 / -1;}
+  .go-btn{
+    margin-top:22px;
+    width:100%;
+    padding:13px;
+    background:var(--maroon);
+    color:#fdf3e4;
+    border:none;
+    border-radius:3px;
+    font-family:inherit;
+    font-size:1.05rem;
+    font-weight:600;
+    cursor:pointer;
+    letter-spacing:.3px;
+  }
+  .go-btn:hover{ filter:brightness(1.08); }
+  #result{ min-height:20px; }
+  .rule-banner{
+    font-size:.9rem;
+    color:var(--ink-soft);
+    background:var(--ok-bg);
+    border-left:3px solid var(--gold);
+    padding:10px 14px;
+    margin-bottom:20px;
+    border-radius:2px;
+  }
+  .rule-banner b{ color:var(--saffron-deep); }
+  .group-title{
+    font-size:.92rem;
+    text-transform:none;
+    color:var(--accent-b);
+    font-weight:600;
+    margin:22px 0 10px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .group-title::before{
+    content:"";
+    width:6px;height:6px;
+    background:var(--accent-b);
+    border-radius:50%;
+    display:inline-block;
+  }
+  .devata-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    gap:12px;
+  }
+  .card{
+    border:1px solid var(--line);
+    background:var(--paper-2);
+    border-radius:3px;
+    padding:14px 16px;
+  }
+  .card .name{
+    font-weight:700;
+    font-size:1.05rem;
+    color:var(--saffron-deep);
+    margin-bottom:4px;
+  }
+  .card .dir{
+    display:inline-block;
+    font-size:.75rem;
+    color:var(--ink-soft);
+    border:1px solid var(--line);
+    padding:1px 8px;
+    border-radius:10px;
+    margin-bottom:8px;
+  }
+  .card .kary{
+    font-size:.92rem;
+    color:var(--ink);
+  }
+  .card .kary.tbd{
+    color:var(--ink-soft);
+    font-style:italic;
+  }
+  .empty{
+    text-align:center;
+    color:var(--ink-soft);
+    padding:30px 10px;
+    font-size:.95rem;
+  }
+  .samasya-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:10px;
+    margin-bottom:24px;
+  }
+  .samasya-btn{
+    text-align:left;
+    padding:13px 16px;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:3px;
+    color:var(--ink);
+    font-family:inherit;
+    font-size:.95rem;
+    cursor:pointer;
+    transition:background .15s, border-color .15s;
+  }
+  .samasya-btn:hover{ border-color:var(--saffron); }
+  .samasya-btn.active{
+    background:var(--saffron);
+    border-color:var(--saffron);
+    color:#fff8ef;
+    font-weight:600;
+  }
+  .remedy-card{
+    border:1px solid var(--gold);
+    background:var(--ok-bg);
+    border-radius:4px;
+    padding:22px 24px;
+    margin-top:6px;
+  }
+  .remedy-name{
+    font-family:'Rozha One', serif;
+    font-size:1.6rem;
+    color:var(--saffron-deep);
+    margin-bottom:14px;
+  }
+  .remedy-row{
+    display:flex;
+    gap:14px;
+    padding:9px 0;
+    border-top:1px solid var(--line);
+    font-size:.95rem;
+  }
+  .remedy-row:first-of-type{ border-top:none; }
+  .remedy-label{
+    min-width:130px;
+    color:var(--ink-soft);
+    flex-shrink:0;
+  }
+  .upay-block{
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+  }
+  .upay-title{
+    font-size:.88rem;
+    font-weight:600;
+    color:var(--saffron-deep);
+    margin-bottom:8px;
+  }
+  .upay-text{
+    margin:0;
+    font-size:.92rem;
+    color:var(--ink);
+    line-height:1.7;
+  }
+  .upay-text.upay-note{
+    margin-top:10px;
+    font-size:.85rem;
+    color:var(--ink-soft);
+    font-style:italic;
+  }
+  footer{
+    text-align:center;
+    color:var(--ink-soft);
+    font-size:.78rem;
+    margin-top:40px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="lang-toggle">
+      <button type="button" class="lang-btn active" data-lang="hi" id="langHi">हिंदी</button>
+      <button type="button" class="lang-btn" data-lang="en" id="langEn">English</button>
+    </div>
+    <div class="yantra"></div>
+    <h1 id="appTitle">वास्तु उपाय</h1>
+    <p id="appSubtitle">दशा स्वामी, उदित/त्रिक (UT/T) एवं नक्षत्र स्वामी के आधार पर अपनी समस्या चुनें और संबंधित देवता को प्रसन्न करने का उपाय जानें</p>
+  </header>
+
+  <div class="panel">
+    <h2 id="inputHeading">इनपुट दें</h2>
+    <div class="grid">
+      <div>
+        <label id="dashaLordLabel" for="dashaLord">दशा स्वामी (Dasha Lord)</label>
+        <select id="dashaLord"></select>
+      </div>
+      <div>
+        <label id="nlLabel" for="nl">नक्षत्र स्वामी (NL)</label>
+        <select id="nl"></select>
+      </div>
+      <div class="full">
+        <label id="statusLabel">दशा स्वामी की स्थिति</label>
+        <div class="toggle-row">
+          <button type="button" class="toggle-btn active" data-val="UT" id="btnUT">उदित (UT)</button>
+          <button type="button" class="toggle-btn" data-val="T" id="btnT">त्रिक (T)</button>
+        </div>
+      </div>
+    </div>
+    <button class="go-btn" id="goBtn">परिणाम देखें</button>
+  </div>
+
+  <div id="result"></div>
+
+  <footer id="appFooter">Vastu Purusha Mandala · 45 पद देवता प्रणाली — विश्वकर्मा प्रकाश एवं वृहत्संहिता आधारित</footer>
+</div>
+
+<script>
+// ---- Master data ----
+// planets in cycle order for the dropdowns
+const PLANETS = ["सूर्य","चन्द्र","मंगल","बुध","गुरु","शुक्र","शनि","राहु","केतु"];
+
+// 45 devata master list: id, name, direction, kary (Problem/Area) — null if not yet provided, planet — null if not yet confirmed
+const DEVATA = [
+  {id:1,  name:"सूर्य",        name_en:"Surya",         dir:"पूर्व (E)",  kary:"सामाजिक संबंध (Social Association)", planet:"सूर्य", bhog:"गुड़ मिश्रित लाल खीर / माणिक्य अन्न", bhog_en:"Jaggery-mixed red kheer / ruby-red grain offering", mantra:"ॐ सूर्याय नमः", ayudh:"सूर्य चक्र या 7 किरणों वाला रथ का पहिया", ayudh_en:"Sun wheel or 7-spoke chariot wheel"},
+  {id:2,  name:"महेन्द्र",     name_en:"Mahendra",      dir:"पूर्व (E)",  kary:"सामाजिक संबंध (Social Association)", planet:"शुक्र", bhog:"पायसम (दूध-चावल की खीर)", bhog_en:"Payasam (milk-rice kheer)", mantra:"ॐ इन्द्राय नमः", ayudh:"वज्र (Vajra)", ayudh_en:"Vajra (thunderbolt)"},
+  {id:3,  name:"सोम",          name_en:"Som",           dir:"उत्तर (N)",  kary:"धन अवसर (Money Opportunity)", planet:"सूर्य", bhog:"सफेद पेड़ा, खीर व मखाने", bhog_en:"White peda, kheer and makhana", mantra:"ॐ सोमाय नमः / ॐ कुबेराय नमः", ayudh:"नेवला (Nakula), गदा या धन-कलश", ayudh_en:"Mongoose (Nakula), mace or wealth-pot"},
+  {id:4,  name:"भल्लाट",       name_en:"Bhallat",       dir:"उत्तर (N)",  kary:"धन अवसर (Money Opportunity)", planet:"शनि", bhog:"मालपुआ अथवा मीठी पूड़ी", bhog_en:"Malpua or sweet poori", mantra:"ॐ भल्लाटाय नमः", ayudh:"रत्न-पात्र (रत्नों की थैली) या तिजोरी का ताला", ayudh_en:"Gem vessel (jewel pouch) or safe lock"},
+  {id:5,  name:"वरुण",         name_en:"Varun",         dir:"पश्चिम (W)", kary:"लाभ प्राप्ति (Gains Propriety)", planet:"केतु", bhog:"गंगाजल, मिश्री व शुद्ध घी का हलवा", bhog_en:"Ganga water, mishri and pure ghee halwa", mantra:"ॐ वरुणाय नमः", ayudh:"पाश (वरुण पाश / रस्सी का फंदा) या जल पात्र", ayudh_en:"Pasha (Varuna's noose) or water vessel"},
+  {id:6,  name:"पुष्पदन्त",    name_en:"Pushpadant",    dir:"पश्चिम (W)", kary:"लाभ प्राप्ति (Gains Propriety)", planet:"शुक्र", bhog:"श्वेत मिष्ठान्न, मखाने की खीर", bhog_en:"White sweets, makhana kheer", mantra:"ॐ पुष्पदन्ताय नमः", ayudh:"श्वेत दन्त (हाथी दांत) या श्वेत कमल", ayudh_en:"White tusk (ivory) or white lotus"},
+  {id:7,  name:"यम",           name_en:"Yam",           dir:"दक्षिण (S)", kary:"विश्राम/यश (Relaxation-Fame)", planet:"राहु", bhog:"काले तिल, गुड़ व उड़द दाल की खिचड़ी", bhog_en:"Black sesame, jaggery and urad dal khichdi", mantra:"ॐ यमाय नमः", ayudh:"यमदण्ड या भैंसे का सींग/प्रतीक", ayudh_en:"Yamdand (rod) or buffalo-horn symbol"},
+  {id:8,  name:"गृहक्षत",      name_en:"Grihakshat",    dir:"दक्षिण (S)", kary:"विश्राम/यश (Relaxation-Fame)", planet:"बुध", bhog:"अंकुरित मूंग व मीठे चावल", bhog_en:"Sprouted moong and sweet rice", mantra:"ॐ गृहक्षताय नमः", ayudh:"धनुष-बाण या मकान/भवन का प्रतीक", ayudh_en:"Bow-arrow or house/building symbol"},
+  {id:9,  name:"जयन्त",        name_en:"Jayant",        dir:"ENE",        kary:"मनोरंजन/आनंद (Recreation-Fun)", planet:"गुरु", bhog:"ध्वजा, श्वेत पुष्प व मीठा दलिया/दही", bhog_en:"Flag, white flowers and sweet porridge/curd", mantra:"ॐ जयन्ताय नमः", ayudh:"ध्वजा (पताका) या विजय बाण", ayudh_en:"Flag (banner) or victory arrow"},
+  {id:10, name:"पर्जन्य",      name_en:"Parjanya",      dir:"ENE",        kary:"मनोरंजन/आनंद (Recreation-Fun)", planet:"राहु", bhog:"मीठा जल, ताजा फल व दूध", bhog_en:"Sweet water, fresh fruit and milk", mantra:"ॐ पर्जन्याय नमः", ayudh:"जल की बूंदें, बादलों का प्रतीक या शंख", ayudh_en:"Water drops, cloud symbol or conch"},
+  {id:11, name:"मुख्य",        name_en:"Mukhya",        dir:"NNW",        kary:"आकर्षण (Sex-Attraction)", planet:"मंगल", bhog:"सभी अन्नों का मिश्रण (सप्तधान्य)", bhog_en:"Mix of all grains (saptadhanya)", mantra:"ॐ मुख्याय नमः", ayudh:"गदा या चाबी का गुच्छा", ayudh_en:"Mace or bunch of keys"},
+  {id:12, name:"नाग (अहि)",    name_en:"Nag (Ahi)",     dir:"NNW",        kary:"आकर्षण (Sex-Attraction)", planet:"राहु", bhog:"कच्चा दूध व लावा", bhog_en:"Raw milk and puffed rice", mantra:"ॐ सर्पेभ्यो नमः / ॐ अहये नमः", ayudh:"सर्प (नाग प्रतिमा) या फन का चिह्न", ayudh_en:"Serpent (Naga idol) or hood symbol"},
+  {id:13, name:"सुग्रीव",      name_en:"Sugriv",        dir:"WSW",        kary:"शिक्षा/बचत (Education-Saving)", planet:"बुध", bhog:"चना, गुड़ व मौसमी फल", bhog_en:"Chana, jaggery and seasonal fruit", mantra:"ॐ सुग्रीवाय नमः", ayudh:"हल (Plough) या अनाज की बाली", ayudh_en:"Plough or grain ear"},
+  {id:14, name:"द्वारिका",     name_en:"Dwarika",       dir:"WSW",        kary:"शिक्षा/बचत (Education-Saving)", planet:"राहु", bhog:"नारियल, रोली-अक्षत व गुड़", bhog_en:"Coconut, roli-akshat and jaggery", mantra:"ॐ दौवारिकाय नमः", ayudh:"गदा, द्वार-कुंजी (चाबी) या डंडा", ayudh_en:"Mace, door-key or staff"},
+  {id:15, name:"वितथ",         name_en:"Vitath",        dir:"SSE",        kary:"सत्ता/आत्मविश्वास (Power-Confidence)", planet:"सूर्य", bhog:"तिल व उड़द के सात्विक लड्डू", bhog_en:"Sesame-urad sattvic laddus", mantra:"ॐ वितथाय नमः", ayudh:"गदा या चाबुक (दण्ड)", ayudh_en:"Mace or whip (rod)"},
+  {id:16, name:"पूषा",         name_en:"Pusha",         dir:"SSE",        kary:"सत्ता/आत्मविश्वास (Power-Confidence)", planet:"शनि", bhog:"पिसी हुई दालें / बेसन का हलवा", bhog_en:"Ground lentils / gram-flour halwa", mantra:"ॐ पूष्णे नमः", ayudh:"हल (Plough) या बैलगाड़ी का पहिया", ayudh_en:"Plough or bullock-cart wheel"},
+  {id:17, name:"शिखी",         name_en:"Shikhi",        dir:"NE",         kary:"स्पष्टता/ध्यान (Clarity-Meditation)", planet:"चन्द्र", bhog:"घृत (शुद्ध घी) व लाजा (खील)", bhog_en:"Ghee and puffed rice (laja)", mantra:"ॐ शिखिने नमः", ayudh:"त्रिशूल, अग्नि शिखा या जल-कलश", ayudh_en:"Trident, flame or water-pot"},
+  {id:18, name:"दिति",         name_en:"Diti",          dir:"NE",         kary:"स्पष्टता/ध्यान (Clarity-Meditation)", planet:"केतु", bhog:"दुग्ध-मिष्ठान्न व श्वेत पुष्प", bhog_en:"Milk sweets and white flowers", mantra:"ॐ दितये नमः", ayudh:"अंकुश या दर्पण (शीशा)", ayudh_en:"Goad (ankush) or mirror"},
+  {id:19, name:"रोग",          name_en:"Rog",           dir:"NW",         kary:"सहयोग/बैंकिंग (Support-Banking)", planet:"शनि", bhog:"गंध, धूप, औषधि युक्त कल्प", bhog_en:"Fragrance, incense, medicinal preparation", mantra:"ॐ रोगाय नमः", ayudh:"औषधि की पोटली या धन्वंतरि कलश", ayudh_en:"Medicine pouch or Dhanvantari pot"},
+  {id:20, name:"पापयक्ष्मा",   name_en:"Papyakshma",    dir:"NW",         kary:"सहयोग/बैंकिंग (Support-Banking)", planet:"मंगल", bhog:"सरसों, तिल व औषधि युक्त जल", bhog_en:"Mustard, sesame and medicated water", mantra:"ॐ पापयक्ष्मणे नमः", ayudh:"ओखली-मूसल या वैद्य की कटोरी", ayudh_en:"Pestle-mortar or physician's bowl"},
+  {id:21, name:"पितृ",         name_en:"Pitru",         dir:"SW",         kary:"संबंध कौशल (Relationship-Skills)", planet:null, bhog:"जौ, तिल, जल व मधुमिश्रित खीर", bhog_en:"Barley, sesame, water and honeyed kheer", mantra:"ॐ पितृभ्यो नमः", ayudh:"कुल्हाड़ी (परशु) या पूर्वजों की चरण पादुका", ayudh_en:"Axe (parashu) or ancestors' footprint"},
+  {id:22, name:"मृगराज",       name_en:"Mrigraj",       dir:"SW",         kary:"संबंध कौशल (Relationship-Skills)", planet:"बुध", bhog:"हरी घास/दूर्वा, फल व कंदमूल", bhog_en:"Green grass/durva, fruit and roots", mantra:"ॐ मृगाय नमः", ayudh:"हिरण (Deer) या सींग का प्रतीक", ayudh_en:"Deer or antler symbol"},
+  {id:23, name:"अग्नि",        name_en:"Agni",          dir:"SE",         kary:"नकद तरलता (Cash-Liquidity)", planet:null, bhog:"घृत-आहुति, तिल व शहद", bhog_en:"Ghee oblation, sesame and honey", mantra:"ॐ अग्नये नमः", ayudh:"स्वास्तिक, दीपक की ज्योति या ज्वाला (Fire Flame)", ayudh_en:"Swastika, lamp flame or fire"},
+  {id:24, name:"आकाश",         name_en:"Aakash",        dir:"SE",         kary:"नकद तरलता (Cash-Liquidity)", planet:"चन्द्र", bhog:"बताशे व श्वेत पुष्प", bhog_en:"Batashe (sugar drops) and white flowers", mantra:"ॐ अन्तरिक्षाय नमः", ayudh:"विहंग (उड़ता पक्षी) या शून्य/गोल चक्र", ayudh_en:"Flying bird or void/round disc"},
+  {id:25, name:"अदिति",        name_en:"Aditi",         dir:"NNE",        kary:"स्वास्थ्य/रोग प्रतिरोधक क्षमता (Health-Immunity)", planet:"सूर्य", bhog:"पंचामृत, ताजे फल व गौ-घृत", bhog_en:"Panchamrit, fresh fruit and cow ghee", mantra:"ॐ अदितये नमः", ayudh:"अभय मुद्रा का हस्त चिह्न या कामधेनु", ayudh_en:"Abhaya mudra hand sign or Kamadhenu"},
+  {id:26, name:"भुजंग",        name_en:"Bhujang",       dir:"NNE",        kary:"स्वास्थ्य/रोग प्रतिरोधक क्षमता (Health-Immunity)", planet:"चन्द्र", bhog:"दूध, बताशा व पुष्प", bhog_en:"Milk, batashe and flowers", mantra:"ॐ भुजङ्गाय नमः", ayudh:"शेषनाग कुंडली या औषधि लता", ayudh_en:"Sheshnag coil or medicinal vine"},
+  {id:27, name:"शोष",          name_en:"Shosh",         dir:"WNW",        kary:"अवसाद/डिटॉक्स (Depression-Low Needs)", planet:"बुध", bhog:"सूखा अन्न, सूखे मेवे व तिल", bhog_en:"Dry grains, dry fruits and sesame", mantra:"ॐ शोषाय नमः", ayudh:"सूखा पत्ता, खाली कलश या रुद्राक्ष", ayudh_en:"Dry leaf, empty pot or rudraksha"},
+  {id:28, name:"असुर",         name_en:"Asur",          dir:"WNW",        kary:"अवसाद/डिटॉक्स (Depression-Low Needs)", planet:"चन्द्र", bhog:"जौ का आटा व गुड़", bhog_en:"Barley flour and jaggery", mantra:"ॐ असुराय नमः", ayudh:"ढाल (Shield) या मुसली", ayudh_en:"Shield or pestle"},
+  {id:29, name:"भृंगराज",      name_en:"Bhringraj",     dir:"SSW",        kary:"विस्तार/अपव्यय (Expand-Wastage)", planet:"केतु", bhog:"भृंगराज पत्र, तिल व गुड़", bhog_en:"Bhringraj leaf, sesame and jaggery", mantra:"ॐ भृङ्गराजाय नमः", ayudh:"कटार या खड्ग (तलवार)", ayudh_en:"Dagger or sword"},
+  {id:30, name:"गन्धर्व",      name_en:"Gandharv",      dir:"SSW",        kary:"विस्तार/अपव्यय (Expand-Wastage)", planet:"शनि", bhog:"सुगन्धित द्रव्य, चन्दन, केसर खीर", bhog_en:"Fragrant substances, sandal, saffron kheer", mantra:"ॐ गन्धर्वाय नमः", ayudh:"वीणा या संगीत वाद्ययंत्र", ayudh_en:"Veena or musical instrument"},
+  {id:31, name:"भृशा",         name_en:"Bhrisha",       dir:"ESE",        kary:"चिंता/मंथन (Anxiety-Churning)", planet:"बुध", bhog:"सत्तू व शीतल जल", bhog_en:"Sattu and cool water", mantra:"ॐ भृशाय नमः", ayudh:"मथानी (Churner) या कल्पवृक्ष की टहनी", ayudh_en:"Churner or wish-tree twig"},
+  {id:32, name:"सत्य",         name_en:"Satya",         dir:"ESE",        kary:"चिंता/मंथन (Anxiety-Churning)", planet:"सूर्य", bhog:"पंचामृत व शुद्ध मक्खन", bhog_en:"Panchamrit and pure butter", mantra:"ॐ सत्याय नमः", ayudh:"तराजू (तुला) या धर्म चक्र", ayudh_en:"Scale (tula) or dharma wheel"},
+  {id:33, name:"आपः / आप",     name_en:"Aap",           dir:"NE",         kary:null, planet:"मंगल", bhog:"शीतल सुगंधित जल व मिश्री", bhog_en:"Cool fragrant water and mishri", mantra:"ॐ अद्भयो नमः", ayudh:"जल-कलश (अमृत कुंभ)", ayudh_en:"Water pot (nectar urn)"},
+  {id:34, name:"आपवत्स",       name_en:"Aapvatsa",      dir:"NE",         kary:null, planet:"केतु", bhog:"गाय का ताजा दूध व मक्खन", bhog_en:"Fresh cow milk and butter", mantra:"ॐ आपवत्साय नमः", ayudh:"बछड़ा (Cow Calf)", ayudh_en:"Cow calf"},
+  {id:35, name:"सवित्र",       name_en:"Savitra",       dir:"SE",         kary:null, planet:"बुध", bhog:"शुद्ध घी का दीपक व पीली खीर", bhog_en:"Pure ghee lamp and yellow kheer", mantra:"ॐ सावित्राय नमः", ayudh:"गायत्री चक्र या सूर्य-कमल", ayudh_en:"Gayatri wheel or sun-lotus"},
+  {id:36, name:"सविता",        name_en:"Savita",        dir:"SE",         kary:null, planet:"शुक्र", bhog:"लाल पुष्प, रोली, गुड़", bhog_en:"Red flowers, roli, jaggery", mantra:"ॐ सवित्रे नमः", ayudh:"गायत्री चक्र या सूर्य-कमल", ayudh_en:"Gayatri wheel or sun-lotus"},
+  {id:37, name:"इन्द्र / विष्णु", name_en:"Indra / Vishnu", dir:"SW",      kary:null, planet:"सूर्य", bhog:"ऋतु फल व नैवेद्य", bhog_en:"Seasonal fruit and offerings", mantra:"ॐ शक्राय नमः", ayudh:null, ayudh_en:null},
+  {id:38, name:"इन्द्रजय",     name_en:"Indrajay",      dir:"SW",         kary:null, planet:null, bhog:"मोदक व पीले फल", bhog_en:"Modak and yellow fruit", mantra:"ॐ जयाय नमः", ayudh:null, ayudh_en:null},
+  {id:39, name:"रुद्र",        name_en:"Rudra",         dir:"NW",         kary:null, planet:"चन्द्र", bhog:"बेलपत्र, भांग-धतूरा (औषधि रूप) व पंचामृत", bhog_en:"Bel leaves, bhang-dhatura (medicinal) and panchamrit", mantra:"ॐ रुद्राय नमः", ayudh:null, ayudh_en:null},
+  {id:40, name:"रुद्रजय",      name_en:"Rudrajay",      dir:"NW",         kary:null, planet:null, bhog:"दुग्ध-मिश्रित चावल", bhog_en:"Milk-mixed rice", mantra:"ॐ रुद्रजयाय नमः", ayudh:null, ayudh_en:null},
+  {id:41, name:"अर्यमा / मरीचि", name_en:"Aryama / Marichi", dir:"पूर्व (E)", kary:null, planet:"मंगल", bhog:"दूध की खीर व जौ", bhog_en:"Milk kheer and barley", mantra:"ॐ अर्यमणे नमः", ayudh:"सूर्य-पाद या विवाह ग्रंथि (गठबंधन का प्रतीक)", ayudh_en:"Sun-foot symbol or marriage knot (bond symbol)"},
+  {id:42, name:"विवस्वान",     name_en:"Vivasvan",      dir:"दक्षिण (S)", kary:null, planet:"बुध", bhog:"हलवा व लाल चन्दन", bhog_en:"Halwa and red sandalwood", mantra:"ॐ विवस्वते नमः", ayudh:"त्रिशूल या सूर्य मंडल", ayudh_en:"Trident or sun disc"},
+  {id:43, name:"मित्र",        name_en:"Mitra",         dir:"पश्चिम (W)", kary:null, planet:"शनि", bhog:"दूध, दही व मिश्री", bhog_en:"Milk, curd and mishri", mantra:"ॐ मित्राय नमः", ayudh:"मित्रता का हाथ (हस्त मिलाप) या चक्र", ayudh_en:"Handshake (friendship hand) or wheel"},
+  {id:44, name:"पृथ्वीधर",     name_en:"Prithvidhar",   dir:"उत्तर (N)",  kary:null, planet:null, bhog:"कंदमूल व ऋतु फल", bhog_en:"Root vegetables and seasonal fruit", mantra:"ॐ भूधराय नमः", ayudh:"पर्वत शिखर या कच्छप (कछुआ)", ayudh_en:"Mountain peak or tortoise"},
+  {id:45, name:"ब्रह्मा",      name_en:"Brahma",        dir:"मध्य (केंद्र)", kary:null, planet:"गुरु", bhog:"पंचमेवा, कमल गट्टा, घृत व श्वेत-पीली खीर", bhog_en:"Panchmeva, lotus seeds, ghee and white-yellow kheer", mantra:"ॐ ब्रह्मणे नमः", ayudh:"कमल का फूल, कमंडल या वेद पुस्तक", ayudh_en:"Lotus flower, kamandal or Veda book"},
+];
+
+let statusVal = "UT";
+let currentLang = "hi";
+let lastInputs = null;
+let selectedId = null;
+
+const TXT = {
+  hi: {
+    title: "वास्तु उपाय",
+    subtitle: "दशा स्वामी, उदित/त्रिक (UT/T) एवं नक्षत्र स्वामी के आधार पर अपनी समस्या चुनें और संबंधित देवता को प्रसन्न करने का उपाय जानें",
+    inputHeading: "इनपुट दें",
+    dashaLordLabel: "दशा स्वामी (Dasha Lord)",
+    nlLabel: "नक्षत्र स्वामी (NL)",
+    statusLabel: "दशा स्वामी की स्थिति",
+    utBtn: "उदित (UT)",
+    tBtn: "त्रिक (T)",
+    goBtn: "परिणाम देखें",
+    chooseSamasya: "कृपया अपनी समस्या चुनें",
+    dirLabel: "दिशा",
+    bhogLabel: "सात्विक भोग",
+    mantraLabel: "मंत्र / उपाय",
+    ayudhLabel: "आयुध / प्रतीक चिह्न",
+    upayTitle: "उपाय विधि",
+    emptyMsg: "इस चयन से जुड़े देवता अभी सूची में उपलब्ध नहीं हैं",
+    pendingText: "जल्द जोड़ा जाएगा",
+    otherLabel: "अन्य",
+    footer: "Vastu Purusha Mandala · 45 पद देवता प्रणाली — विश्वकर्मा प्रकाश एवं वृहत्संहिता आधारित",
+    bannerUT:(dl,nl)=>`<b>दशा स्वामी उदित (UT)</b> है — इसलिए दशा स्वामी (${dl}) एवं नक्षत्र स्वामी (${nl}) दोनों से जुड़ी समस्याएं नीचे दिखाई गई हैं।`,
+    bannerT:(nl)=>`<b>दशा स्वामी त्रिक (T)</b> है — इसलिए केवल नक्षत्र स्वामी (${nl}) से जुड़ी समस्याएं नीचे दिखाई गई हैं, दशा स्वामी को नहीं लिया जाएगा।`,
+    upayText:(name,dir)=>`${name} देवता के स्थान (${dir}) पर दोष आने के कारण आपके जीवन में यह समस्या हो सकती है। अतः उस स्थान को साफ-सुथरा करके वहाँ धूप, दीप, पुष्प एवं इनका भोग रखकर शुद्ध मन व भाव से प्रार्थना करें — "मेरे द्वारा अनजाने में भूलवश जो भी गलती हो गई है उसे क्षमा करें, और मेरे जीवन में आ रही इन समस्याओं को समाप्त कर मुझे अपना आशीर्वाद प्रदान करें।" यदि संभव हो तो उनसे संबंधित चित्र भी वहाँ कुछ दिनों के लिए स्थापित करें। ऐसा निरंतर कुछ दिन करने से आपको निश्चित ही लाभ प्राप्त होगा।`
+  },
+  en: {
+    title: "Vastu Remedies",
+    subtitle: "Based on your Dasha Lord, its Udit/Trik (UT/T) status, and Nakshatra Lord — pick your problem and find the remedy to please the related devata",
+    inputHeading: "Enter Details",
+    dashaLordLabel: "Dasha Lord",
+    nlLabel: "Nakshatra Lord (NL)",
+    statusLabel: "Dasha Lord's Status",
+    utBtn: "Udit (UT)",
+    tBtn: "Trik (T)",
+    goBtn: "Show Result",
+    chooseSamasya: "Please select your problem",
+    dirLabel: "Direction",
+    bhogLabel: "Sattvic Offering",
+    mantraLabel: "Mantra / Remedy",
+    ayudhLabel: "Symbol / Emblem",
+    upayTitle: "Remedy Method",
+    emptyMsg: "No devata linked to this selection are available in the list yet",
+    pendingText: "Will be added soon",
+    otherLabel: "Other",
+    footer: "Vastu Purusha Mandala · 45-Pada Devata System — based on Vishwakarma Prakash and Brihat Samhita",
+    bannerUT:(dl,nl)=>`Dasha Lord is <b>Udit (UT)</b> — so problems linked to both the Dasha Lord (${dl}) and the Nakshatra Lord (${nl}) are shown below.`,
+    bannerT:(nl)=>`Dasha Lord is <b>Trik (T)</b> — so only problems linked to the Nakshatra Lord (${nl}) are shown below; the Dasha Lord is not taken.`,
+    upayText:(name,dir)=>`A dosh at the place (${dir}) of devata ${name} may be causing this problem in your life. Clean that place, offer incense, a lamp, flowers and this devata's bhog there, and pray with a pure heart and mind — "Please forgive whatever mistake I may have made unknowingly, end these problems in my life, and bless me." If possible, also place an image related to this devata there for a few days. Doing this continuously for a few days will surely bring benefit.`
+  }
+};
+
+function dirText(dir, lang){
+  if(lang === "hi") return dir;
+  const map = {
+    "पूर्व (E)":"East", "उत्तर (N)":"North", "पश्चिम (W)":"West",
+    "दक्षिण (S)":"South", "मध्य (केंद्र)":"Center"
+  };
+  return map[dir] || dir;
+}
+
+function karyText(kary, lang){
+  if(!kary) return null;
+  const m = kary.match(/^(.*?)\s*\((.*)\)\s*$/);
+  if(!m) return kary;
+  return lang === "hi" ? m[1].trim() : m[2].trim();
+}
+
+function nameText(d, lang){ return lang === "hi" ? d.name : d.name_en; }
+function bhogText(d, lang){ return lang === "hi" ? d.bhog : d.bhog_en; }
+function ayudhText(d, lang){ return lang === "hi" ? d.ayudh : d.ayudh_en; }
+
+function applyStaticText(){
+  const t = TXT[currentLang];
+  document.title = t.title;
+  document.getElementById("appTitle").textContent = t.title;
+  document.getElementById("appSubtitle").textContent = t.subtitle;
+  document.getElementById("inputHeading").textContent = t.inputHeading;
+  document.getElementById("dashaLordLabel").textContent = t.dashaLordLabel;
+  document.getElementById("nlLabel").textContent = t.nlLabel;
+  document.getElementById("statusLabel").textContent = t.statusLabel;
+  document.getElementById("btnUT").textContent = t.utBtn;
+  document.getElementById("btnT").textContent = t.tBtn;
+  document.getElementById("goBtn").textContent = t.goBtn;
+  document.getElementById("appFooter").textContent = t.footer;
+}
+
+function populateSelects(){
+  ["dashaLord","nl"].forEach(id=>{
+    const sel = document.getElementById(id);
+    sel.innerHTML = PLANETS.map(p=>`<option value="${p}">${p}</option>`).join("");
+  });
+}
+populateSelects();
+applyStaticText();
+
+document.getElementById("langHi").addEventListener("click", ()=>setLang("hi"));
+document.getElementById("langEn").addEventListener("click", ()=>setLang("en"));
+function setLang(lang){
+  currentLang = lang;
+  document.getElementById("langHi").classList.toggle("active", lang==="hi");
+  document.getElementById("langEn").classList.toggle("active", lang==="en");
+  applyStaticText();
+  renderResult();
+}
+
+document.getElementById("btnUT").addEventListener("click", ()=>setStatus("UT"));
+document.getElementById("btnT").addEventListener("click", ()=>setStatus("T"));
+function setStatus(v){
+  statusVal = v;
+  document.getElementById("btnUT").classList.toggle("active", v==="UT");
+  document.getElementById("btnT").classList.toggle("active", v==="T");
+}
+
+function devataFor(planet){
+  return DEVATA.filter(d=>d.planet===planet);
+}
+
+// currently active devata pool for the samasya list shown
+let activePool = [];
+
+function samasyaBtnHtml(d){
+  const t = TXT[currentLang];
+  const label = karyText(d.kary, currentLang) || t.otherLabel;
+  const activeCls = String(d.id) === String(selectedId) ? " active" : "";
+  return `<button type="button" class="samasya-btn${activeCls}" data-id="${d.id}">${label}</button>`;
+}
+
+function remedyCardHtml(d){
+  const t = TXT[currentLang];
+  const bhog = bhogText(d, currentLang) || t.pendingText;
+  const mantra = d.mantra ? d.mantra : t.pendingText;
+  const ayudh = ayudhText(d, currentLang) || t.pendingText;
+  const upayText = t.upayText(nameText(d, currentLang), dirText(d.dir, currentLang));
+  return `<div class="remedy-card">
+    <div class="remedy-name">${nameText(d, currentLang)}</div>
+    <div class="remedy-row"><span class="remedy-label">${t.dirLabel}</span><span>${dirText(d.dir, currentLang)}</span></div>
+    <div class="remedy-row"><span class="remedy-label">${t.bhogLabel}</span><span>${bhog}</span></div>
+    <div class="remedy-row"><span class="remedy-label">${t.mantraLabel}</span><span>${mantra}</span></div>
+    <div class="remedy-row"><span class="remedy-label">${t.ayudhLabel}</span><span>${ayudh}</span></div>
+    <div class="upay-block">
+      <div class="upay-title">${t.upayTitle}</div>
+      <p class="upay-text">${upayText}</p>
+    </div>
+  </div>`;
+}
+
+document.getElementById("goBtn").addEventListener("click", ()=>{
+  const dashaLord = document.getElementById("dashaLord").value;
+  const nl = document.getElementById("nl").value;
+  lastInputs = {dashaLord, nl, statusVal};
+  selectedId = null;
+  renderResult();
+});
+
+function renderResult(){
+  const result = document.getElementById("result");
+  if(!lastInputs){ result.innerHTML = ""; return; }
+  const t = TXT[currentLang];
+  const {dashaLord, nl, statusVal} = lastInputs;
+
+  let bannerText = "";
+  let pool = [];
+
+  if(statusVal === "UT"){
+    bannerText = t.bannerUT(dashaLord, nl);
+    pool = [...devataFor(dashaLord), ...devataFor(nl)];
+  } else {
+    bannerText = t.bannerT(nl);
+    pool = [...devataFor(nl)];
+  }
+
+  activePool = pool;
+
+  if(!pool.length){
+    result.innerHTML = `<div class="rule-banner">${bannerText}</div><div class="empty">${t.emptyMsg}</div>`;
+    return;
+  }
+
+  const samasyaListHtml = pool.map(samasyaBtnHtml).join("");
+  const selected = activePool.find(x=>String(x.id)===String(selectedId));
+  result.innerHTML = `
+    <div class="rule-banner">${bannerText}</div>
+    <div class="group-title">${t.chooseSamasya}</div>
+    <div class="samasya-grid">${samasyaListHtml}</div>
+    <div id="remedyBox">${selected ? remedyCardHtml(selected) : ""}</div>
+  `;
+
+  document.querySelectorAll(".samasya-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      selectedId = btn.dataset.id;
+      renderResult();
+    });
+  });
+}
+</script>
+</body>
+</html>

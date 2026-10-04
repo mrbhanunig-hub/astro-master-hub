@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>चोरी / खोई वस्तु विचार</title>
+<style>
+:root{--bg:#faf6ee;--card:#fff;--tx:#2a2118;--mut:#7a6a58;--ac:#b4501a;--bd:#e4d8c4;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1611;--card:#262019;--tx:#f0e8da;--mut:#b3a48f;--ac:#f0894d;--bd:#3d3428}}
+:root[data-theme="dark"]{--bg:#1a1611;--card:#262019;--tx:#f0e8da;--mut:#b3a48f;--ac:#f0894d;--bd:#3d3428}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Noto Sans Devanagari",sans-serif;line-height:1.5}
+main{max-width:560px;margin:0 auto;padding:16px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+h1{font-size:1.25rem;margin:4px 0 14px;color:var(--ac)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
+label{display:block;font-size:.85rem;color:var(--mut);margin:10px 0 4px}
+input[type=date],input[type=time],input[type=text],select{width:100%;box-sizing:border-box;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:1rem}
+input:disabled{opacity:.45}
+.chk{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:1rem;color:var(--tx)}
+button{padding:12px;border:0;border-radius:8px;background:var(--ac);color:#fff;font-size:1rem;font-weight:600;cursor:pointer}
+.btns{display:flex;gap:10px;margin-top:14px}.btns button{flex:1}#rs{background:var(--bg);color:var(--tx);border:1px solid var(--bd)}
+.seg{display:flex;border:1px solid var(--bd);border-radius:8px;overflow:hidden}
+.seg button{flex:1;margin:0;border-radius:0;background:var(--bg);color:var(--tx);font-weight:500;padding:9px}
+.seg button.on{background:var(--ac);color:#fff}
+.lang{width:auto}.lang button{padding:6px 10px;font-size:.85rem}
+.row{display:flex;gap:10px}.row>div{flex:1}
+.big{font-size:1.25rem;font-weight:700}
+.k,.note{color:var(--mut);font-size:.85rem}
+.res{border-top:1px solid var(--bd);padding:10px 0}.res b{display:block}
+</style>
+</head>
+<body>
+<main>
+<div class="top"><h1 id="ttl"></h1>
+<div class="seg lang"><button id="lh" class="on">हिं</button><button id="le">EN</button></div></div>
+<div class="card">
+<label id="lk"></label>
+<div class="seg"><button id="kv" class="on"></button><button id="kp"></button></div>
+<div class="row">
+<div><label for="d" id="ld"></label><input type="date" id="d"></div>
+<div><label for="t" id="lt"></label><input type="time" id="t"></div>
+</div>
+<label for="p" id="lp"></label><input type="text" id="p">
+<label class="chk"><input type="checkbox" id="unk"><span id="lu"></span></label>
+<label for="tz" id="ltz"></label>
+<select id="tz">
+<option value="dev" id="odev"></option>
+<option value="5.5" selected>IST (UTC+5:30) India</option>
+<option value="0">UTC / GMT</option><option value="1">CET (UTC+1)</option>
+<option value="3">UTC+3</option><option value="4">UTC+4 Dubai</option>
+<option value="5">UTC+5 Pakistan</option><option value="5.75">UTC+5:45 Nepal</option>
+<option value="6">UTC+6 Bangladesh</option><option value="8">UTC+8 Singapore/China</option>
+<option value="9">UTC+9 Japan</option><option value="10">UTC+10 Sydney</option>
+<option value="-5">UTC-5 New York</option><option value="-8">UTC-8 Los Angeles</option>
+</select>
+<div class="btns"><button id="go"></button><button id="rs"></button></div>
+</div>
+<div class="card" id="out" hidden></div>
+<p class="note" id="nt"></p>
+</main>
+<script>
+const NH=["अश्विनी","भरणी","कृत्तिका","रोहिणी","मृगशिर","आर्द्रा","पुनर्वसु","पुष्य","आश्लेषा","मघा","पूर्वाफाल्गुनी","उत्तराफाल्गुनी","हस्त","चित्रा","स्वाति","विशाखा","अनुराधा","ज्येष्ठा","मूल","पूर्वाषाढ़ा","उत्तराषाढ़ा","श्रवण","धनिष्ठा","शतभिषा","पूर्वाभाद्रपद","उत्तराभाद्रपद","रेवती"];
+const NE=["Ashwini","Bharani","Krittika","Rohini","Mrigashira","Ardra","Punarvasu","Pushya","Ashlesha","Magha","Purva Phalguni","Uttara Phalguni","Hasta","Chitra","Swati","Vishakha","Anuradha","Jyeshtha","Mula","Purva Ashadha","Uttara Ashadha","Shravana","Dhanishtha","Shatabhisha","Purva Bhadrapada","Uttara Bhadrapada","Revati"];
+const T={
+hi:{ttl:"नक्षत्रानुसार चोरी / खोई वस्तु-व्यक्ति विचार",lk:"किसका विचार करना है",kv:"वस्तु",kp:"व्यक्ति",ld:"चोरी/गुम होने की तारीख",lt:"समय",lp:"स्थान",ph:"जैसे: कानपुर",lu:"पता नहीं (प्रश्न-काल का वर्तमान समय लें)",ltz:"समय-क्षेत्र",odev:"इस डिवाइस का समय-क्षेत्र",go:"परिणाम देखें",rs:"रीसेट",nt:"गणना: चंद्र का निरयण (लाहिड़ी अयनांश) नक्षत्र। निर्णय ग्रन्थ-आधारित नियमों पर आधारित है।",al:"तारीख और समय भरें, या 'पता नहीं' चुनें।",pr:"प्रश्न-काल",ev:"चोरी/गुम होने का समय",pd:"चरण",moon:"चंद्र",sn:"संज्ञा",dr:"दिशा",st:"स्थिति"},
+en:{ttl:"Theft / Lost Item or Person by Nakshatra",lk:"What to examine",kv:"Item",kp:"Person",ld:"Date of theft / loss",lt:"Time",lp:"Place",ph:"e.g. Kanpur",lu:"Don't know (use current time as Prashna time)",ltz:"Time zone",odev:"This device's time zone",go:"See Result",rs:"Reset",nt:"Calculation: sidereal Moon Nakshatra (Lahiri ayanamsha). Judgement follows the traditional text-based rules.",al:"Enter date and time, or tick 'Don't know'.",pr:"Prashna time",ev:"Time of theft / loss",pd:"Pada",moon:"Moon",sn:"Class",dr:"Direction",st:"Where it is"}};
+const GN={andha:["अन्धलोचन","Andhalochana (blind-eyed)"],manda:["मन्दलोचन","Mandalochana (dim-eyed)"],madhya:["काणलोचन / मध्यलोचन","Kanalochana / Madhyalochana (one-eyed)"],sulochan:["सुलोचन","Sulochana (good-eyed)"]};
+const G={andha:[3,7,11,15,19,22,26],manda:[4,8,12,16,20,23,0],madhya:[5,9,13,17,24,1],sulochan:[6,10,14,18,21,25,2]};
+const DIR={andha:["पूर्व दिशा","East"],manda:["पश्चिम दिशा","West"],madhya:["दक्षिण दिशा","South"],sulochan:["उत्तर दिशा","North"]};
+// R[group][lang][kind]  kind 0=vastu,1=vyakti
+const R={
+andha:{hi:["वस्तु पूर्व दिशा में है और शीघ्र मिल जाती है।","व्यक्ति पूर्व दिशा में है और शीघ्र मिल जाता है।"],en:["The item lies in the east and is found soon.","The person is in the east and is found soon."]},
+manda:{hi:["वस्तु पश्चिम दिशा में है और अधिक प्रयत्न करने पर मिलती है।","व्यक्ति पश्चिम दिशा में है और अधिक प्रयत्न करने पर मिलता है।"],en:["The item lies in the west and is found only with much effort.","The person is in the west and is found only with much effort."]},
+madhya:{hi:["वस्तु दक्षिण दिशा में है; प्राप्ति नहीं होती, किन्तु बहुत दिनों बाद उसके सम्बन्ध में समाचार सुनने को मिलते हैं।","व्यक्ति दक्षिण दिशा में है; मिलता नहीं, किन्तु बहुत दिनों बाद उसके सम्बन्ध में समाचार सुनने को मिलते हैं।"],en:["The item lies in the south and is not recovered, but news of it comes after many days.","The person is in the south and is not found, but news of them comes after many days."]},
+sulochan:{hi:["वस्तु उत्तर दिशा में रहती है और कभी प्राप्त नहीं होती तथा न उसके समाचार ही मिलते हैं।","व्यक्ति उत्तर दिशा में रहता है और कभी प्राप्त नहीं होता तथा न उसके समाचार ही मिलते हैं।"],en:["The item lies in the north and is never recovered, nor is any news of it received.","The person stays in the north and is never found, nor is any news of them received."]}};
+const W={
+near:{hi:["मघा से उत्तराफाल्गुनी: खोई हुई वस्तु पास ही में मिल जाती है, विशेष झंझट नहीं करना पड़ता।","मघा से उत्तराफाल्गुनी: खोया हुआ व्यक्ति पास ही में मिल जाता है, विशेष झंझट नहीं करना पड़ता।"],en:["Magha to Uttara Phalguni: the lost item is found nearby, without much trouble.","Magha to Uttara Phalguni: the missing person is found nearby, without much trouble."]},
+hand:{hi:["हस्त से धनिष्ठा: खोई हुई वस्तु अन्य व्यक्ति के हाथ में दिखलाई पड़ती है।","हस्त से धनिष्ठा: खोया हुआ व्यक्ति अन्य व्यक्ति के पास दिखलाई पड़ता है।"],en:["Hasta to Dhanishtha: the lost item is seen in another person's hands.","Hasta to Dhanishtha: the missing person is seen with another person."]},
+home:{hi:["शतभिषा से भरणी: खोई हुई वस्तु अपने घर में ही दिखलाई पड़ती है।","शतभिषा से भरणी: खोया हुआ व्यक्ति अपने घर में ही दिखलाई पड़ता है।"],en:["Shatabhisha to Bharani: the lost item is seen within one's own home.","Shatabhisha to Bharani: the missing person is seen within one's own home."]},
+far:{hi:["कृत्तिका से आश्लेषा: खोई हुई वस्तु देखने में नहीं आती, कहीं दूर चली जाती है।","कृत्तिका से आश्लेषा: खोया हुआ व्यक्ति देखने में नहीं आता, कहीं दूर चला जाता है।"],en:["Krittika to Ashlesha: the lost item is not seen; it goes far away.","Krittika to Ashlesha: the missing person is not seen; they go far away."]}};
+function grp(i,abh){if(abh)return"madhya";for(const k in G)if(G[k].includes(i))return k;}
+function where(i,abh){if(i>=9&&i<=11)return"near";if((i>=12&&i<=22)||abh)return"hand";if(i>=23||i<=1)return"home";return"far";}
+const rad=x=>x*Math.PI/180,s=x=>Math.sin(rad(x));
+function moonSid(jd){const t=(jd-2451545)/36525;
+const L=218.3164477+481267.88123421*t,D=297.8501921+445267.1114034*t,M=357.5291092+35999.0502909*t,P=134.9633964+477198.8675055*t,F=93.272095+483202.0175233*t;
+const lon=L+6.288774*s(P)+1.274027*s(2*D-P)+0.658314*s(2*D)+0.213618*s(2*P)-0.185116*s(M)-0.114332*s(2*F)+0.058793*s(2*D-2*P)+0.057066*s(2*D-M-P)+0.053322*s(2*D+P)+0.045758*s(2*D-M);
+return((lon-(23.85306+0.013969*(jd-2451545)/365.25))%360+360)%360;}
+const $=id=>document.getElementById(id);
+let lang="hi",kind=0,last=null;
+function ui(){const t=T[lang];document.documentElement.lang=lang;
+["ttl","lk","kv","kp","ld","lt","lp","lu","ltz","odev","go","rs","nt"].forEach(k=>$(k).textContent=t[k]);
+$("p").placeholder=t.ph;document.title=t.ttl;
+$("lh").classList.toggle("on",lang=="hi");$("le").classList.toggle("on",lang=="en");
+$("kv").classList.toggle("on",kind==0);$("kp").classList.toggle("on",kind==1);
+if(last)show();}
+function show(){const t=T[lang],l=lang=="hi"?0:1,{i,abh,pada,deg,pr,ds,ts,pl}=last,g=grp(i,abh);
+const nm=abh?(l?"Abhijit":"अभिजित"):(l?NE[i]:NH[i]);
+$("out").hidden=false;
+$("out").innerHTML='<div class="k">'+(pr?t.pr:t.ev)+": "+ds+" "+ts+(pl&&!pr?" · "+pl:"")+'</div>'+
+'<div class="big">'+nm+' <span class="k">('+t.pd+" "+pada+", "+t.moon+" "+deg+'°)</span></div>'+
+'<div class="res"><b>'+t.sn+": "+GN[g][l]+'</b><span>'+R[g][lang][kind]+'</span></div>'+
+'<div class="res"><b>'+t.dr+": "+DIR[g][l]+'</b></div>'+
+'<div class="res"><b>'+t.st+'</b><span>'+W[where(i,abh)][lang][kind]+'</span></div>';}
+$("lh").onclick=()=>{lang="hi";ui()};$("le").onclick=()=>{lang="en";ui()};
+$("kv").onclick=()=>{kind=0;ui()};$("kp").onclick=()=>{kind=1;ui()};
+$("unk").onchange=()=>{const u=$("unk").checked;$("d").disabled=$("t").disabled=$("p").disabled=u;};
+$("go").onclick=()=>{let ds=$("d").value,ts=$("t").value,pr=false;
+let tz=$("tz").value=="dev"?-new Date().getTimezoneOffset()/60:parseFloat($("tz").value);
+if($("unk").checked){const n=new Date(),z=x=>String(x).padStart(2,"0");
+ds=n.getFullYear()+"-"+z(n.getMonth()+1)+"-"+z(n.getDate());ts=z(n.getHours())+":"+z(n.getMinutes());pr=true;tz=-n.getTimezoneOffset()/60;}
+if(!ds||!ts){alert(T[lang].al);return;}
+const [y,m,d]=ds.split("-").map(Number),[h,mi]=ts.split(":").map(Number);
+const jd=(Date.UTC(y,m-1,d,h,mi)-tz*3600000)/86400000+2440587.5,lon=moonSid(jd),w=360/27;
+last={i:Math.floor(lon/w),abh:lon>=276.6667&&lon<280.8889,pada:Math.floor((lon%w)/(w/4))+1,deg:(lon%30).toFixed(2),pr,ds,ts,pl:$("p").value};show();};
+$("rs").onclick=()=>{$("d").value="";$("t").value="";$("p").value="";$("unk").checked=false;$("d").disabled=$("t").disabled=$("p").disabled=false;$("tz").value="5.5";kind=0;last=null;$("out").hidden=true;$("out").innerHTML="";ui();};
+ui();
+</script>
+</body>
+</html>
