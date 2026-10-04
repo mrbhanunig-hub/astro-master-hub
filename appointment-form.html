@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ज्योतिष परामर्श अपॉइंटमेंट फॉर्म</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#202124;
+    --sub:#5f6368;
+    --line:#dadce0;
+    --purple:#673ab7;
+    --purple-dark:#4a2c8f;
+    --bg:#f0ebf8;
+    --error:#c5221f;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Noto Sans Devanagari','Noto Sans',Arial,sans-serif;
+    min-height:100vh;
+    padding:24px 12px 60px;
+  }
+  .wrap{max-width:660px;margin:0 auto;}
+
+  .banner{
+    height:10px;
+    border-radius:8px 8px 0 0;
+    background:var(--purple);
+  }
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-top:none;
+    border-radius:0 0 8px 8px;
+    padding:24px 24px 28px;
+  }
+  .card + .card{
+    margin-top:18px;
+    border-radius:8px;
+    border-top:1px solid var(--line);
+    padding-top:24px;
+  }
+  .plain-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:24px 24px 28px;
+    margin-top:18px;
+  }
+
+  h1{
+    font-family:'Noto Serif Devanagari',serif;
+    font-weight:600;
+    font-size:26px;
+    margin:0 0 8px;
+    color:var(--ink);
+  }
+  .desc{
+    color:var(--sub);
+    font-size:14px;
+    line-height:1.6;
+    margin:0 0 14px;
+  }
+  .req-note{
+    color:var(--error);
+    font-size:13px;
+    margin:0;
+  }
+
+  .section-title{
+    font-family:'Noto Serif Devanagari',serif;
+    font-size:19px;
+    font-weight:600;
+    color:var(--ink);
+    margin:0 0 2px;
+  }
+  .section-sub{
+    color:var(--sub);
+    font-size:13px;
+    margin:0 0 20px;
+  }
+
+  .field{margin-bottom:26px;}
+  .field:last-child{margin-bottom:0;}
+  label.q{
+    display:block;
+    font-size:15px;
+    margin-bottom:10px;
+    color:var(--ink);
+    line-height:1.5;
+  }
+  .req{color:var(--error);margin-left:2px;}
+
+  input[type=text], input[type=tel], input[type=email], input[type=date], input[type=time], select, textarea{
+    width:100%;
+    background:#fff;
+    border:none;
+    border-bottom:1px solid var(--line);
+    padding:8px 2px;
+    color:var(--ink);
+    font-size:15px;
+    font-family:inherit;
+    outline:none;
+    transition:border-color 0.15s;
+  }
+  select{appearance:auto; cursor:pointer;}
+  select:invalid{color:#9aa0a6;}
+  input::placeholder, textarea::placeholder{color:#9aa0a6;}
+  input:focus, textarea:focus, select:focus{border-bottom:2px solid var(--purple); padding-bottom:7px;}
+  textarea{resize:vertical;min-height:80px;border:1px solid var(--line);border-radius:4px;padding:10px;}
+  textarea:focus{border:2px solid var(--purple);padding:9px;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  @media(max-width:480px){.grid2{grid-template-columns:1fr;}}
+
+  .options{display:flex;flex-direction:column;gap:2px;}
+  .opt{
+    display:flex;align-items:center;gap:12px;
+    padding:9px 2px;
+    cursor:pointer;
+    font-size:15px;
+  }
+  .opt input{width:18px;height:18px;margin:0;accent-color:var(--purple);flex-shrink:0;cursor:pointer;}
+  .opt span{cursor:pointer;}
+
+  .err-msg{
+    display:none;
+    color:var(--error);
+    font-size:12.5px;
+    margin-top:6px;
+  }
+  .field.invalid .err-msg{display:block;}
+  .field.invalid input, .field.invalid textarea{border-color:var(--error) !important;}
+
+  .submit-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:22px;
+  }
+  button{
+    background:var(--purple);
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    padding:11px 28px;
+    font-size:15px;
+    font-weight:500;
+    font-family:'Noto Sans Devanagari',sans-serif;
+    cursor:pointer;
+    transition:background 0.15s;
+  }
+  button:hover{background:var(--purple-dark);}
+  button:disabled{opacity:0.6;cursor:default;}
+
+  .note{
+    text-align:center;
+    color:var(--sub);
+    font-size:12.5px;
+    margin-top:22px;
+  }
+
+  .success{
+    display:none;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:50px 28px;
+    text-align:center;
+  }
+  .success h2{
+    font-family:'Noto Serif Devanagari',serif;
+    color:var(--ink);
+    font-size:21px;
+    margin:0 0 10px;
+  }
+  .success p{color:var(--sub);font-size:14.5px;line-height:1.7;max-width:400px;margin:0 auto;}
+  .success button{margin-top:22px;background:#fff;border:1px solid var(--purple);color:var(--purple);}
+  .success button:hover{background:#f3edfb;}
+
+  form.hidden{display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <form id="apptForm" novalidate>
+    <div class="banner"></div>
+    <div class="card">
+      <h1>ज्योतिष परामर्श अपॉइंटमेंट फॉर्म</h1>
+      <p class="desc">कृपया नीचे दी गई जानकारी ध्यानपूर्वक भरें ताकि आपकी अपॉइंटमेंट सही ढंग से तय की जा सके।</p>
+      <p class="req-note">* आवश्यक प्रश्न</p>
+    </div>
+
+    <div class="plain-card">
+      <h2 class="section-title">Section 1 — Client Details</h2>
+      <p class="section-sub">ग्राहक विवरण</p>
+
+      <div class="field" data-required="true">
+        <label class="q">1. आपका पूरा नाम<span class="req">*</span></label>
+        <input type="text" name="fullName" placeholder="आपका उत्तर">
+        <div class="err-msg">यह फ़ील्ड आवश्यक है</div>
+      </div>
+
+      <div class="field" data-required="true">
+        <label class="q">2. मोबाइल नंबर<span class="req">*</span></label>
+        <input type="tel" name="mobile" placeholder="आपका उत्तर">
+        <div class="err-msg">कृपया मान्य मोबाइल नंबर दर्ज करें</div>
+      </div>
+
+      <div class="field">
+        <label class="q">3. WhatsApp नंबर</label>
+        <input type="tel" name="whatsapp" placeholder="आपका उत्तर">
+      </div>
+
+      <div class="field">
+        <label class="q">4. Email ID</label>
+        <input type="email" name="email" placeholder="आपका उत्तर">
+      </div>
+
+      <div class="field">
+        <label class="q">5. शहर / स्थान</label>
+        <input type="text" name="city" placeholder="आपका उत्तर">
+      </div>
+    </div>
+
+    <div class="plain-card">
+      <h2 class="section-title">Section 2 — Birth Details</h2>
+      <p class="section-sub">जन्म विवरण</p>
+
+      <div class="grid2">
+        <div class="field" data-required="true">
+          <label class="q">6. जन्म तारीख<span class="req">*</span></label>
+          <input type="date" name="dob">
+          <div class="err-msg">यह फ़ील्ड आवश्यक है</div>
+        </div>
+        <div class="field" data-required="true">
+          <label class="q">7. जन्म समय<span class="req">*</span></label>
+          <input type="time" name="tob">
+          <div class="err-msg">यह फ़ील्ड आवश्यक है</div>
+        </div>
+      </div>
+
+      <div class="field" data-required="true">
+        <label class="q">8. जन्म स्थान<span class="req">*</span></label>
+        <input type="text" name="pob" placeholder="आपका उत्तर">
+        <div class="err-msg">यह फ़ील्ड आवश्यक है</div>
+      </div>
+
+      <div class="field">
+        <label class="q">9. क्या आपका जन्म समय निश्चित है?</label>
+        <div class="options" data-radio="birthTimeCertainty">
+          <label class="opt"><input type="radio" name="birthTimeCertainty" value="हाँ, बिल्कुल निश्चित है"><span>हाँ, बिल्कुल निश्चित है</span></label>
+          <label class="opt"><input type="radio" name="birthTimeCertainty" value="लगभग सही है"><span>लगभग सही है</span></label>
+          <label class="opt"><input type="radio" name="birthTimeCertainty" value="जन्म समय की जानकारी नहीं है"><span>जन्म समय की जानकारी नहीं है</span></label>
+        </div>
+      </div>
+    </div>
+
+    <div class="plain-card">
+      <h2 class="section-title">Section 3 — Appointment Details</h2>
+      <p class="section-sub">अपॉइंटमेंट विवरण</p>
+
+      <div class="field" data-required="true">
+        <label class="q">10. आप किस विषय पर ज्योतिषीय परामर्श चाहते हैं?<span class="req">*</span></label>
+        <div class="options" id="topicOptions">
+          <label class="opt"><input type="checkbox" name="topics" value="Career / Job"><span>Career / Job</span></label>
+          <label class="opt"><input type="checkbox" name="topics" value="Business"><span>Business</span></label>
+          <label class="opt"><input type="checkbox" name="topics" value="Marriage / Relationship"><span>Marriage / Relationship</span></label>
+          <label class="opt"><input type="checkbox" name="topics" value="Finance / Property"><span>Finance / Property</span></label>
+          <label class="opt"><input type="checkbox" name="topics" value="Education"><span>Education</span></label>
+          <label class="opt"><input type="checkbox" name="topics" value="Family"><span>Family</span></label>
+          <label class="opt"><input type="checkbox" name="topics" value="Foreign Travel / Settlement"><span>Foreign Travel / Settlement</span></label>
+          <label class="opt"><input type="checkbox" name="topics" value="Vastu"><span>Vastu</span></label>
+          <label class="opt"><input type="checkbox" name="topics" value="Numerology"><span>Numerology</span></label>
+          <label class="opt"><input type="checkbox" name="topics" value="Litigation / Judicial"><span>Litigation / Judicial</span></label>
+          <label class="opt"><input type="checkbox" name="topics" value="अन्य"><span>अन्य</span></label>
+        </div>
+        <div class="err-msg">कम से कम एक विकल्प चुनें</div>
+      </div>
+
+      <div class="field" data-required="true">
+        <label class="q">11. Appointment का माध्यम<span class="req">*</span></label>
+        <div class="options" data-radio="mode">
+          <label class="opt"><input type="radio" name="mode" value="WhatsApp Call"><span>WhatsApp Call</span></label>
+          <label class="opt"><input type="radio" name="mode" value="Phone Call"><span>Phone Call</span></label>
+          <label class="opt"><input type="radio" name="mode" value="Video Call"><span>Video Call</span></label>
+          <label class="opt"><input type="radio" name="mode" value="In-Person"><span>In-Person</span></label>
+        </div>
+        <div class="err-msg">एक विकल्प चुनें</div>
+      </div>
+
+      <div class="grid2">
+        <div class="field" data-required="true">
+          <label class="q">12. आप किस तारीख को Appointment चाहते हैं?<span class="req">*</span></label>
+          <input type="date" name="apptDate" id="apptDate">
+          <div class="err-msg">कृपया आज के बाद की कोई तारीख चुनें</div>
+        </div>
+        <div class="field" data-required="true">
+          <label class="q">13. आप किस समय Appointment चाहते हैं?<span class="req">*</span></label>
+          <select name="apptTime" id="apptTime">
+            <option value="" disabled selected>समय चुनें (प्रत्येक स्लॉट 30 मिनट का है)</option>
+            <optgroup label="Slot A — 11:00 AM to 2:00 PM">
+              <option value="11:00 AM – 11:30 AM">11:00 AM – 11:30 AM</option>
+              <option value="11:30 AM – 12:00 PM">11:30 AM – 12:00 PM</option>
+              <option value="12:00 PM – 12:30 PM">12:00 PM – 12:30 PM</option>
+              <option value="12:30 PM – 1:00 PM">12:30 PM – 1:00 PM</option>
+              <option value="1:00 PM – 1:30 PM">1:00 PM – 1:30 PM</option>
+              <option value="1:30 PM – 2:00 PM">1:30 PM – 2:00 PM</option>
+            </optgroup>
+            <optgroup label="Slot B — 4:30 PM to 6:30 PM">
+              <option value="4:30 PM – 5:00 PM">4:30 PM – 5:00 PM</option>
+              <option value="5:00 PM – 5:30 PM">5:00 PM – 5:30 PM</option>
+              <option value="5:30 PM – 6:00 PM">5:30 PM – 6:00 PM</option>
+              <option value="6:00 PM – 6:30 PM">6:00 PM – 6:30 PM</option>
+            </optgroup>
+          </select>
+          <div class="err-msg">कृपया एक समय स्लॉट चुनें</div>
+        </div>
+      </div>
+      <p class="section-sub" style="margin-top:-10px;">Appointment स्लॉट: (a) 11:00 AM – 2:00 PM (b) 4:30 PM – 6:30 PM &mdash; प्रत्येक स्लॉट केवल 30 मिनट के लिए बुक होगा।</p>
+
+      <div class="field" data-required="true">
+        <label class="q">14. अपनी समस्या / प्रश्न विस्तार से लिखें<span class="req">*</span></label>
+        <textarea name="query" placeholder="आपका उत्तर"></textarea>
+        <div class="err-msg">यह फ़ील्ड आवश्यक है</div>
+      </div>
+    </div>
+
+    <div class="submit-row">
+      <button type="submit">Submit</button>
+    </div>
+    <p class="note">आपकी जानकारी सुरक्षित रहेगी और केवल परामर्श हेतु उपयोग होगी</p>
+  </form>
+
+  <div class="success" id="successView">
+    <h2>आपका उत्तर दर्ज कर लिया गया है</h2>
+    <p>धन्यवाद! आपकी अपॉइंटमेंट रिक्वेस्ट प्राप्त हो गई है। हमारी टीम जल्द ही आपसे संपर्क करेगी।</p>
+    <button type="button" id="resetBtn">एक और उत्तर सबमिट करें</button>
+  </div>
+
+</div>
+
+<script>
+const form = document.getElementById('apptForm');
+const successView = document.getElementById('successView');
+
+function clearError(field){ field.classList.remove('invalid'); }
+
+function validate(){
+  let valid = true;
+  document.querySelectorAll('.field[data-required="true"]').forEach(field=>{
+    const input = field.querySelector('input[type=text], input[type=tel], input[type=email], input[type=date], input[type=time], select, textarea');
+    if(input){
+      if(!input.value.trim()){ field.classList.add('invalid'); valid = false; }
+      else clearError(field);
+    } else if(field.querySelector('#topicOptions')){
+      const checked = field.querySelectorAll('input[name="topics"]:checked').length;
+      if(checked===0){ field.classList.add('invalid'); valid = false; }
+      else clearError(field);
+    } else if(field.querySelector('input[type=radio]')){
+      const name = field.querySelector('input[type=radio]').name;
+      const checked = field.querySelectorAll(`input[name="${name}"]:checked`).length;
+      if(checked===0){ field.classList.add('invalid'); valid = false; }
+      else clearError(field);
+    }
+  });
+  const mobileInput = form.querySelector('input[name=mobile]');
+  const mobileField = mobileInput.closest('.field');
+  if(mobileInput.value.trim() && !/^[0-9+\-\s]{7,15}$/.test(mobileInput.value.trim())){
+    mobileField.classList.add('invalid');
+    valid = false;
+  }
+
+  const apptDateInput = document.getElementById('apptDate');
+  const apptDateField = apptDateInput.closest('.field');
+  if(apptDateInput.value && apptDateInput.value < apptDateInput.min){
+    apptDateField.classList.add('invalid');
+    valid = false;
+  }
+
+  return valid;
+}
+
+(function setMinApptDate(){
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  const min = d.toISOString().split('T')[0];
+  const apptDateInput = document.getElementById('apptDate');
+  apptDateInput.min = min;
+})();
+
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  if(!validate()){
+    document.querySelector('.field.invalid')?.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+
+  const data = new FormData(form);
+  const topics = data.getAll('topics');
+  const entry = {
+    fullName: data.get('fullName'),
+    mobile: data.get('mobile'),
+    whatsapp: data.get('whatsapp'),
+    email: data.get('email'),
+    city: data.get('city'),
+    dob: data.get('dob'),
+    tob: data.get('tob'),
+    pob: data.get('pob'),
+    birthTimeCertainty: data.get('birthTimeCertainty') || '',
+    topics: topics,
+    mode: data.get('mode'),
+    apptDate: data.get('apptDate'),
+    apptTime: data.get('apptTime'),
+    query: data.get('query'),
+    submittedAt: new Date().toISOString()
+  };
+
+  const submitBtn = form.querySelector('button[type=submit]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'भेजा जा रहा है...';
+
+  try{
+    const key = 'appointment:' + Date.now();
+    await window.storage.set(key, JSON.stringify(entry), true);
+  } catch(err){
+    console.error('Storage error', err);
+  }
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = 'Submit';
+  form.classList.add('hidden');
+  successView.style.display = 'block';
+});
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  form.reset();
+  document.querySelectorAll('.field.invalid').forEach(f=>f.classList.remove('invalid'));
+  successView.style.display = 'none';
+  form.classList.remove('hidden');
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+</script>
+</body>
+</html>

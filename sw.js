@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cosmic-hub-v21';
+const CACHE_NAME = 'cosmic-hub-v22';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -19,7 +19,8 @@ const ASSETS_TO_CACHE = [
   './navtara_chakra.html',
   './BNN_Kundli_Calculator.html',
   './ghat-chakra (1).html',
-  './kundli-milan.html'
+  './kundli-milan.html',
+  './appointment-form.html'
 ];
 
 self.addEventListener('install', (event) => {
