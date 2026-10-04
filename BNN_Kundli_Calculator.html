@@ -163,7 +163,7 @@
   </header>
 
   <!-- INPUT CARD -->
-  <div class="card">
+  <div class="card" id="profile-container">
     <h2>जन्म विवरण <span class="tag">INPUT</span></h2>
     <div class="grid3">
       <div class="field">
@@ -3008,19 +3008,39 @@ window.addEventListener("DOMContentLoaded", function(){
   });
 });
 
-</script>
-<!-- 1. स्क्रिप्ट को लिंक करें -->
 <script src="birth-profile.js"></script>
 
-<!-- 2. स्क्रिप्ट को Initialize करें -->
+<!-- 2. BNN ऐप के लिए ब्रिज और इनिशियलाइज़ेशन स्क्रिप्ट -->
 <script>
   window.addEventListener('DOMContentLoaded', function() {
-    // यह फ्लोटिंग बटन और ऑटो-फिल को एक्टिवेट कर देगा
+    // 1. फ्लोटिंग बटन और मास्टर UI चालू करें
     BirthProfile.init(); 
     
-    // (Optional) अगर आप पेज के अंदर भी ड्रॉपडाउन दिखाना चाहते हैं, 
-    // तो किसी <div> की ID यहाँ पास कर सकते हैं:
-    // BirthProfile.attachProfileSelector("my-header-div"); 
+    // 2. कार्ड के अंदर प्रोफाइल चुनने वाला ड्रॉपडाउन लगाएँ
+    BirthProfile.attachProfileSelector("profile-container"); 
+
+    // 3. BNN कैलकुलेटर के कस्टम फील्ड्स को मास्टर डेटा से कनेक्ट करें
+    const originalFill = BirthProfile.fillForm;
+    BirthProfile.fillForm = function(prof) {
+      originalFill(prof); // डिफ़ॉल्ट फील्ड्स भरें
+      
+      const p = prof || BirthProfile.get();
+      if(!p) return;
+
+      // BNN की विशेष IDs में डेटा डालें
+      if(document.getElementById("personName")) document.getElementById("personName").value = p.name || "";
+      if(document.getElementById("tobMinute")) document.getElementById("tobMinute").value = p.minute || 0;
+      if(document.getElementById("tobAmPm")) document.getElementById("tobAmPm").value = p.ampm || "AM";
+      if(document.getElementById("manualTz")) document.getElementById("manualTz").value = p.tz || 5.5;
+
+      // BNN के कस्टम Gender बटन्स को अपडेट करें
+      if(typeof setGender === "function" && p.gender) {
+        setGender(p.gender);
+      }
+    };
+
+    // पेज लोड होने पर एक्टिव प्रोफाइल का डेटा अपने आप भर दें
+    BirthProfile.fillForm();
   });
 </script>
 </body>
