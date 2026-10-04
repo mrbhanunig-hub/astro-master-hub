@@ -156,7 +156,8 @@
     <p>अपने जन्म नक्षत्र से किसी भी दिन का तारा जानें — शुभ या अशुभ</p>
   </header>
 
-  <div class="panel">
+  <!-- Attached id="navtaraInputPanel" for Profile Selector -->
+  <div class="panel" id="navtaraInputPanel">
     <h2>जन्म नक्षत्र व तारीख</h2>
     <div class="field">
       <label for="janmaNak">आपका जन्म नक्षत्र चुनें</label>
@@ -169,10 +170,10 @@
         <div><label for="bTime">जन्म समय</label><input type="time" id="bTime"></div>
       </div>
       <div class="row">
-        <div><label for="bLat">Latitude</label><input type="number" id="bLat" step="0.0001" value="26.4667"></div>
-        <div><label for="bLon">Longitude</label><input type="number" id="bLon" step="0.0001" value="80.6833"></div>
+        <div><label for="bLat">Latitude</label><input type="number" step="0.0001" id="bLat" value="26.4667"></div>
+        <div><label for="bLon">Longitude</label><input type="number" step="0.0001" id="bLon" value="80.6833"></div>
       </div>
-      <div style="font-size:12.5px;color:var(--text-muted);">डिफ़ॉल्ट स्थान: कानपुर — ज़रूरत हो तो बदल दें। तारीख भरते ही जन्म नक्षत्र ऊपर अपने आप चुन जाएगा।</div>
+      <div style="font-size:12.5px;color:var(--text-muted);">तारीख व समय भरते ही जन्म नक्षत्र ऊपर अपने आप चुन जाएगा।</div>
     </div>
 
     <div class="divider"></div>
@@ -238,7 +239,6 @@ const NAK_LORD = ["केतु","शुक्र","सूर्य","चंद�
 "केतु","शुक्र","सूर्य","चंद्र","मंगल","राहु","गुरु","शनि","बुध",
 "केतु","शुक्र","सूर्य","चंद्र","मंगल","राहु","गुरु","शनि","बुध"];
 
-// Adhishthata Devata (ruling deity) of each nakshatra, and their simple salutation mantra
 const NAK_DEVATA = ["अश्विनी कुमार","यमराज","अग्नि देव","ब्रह्मा (प्रजापति)","सोम (चंद्र)","रुद्र",
 "अदिति","बृहस्पति","नाग देवता","पितर","भग देव","अर्यमन","सविता","त्वष्टा (विश्वकर्मा)","वायु देव",
 "इंद्र-अग्नि","मित्र देव","इंद्र","निर्ऋति","आपः (जल देवता)","विश्वेदेवा","भगवान विष्णु","अष्ट वसु",
@@ -280,7 +280,6 @@ const JATAK_DETAIL = [
 "करुणामयी, पालन-पोषण करने वाले और यात्रा-मार्गदर्शन में रुचि रखने वाले। सबका भला चाहने वाला कोमल स्वभाव।"
 ];
 
-// Nakshatra ki pauranik katha — bhaje jaate hi yahan add hoti hain (khali = abhi nahi mili)
 const NAK_KATHA = [
 "पौराणिक कथाओं के अनुसार, सूर्य देव की पत्नी संज्ञा उनके अत्यधिक तेज को सहन नहीं कर पा रही थीं। इसलिए वे उत्तर दिशा की ओर चली गईं और उन्होंने घोड़ी (अश्विनी) का रूप धारण कर लिया। जब सूर्य देव को इस बात का पता चला, तो उन्होंने भी घोड़े का रूप धारण किया और अपनी पत्नी के पास पहुँचे। उनके मिलन से जुड़वाँ पुत्रों, अश्विनी कुमारों, का जन्म हुआ। अश्विनी कुमार देवताओं के वैद्य माने जाते हैं। इसी कारण अश्विनी नक्षत्र का संबंध चिकित्सा, उपचार, गति और नई शुरुआत से माना जाता है।",
 "भरणी नक्षत्र के अधिष्ठाता यमराज हैं। पौराणिक मान्यताओं के अनुसार, यमराज प्रत्येक जीव के कर्मों का लेखा-जोखा रखते हैं और उसी के अनुसार न्याय करते हैं। भरणी शब्द का अर्थ है धारण करना या गर्भ में रखना। इसलिए यह नक्षत्र जीवन और मृत्यु के बीच होने वाले परिवर्तन, कर्मफल, त्याग और आत्मिक विकास का प्रतीक माना जाता है।",
@@ -292,7 +291,6 @@ const NAK_KATHA = [
 ];
 
 const TARA_NAMES = ["जन्म","सम्पत","विपत","क्षेम","प्रत्यरि","साधक","वध","मित्र","परम मित्र"];
-// 'neutral' | 'good' | 'bad'
 const TARA_STATUS = ["neutral","good","bad","good","bad","good","bad","good","good"];
 const TARA_MEANING = [
   "स्वयं की स्थिति — यह तारा शुभ या अशुभ नहीं, सामान्य माना जाता है।",
@@ -319,7 +317,6 @@ function fillTaraRef(){
   ).join('');
 }
 
-// ---------- Simplified lunar longitude (Meeus low-precision periodic series) ----------
 function normDeg(d){ d = d % 360; if(d<0) d+=360; return d; }
 
 function moonEclipticLongitude(date){
@@ -396,7 +393,6 @@ function isoToLocalNoonDate(iso){
 function getJanmaIdxOrAlert(){
   let jSel = document.getElementById('janmaNak').value;
   if(jSel===''){
-    // fall back: try deriving it from DOB right now, in case the earlier auto-fill didn't fire
     autoCalcJanmaNak();
     jSel = document.getElementById('janmaNak').value;
   }
@@ -430,7 +426,6 @@ document.getElementById('toggleBirthCalc').addEventListener('click', ()=>{
   document.getElementById('birthCalcBlock').classList.toggle('open');
 });
 
-// dd/mm/yyyy auto-slash formatting
 function formatDDMMYYYY(el){
   let digits = el.value.replace(/\D/g,'').slice(0,8);
   let out = digits;
@@ -449,7 +444,7 @@ function parseDDMMYYYY(str){
 function autoCalcJanmaNak(){
   const bd = document.getElementById('bDate').value;
   const parsed = parseDDMMYYYY(bd);
-  if(!parsed) return; // wait till a full valid date is typed
+  if(!parsed) return;
   const bt = document.getElementById('bTime').value || '12:00';
   const [hh,mm] = bt.split(':').map(Number);
   const localDate = new Date(Date.UTC(parsed.yyyy, parsed.mm-1, parsed.dd, hh, mm, 0));
@@ -465,9 +460,6 @@ bDateEl.addEventListener('keyup', autoCalcJanmaNak);
 document.getElementById('bTime').addEventListener('change', autoCalcJanmaNak);
 document.getElementById('bLat').addEventListener('change', autoCalcJanmaNak);
 document.getElementById('bLon').addEventListener('change', autoCalcJanmaNak);
-
-// pre-filled default DOB should also auto-fill Janma Nakshatra right away
-autoCalcJanmaNak();
 
 document.getElementById('useToday').addEventListener('click', ()=>{
   const t = new Date();
@@ -559,12 +551,10 @@ document.getElementById('btnCal').addEventListener('click', function(){
   toggleSection(document.getElementById('secCal'), this, refreshCal);
 });
 
-// Tara reference
 document.getElementById('btnTaraRef').addEventListener('click', function(){
   toggleSection(document.getElementById('secTaraRef'), this, null);
 });
 
-// Remedies: Janma Tara devata/mantra + a pick-one option among the 3 Parama Mitra nakshatras
 let selectedParamaMitraIdx = null;
 function refreshRemedy(){
   const janmaIdx = getJanmaIdxOrAlert();
@@ -616,8 +606,6 @@ document.getElementById('btnRemedy').addEventListener('click', function(){
   toggleSection(document.getElementById('secRemedy'), this, refreshRemedy);
 });
 
-// Keep already-open sections (and the main result, if shown) live-synced
-// whenever the Janma Nakshatra or target date changes.
 document.getElementById('janmaNak').addEventListener('change', ()=>{
   selectedParamaMitraIdx = null;
   if(document.getElementById('resultPanel').style.display==='block') computeResult();
@@ -629,6 +617,58 @@ document.getElementById('janmaNak').addEventListener('change', ()=>{
 document.getElementById('targetDate').addEventListener('change', ()=>{
   if(document.getElementById('resultPanel').style.display==='block') computeResult();
 });
+</script>
+
+<!-- Centralized Profile Engine & Hub Scripts -->
+<script src="birth-profile.js"></script>
+<script src="hub-nav.js"></script>
+<script>
+  window.addEventListener("DOMContentLoaded", function () {
+    if (window.BirthProfile) {
+      // 1. Initialize Profile Engine
+      BirthProfile.init();
+
+      // 2. Attach Saved Profile Picker at the top of the input card
+      if (BirthProfile.attachProfileSelector) {
+        BirthProfile.attachProfileSelector("navtaraInputPanel");
+      }
+
+      // 3. Function to sync profile data and auto-calculate
+      function syncFromProfile() {
+        const p = BirthProfile.get();
+        if (p) {
+          if (p.day && p.month && p.year) {
+            document.getElementById('bDate').value = 
+              String(p.day).padStart(2, '0') + '/' + String(p.month).padStart(2, '0') + '/' + p.year;
+          }
+          if (p.hour !== undefined && p.minute !== undefined) {
+            let h24 = p.hour;
+            if (p.ampm === 'PM' && h24 < 12) h24 += 12;
+            if (p.ampm === 'AM' && h24 === 12) h24 = 0;
+            document.getElementById('bTime').value = 
+              String(h24).padStart(2, '0') + ':' + String(p.minute).padStart(2, '0');
+          }
+          if (p.lat) document.getElementById('bLat').value = p.lat;
+          if (p.lon) document.getElementById('bLon').value = p.lon;
+          
+          // Auto calculate Nakshatra and display today's Tara
+          autoCalcJanmaNak();
+          computeResult();
+        }
+      }
+
+      // Execute on page load
+      syncFromProfile();
+
+      // Listen for changes from profile picker dropdown
+      const picker = document.getElementById("cc-app-profile-picker");
+      if (picker) {
+        picker.addEventListener("change", function () {
+          setTimeout(syncFromProfile, 50);
+        });
+      }
+    }
+  });
 </script>
 </body>
 </html>
