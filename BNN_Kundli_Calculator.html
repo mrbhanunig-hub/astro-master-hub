@@ -3009,5 +3009,19 @@ window.addEventListener("DOMContentLoaded", function(){
 });
 
 </script>
+<!-- 1. स्क्रिप्ट को लिंक करें -->
+<script src="birth-profile.js"></script>
+
+<!-- 2. स्क्रिप्ट को Initialize करें -->
+<script>
+  window.addEventListener('DOMContentLoaded', function() {
+    // यह फ्लोटिंग बटन और ऑटो-फिल को एक्टिवेट कर देगा
+    BirthProfile.init(); 
+    
+    // (Optional) अगर आप पेज के अंदर भी ड्रॉपडाउन दिखाना चाहते हैं, 
+    // तो किसी <div> की ID यहाँ पास कर सकते हैं:
+    // BirthProfile.attachProfileSelector("my-header-div"); 
+  });
+</script>
 </body>
 </html>
