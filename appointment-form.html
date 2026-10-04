@@ -339,14 +339,18 @@
   </form>
 
   <div class="success" id="successView">
-    <h2>आपका उत्तर दर्ज कर लिया गया है</h2>
-    <p>धन्यवाद! आपकी अपॉइंटमेंट रिक्वेस्ट प्राप्त हो गई है। हमारी टीम जल्द ही आपसे संपर्क करेगी।</p>
+    <h2>बस एक आख़िरी कदम बाकी है</h2>
+    <p>आपकी जानकारी व्हाट्सऐप में तैयार है। कृपया खुले हुए व्हाट्सऐप में <strong>Send (भेजें)</strong> बटन दबाएँ, तभी आपकी रिक्वेस्ट हम तक पहुँचेगी।</p>
+    <p style="margin-top:10px;">व्हाट्सऐप नहीं खुला?</p>
+    <a id="waSendBtn" href="#" target="_blank" rel="noopener noreferrer" style="display:inline-block;margin:10px 0 14px;padding:12px 22px;border-radius:9999px;background:#25D366;color:#fff;font-weight:700;text-decoration:none;">व्हाट्सऐप पर भेजें</a><br>
     <button type="button" id="resetBtn">एक और उत्तर सबमिट करें</button>
   </div>
 
 </div>
 
 <script>
+const WA_NUMBER = '919450122288'; // Astrologer WhatsApp number (country code सहित, बिना +)
+let waLink = '';
 const form = document.getElementById('apptForm');
 const successView = document.getElementById('successView');
 
@@ -395,7 +399,7 @@ function validate(){
   apptDateInput.min = min;
 })();
 
-form.addEventListener('submit', async (e)=>{
+form.addEventListener('submit', (e)=>{
   e.preventDefault();
   if(!validate()){
     document.querySelector('.field.invalid')?.scrollIntoView({behavior:'smooth', block:'center'});
@@ -422,19 +426,38 @@ form.addEventListener('submit', async (e)=>{
     submittedAt: new Date().toISOString()
   };
 
-  const submitBtn = form.querySelector('button[type=submit]');
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'भेजा जा रहा है...';
+  const fmtDate = (v)=> v ? v.split('-').reverse().join('/') : '-';
+  const val = (v)=> (v && String(v).trim()) ? String(v).trim() : '-';
+  const lines = [
+    '*नया अपॉइंटमेंट अनुरोध*',
+    '',
+    '*क्लाइंट विवरण*',
+    'नाम: ' + val(entry.fullName),
+    'मोबाइल: ' + val(entry.mobile),
+    'व्हाट्सऐप: ' + val(entry.whatsapp),
+    'ईमेल: ' + val(entry.email),
+    'शहर: ' + val(entry.city),
+    '',
+    '*जन्म विवरण*',
+    'जन्म तिथि: ' + fmtDate(entry.dob),
+    'जन्म समय: ' + val(entry.tob),
+    'जन्म स्थान: ' + val(entry.pob),
+    'समय की निश्चितता: ' + val(entry.birthTimeCertainty),
+    '',
+    '*अपॉइंटमेंट विवरण*',
+    'विषय: ' + (entry.topics.length ? entry.topics.join(', ') : '-'),
+    'माध्यम: ' + val(entry.mode),
+    'पसंदीदा तिथि: ' + fmtDate(entry.apptDate),
+    'समय स्लॉट: ' + val(entry.apptTime),
+    'प्रश्न: ' + val(entry.query)
+  ];
+  waLink = 'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(lines.join('\n'));
+  document.getElementById('waSendBtn').href = waLink;
 
-  try{
-    const key = 'appointment:' + Date.now();
-    await window.storage.set(key, JSON.stringify(entry), true);
-  } catch(err){
-    console.error('Storage error', err);
-  }
+  // WhatsApp खोलें (सीधे क्लिक/सबमिट के भीतर, ताकि ब्राउज़र ब्लॉक न करे)
+  const w = window.open(waLink, '_blank');
+  if(!w){ window.location.href = waLink; }
 
-  submitBtn.disabled = false;
-  submitBtn.textContent = 'Submit';
   form.classList.add('hidden');
   successView.style.display = 'block';
 });
