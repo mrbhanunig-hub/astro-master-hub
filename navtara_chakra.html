@@ -123,6 +123,26 @@
 
   .jatak-detail{font-size:14.5px; line-height:1.8; color:var(--text);}
   .jatak-detail .lord{color:var(--gold); font-size:13.5px; margin-bottom:10px;}
+  .jatak-detail .katha-block{margin-top:16px; padding-top:14px; border-top:1px dashed var(--rule);}
+  .jatak-detail .katha-title{font-family:'Noto Serif Devanagari','Nirmala UI','Kohinoor Devanagari',serif; color:var(--gold); font-size:15px; font-weight:600; margin-bottom:8px;}
+  .jatak-detail .katha-missing{color:var(--text-muted); font-style:italic; font-size:13.5px;}
+
+  .remedy-block .r-group{margin-bottom:20px;}
+  .remedy-block .r-title{font-family:'Noto Serif Devanagari','Nirmala UI','Kohinoor Devanagari',serif; color:var(--gold); font-size:16px; font-weight:600; margin-bottom:4px;}
+  .remedy-block .r-sub{color:var(--text-muted); font-size:13px; margin-bottom:10px;}
+  .remedy-card{background:var(--bg-panel-2); border:1px solid var(--rule); border-radius:4px; padding:14px 16px; margin-bottom:10px;}
+  .remedy-card .r-nak{color:var(--text); font-size:14.5px; font-weight:600; margin-bottom:6px;}
+  .remedy-card .r-devata{color:var(--text-muted); font-size:13.5px; margin-bottom:6px;}
+  .remedy-card .r-mantra{font-family:'Noto Serif Devanagari','Nirmala UI','Kohinoor Devanagari',serif; color:var(--gold); font-size:16px; margin-bottom:6px;}
+  .remedy-card .r-count{color:var(--good); font-size:13px; font-weight:600;}
+  .remedy-option{cursor:pointer;}
+  .remedy-option .r-radio{display:inline-flex; align-items:center; gap:8px; margin-bottom:6px;}
+  .remedy-option .r-radio .dot-outer{width:16px; height:16px; border-radius:50%; border:2px solid var(--gold-dim); display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .remedy-option.selected .dot-outer{border-color:var(--gold);}
+  .remedy-option .r-radio .dot-inner{width:8px; height:8px; border-radius:50%; background:transparent;}
+  .remedy-option.selected .dot-outer .dot-inner{background:var(--gold);}
+  .remedy-option.selected{border-color:var(--gold);}
+  .remedy-note{color:var(--text-muted); font-size:13px; margin-top:6px;}
 
   footer{text-align:center; color:var(--text-muted); font-size:12.5px; margin-top:28px;}
 </style>
@@ -136,8 +156,7 @@
     <p>अपने जन्म नक्षत्र से किसी भी दिन का तारा जानें — शुभ या अशुभ</p>
   </header>
 
-  <!-- Attached id="inputPanelWrapper" for Profile Selector -->
-  <div class="panel" id="inputPanelWrapper">
+  <div class="panel">
     <h2>जन्म नक्षत्र व तारीख</h2>
     <div class="field">
       <label for="janmaNak">आपका जन्म नक्षत्र चुनें</label>
@@ -151,9 +170,9 @@
       </div>
       <div class="row">
         <div><label for="bLat">Latitude</label><input type="number" id="bLat" step="0.0001" value="26.4667"></div>
-        <div><label for="bLon">Longitude</label><input type="number" step="0.0001" value="80.6833"></div>
+        <div><label for="bLon">Longitude</label><input type="number" id="bLon" step="0.0001" value="80.6833"></div>
       </div>
-      <div style="font-size:12.5px;color:var(--text-muted);">तारीख व समय भरते ही जन्म नक्षत्र ऊपर अपने आप चुन जाएगा।</div>
+      <div style="font-size:12.5px;color:var(--text-muted);">डिफ़ॉल्ट स्थान: कानपुर — ज़रूरत हो तो बदल दें। तारीख भरते ही जन्म नक्षत्र ऊपर अपने आप चुन जाएगा।</div>
     </div>
 
     <div class="divider"></div>
@@ -198,6 +217,11 @@
       <div class="section-block" id="secTaraRef">
         <div class="tara-ref" id="taraRef"></div>
       </div>
+
+      <button class="action-btn" id="btnRemedy" type="button"><span>उपाय (देवता व मंत्र) देखें</span><span class="arrow">▾</span></button>
+      <div class="section-block" id="secRemedy">
+        <div class="remedy-block" id="remedyContent"></div>
+      </div>
     </div>
   </div>
 
@@ -213,6 +237,18 @@ const NAKSHATRAS = ["अश्विनी","भरणी","कृत्ति�
 const NAK_LORD = ["केतु","शुक्र","सूर्य","चंद्र","मंगल","राहु","गुरु","शनि","बुध",
 "केतु","शुक्र","सूर्य","चंद्र","मंगल","राहु","गुरु","शनि","बुध",
 "केतु","शुक्र","सूर्य","चंद्र","मंगल","राहु","गुरु","शनि","बुध"];
+
+// Adhishthata Devata (ruling deity) of each nakshatra, and their simple salutation mantra
+const NAK_DEVATA = ["अश्विनी कुमार","यमराज","अग्नि देव","ब्रह्मा (प्रजापति)","सोम (चंद्र)","रुद्र",
+"अदिति","बृहस्पति","नाग देवता","पितर","भग देव","अर्यमन","सविता","त्वष्टा (विश्वकर्मा)","वायु देव",
+"इंद्र-अग्नि","मित्र देव","इंद्र","निर्ऋति","आपः (जल देवता)","विश्वेदेवा","भगवान विष्णु","अष्ट वसु",
+"वरुण देव","अजैकपाद","अहिर्बुध्न्य","पूषन"];
+
+const NAK_MANTRA = ["ॐ अश्विनी कुमाराभ्यां नमः","ॐ यमाय नमः","ॐ अग्नये नमः","ॐ प्रजापतये नमः",
+"ॐ सोमाय नमः","ॐ रुद्राय नमः","ॐ अदित्यै नमः","ॐ बृहस्पतये नमः","ॐ सर्पेभ्यो नमः","ॐ पितृभ्यो नमः",
+"ॐ भगाय नमः","ॐ अर्यम्णे नमः","ॐ सवित्रे नमः","ॐ विश्वकर्मणे नमः","ॐ वायवे नमः","ॐ इन्द्राग्निभ्यां नमः",
+"ॐ मित्राय नमः","ॐ इन्द्राय नमः","ॐ निर्ऋतये नमः","ॐ अद्भ्यो नमः","ॐ विश्वेदेवेभ्यो नमः",
+"ॐ नमो भगवते वासुदेवाय","ॐ वसुभ्यो नमः","ॐ वरुणाय नमः","ॐ अजैकपदे नमः","ॐ अहिर्बुध्न्याय नमः","ॐ पूष्णे नमः"];
 
 const JATAK_DETAIL = [
 "तेज़, ऊर्जावान और साहसी स्वभाव। नई शुरुआत करने में माहिर, तेज़ी और वेग से जुड़े कार्यों में रुचि रखते हैं।",
@@ -244,7 +280,19 @@ const JATAK_DETAIL = [
 "करुणामयी, पालन-पोषण करने वाले और यात्रा-मार्गदर्शन में रुचि रखने वाले। सबका भला चाहने वाला कोमल स्वभाव।"
 ];
 
+// Nakshatra ki pauranik katha — bhaje jaate hi yahan add hoti hain (khali = abhi nahi mili)
+const NAK_KATHA = [
+"पौराणिक कथाओं के अनुसार, सूर्य देव की पत्नी संज्ञा उनके अत्यधिक तेज को सहन नहीं कर पा रही थीं। इसलिए वे उत्तर दिशा की ओर चली गईं और उन्होंने घोड़ी (अश्विनी) का रूप धारण कर लिया। जब सूर्य देव को इस बात का पता चला, तो उन्होंने भी घोड़े का रूप धारण किया और अपनी पत्नी के पास पहुँचे। उनके मिलन से जुड़वाँ पुत्रों, अश्विनी कुमारों, का जन्म हुआ। अश्विनी कुमार देवताओं के वैद्य माने जाते हैं। इसी कारण अश्विनी नक्षत्र का संबंध चिकित्सा, उपचार, गति और नई शुरुआत से माना जाता है।",
+"भरणी नक्षत्र के अधिष्ठाता यमराज हैं। पौराणिक मान्यताओं के अनुसार, यमराज प्रत्येक जीव के कर्मों का लेखा-जोखा रखते हैं और उसी के अनुसार न्याय करते हैं। भरणी शब्द का अर्थ है धारण करना या गर्भ में रखना। इसलिए यह नक्षत्र जीवन और मृत्यु के बीच होने वाले परिवर्तन, कर्मफल, त्याग और आत्मिक विकास का प्रतीक माना जाता है।",
+"कृत्तिका नक्षत्र की कथा भगवान कार्तिकेय से जुड़ी हुई है। पौराणिक कथाओं के अनुसार, छह कृत्तिका देवियों ने भगवान कार्तिकेय का पालन-पोषण किया था। इन्हीं छह माताओं के कारण कार्तिकेय के छह मुख बताए जाते हैं। कृत्तिका नक्षत्र के अधिष्ठाता अग्नि देव हैं, इसलिए यह नक्षत्र साहस, शुद्धि और ऊर्जा का प्रतीक माना जाता है।",
+"रोहिणी दक्ष प्रजापति की 27 पुत्रियों में सबसे सुंदर मानी जाती थीं। चंद्र देव अपनी सभी पत्नियों में रोहिणी से सबसे अधिक प्रेम करते थे। इससे अन्य पत्नियाँ दुखी हो गईं और उन्होंने अपने पिता दक्ष प्रजापति से शिकायत की। क्रोधित होकर दक्ष ने चंद्रमा को क्षीण होने का श्राप दे दिया। बाद में भगवान शिव ने चंद्रमा को वरदान दिया कि वे घटते और बढ़ते रहेंगे। इसी कारण रोहिणी नक्षत्र प्रेम, आकर्षण और सृजन का प्रतीक माना जाता है।",
+"मृगशिरा नक्षत्र की कथा ब्रह्मा और भगवान शिव से जुड़ी हुई है। एक कथा के अनुसार, ब्रह्मा ने मृग का रूप धारण किया था। भगवान शिव ने उनका पीछा किया और अंततः उस मृग के सिर को आकाश में स्थापित कर दिया। इसलिए इस नक्षत्र का प्रतीक हिरण का सिर माना जाता है। यह नक्षत्र खोज, जिज्ञासा और ज्ञान की तलाश का प्रतिनिधित्व करता है।",
+"आर्द्रा नक्षत्र के अधिष्ठाता भगवान रुद्र हैं। रुद्र, भगवान शिव का उग्र और प्रचंड स्वरूप हैं। पौराणिक कथाओं में रुद्र को विनाश और परिवर्तन का देवता बताया गया है। आर्द्रा का अर्थ आँसू या नमी होता है। इसलिए यह नक्षत्र जीवन में आने वाले बड़े परिवर्तनों और भावनात्मक उतार-चढ़ाव का प्रतीक माना जाता है।",
+"पुनर्वसु नक्षत्र की अधिष्ठात्री देवी अदिति हैं, जिन्हें देवताओं की माता कहा जाता है। जब असुरों ने देवताओं को पराजित कर दिया था, तब अदिति ने कठोर तपस्या करके अपने पुत्रों को पुनः शक्ति प्रदान की थी। इसलिए पुनर्वसु का अर्थ पुनः प्रकाश प्राप्त करना या दोबारा स्थापित होना माना जाता है। यह नक्षत्र आशा, पुनर्जन्म और पुनर्निर्माण का प्रतीक है।","पुष्य नक्षत्र के अधिष्ठाता देवगुरु बृहस्पति हैं। बृहस्पति को ज्ञान, धर्म और शिक्षा का देवता माना जाता है। पुष्य शब्द का अर्थ पोषण करना है। इसलिए यह नक्षत्र ज्ञान, समृद्धि, आध्यात्मिकता और संरक्षण का प्रतिनिधित्व करता है।","आश्लेषा नक्षत्र का संबंध नागों से है। पौराणिक कथाओं में नागों को गुप्त ज्ञान और रहस्यमयी शक्तियों का स्वामी माना गया है। नाग पृथ्वी के नीचे रहने वाले दिव्य प्राणी माने जाते हैं, जो छिपे हुए ज्ञान की रक्षा करते हैं। इसी कारण आश्लेषा नक्षत्र रहस्य, गूढ़ विद्या और कुंडलिनी शक्ति से जुड़ा हुआ है।","मघा नक्षत्र के अधिष्ठाता पितर हैं। हिंदू धर्म में पितरों को परिवार और वंश का संरक्षक माना जाता है। यह माना जाता है कि हमारे पूर्वज सदैव अपनी संतानों का मार्गदर्शन करते हैं। इसलिए मघा नक्षत्र परंपरा, वंश, कुल और पूर्वजों के सम्मान का प्रतीक माना जाता है।","पूर्वा फाल्गुनी नक्षत्र के अधिष्ठाता भग देव हैं, जिन्हें आनंद, सौंदर्य और समृद्धि का देवता माना जाता है। पौराणिक कथाओं के अनुसार, भग देव जीवन में सुख और आनंद प्रदान करते हैं। इसलिए यह नक्षत्र प्रेम, कला, मनोरंजन और वैवाहिक सुख से जुड़ा हुआ है।","उत्तरा फाल्गुनी के अधिष्ठाता अर्यमन हैं। वैदिक साहित्य में अर्यमन को मित्रता, विवाह और सामाजिक संबंधों का देवता बताया गया है। इसलिए यह नक्षत्र साझेदारी, सहयोग और सामाजिक प्रतिष्ठा का प्रतिनिधित्व करता है।","हस्त नक्षत्र के अधिष्ठाता सविता हैं, जो सूर्य का एक विशेष स्वरूप हैं। हस्त का अर्थ हाथ होता है। पौराणिक मान्यताओं के अनुसार, सविता अपने हाथों से संसार को प्रकाश और ऊर्जा प्रदान करते हैं। इसलिए यह नक्षत्र कौशल, सृजन और कर्म का प्रतीक है।","चित्रा नक्षत्र के अधिष्ठाता त्वष्टा या विश्वकर्मा हैं। विश्वकर्मा को देवताओं का दिव्य वास्तुकार कहा जाता है। उन्होंने अनेक दिव्य अस्त्रों, महलों और स्वर्गीय संरचनाओं का निर्माण किया था। इसलिए चित्रा नक्षत्र कला, वास्तुकला, सौंदर्य और रचनात्मकता का प्रतिनिधित्व करता है।","स्वाती नक्षत्र के अधिष्ठाता वायु देव हैं। वायु को स्वतंत्रता और गति का प्रतीक माना जाता है। जिस प्रकार हवा को बाँधा नहीं जा सकता, उसी प्रकार स्वाती नक्षत्र स्वतंत्र विचारों और आत्मनिर्भरता का प्रतिनिधित्व करता है।","विशाखा नक्षत्र के अधिष्ठाता इंद्र और अग्नि दोनों हैं। इंद्र शक्ति और विजय के देवता हैं, जबकि अग्नि ऊर्जा और परिवर्तन के देवता हैं। इसलिए यह नक्षत्र लक्ष्य प्राप्ति, महत्वाकांक्षा और सफलता की तीव्र इच्छा का प्रतीक माना जाता है।","अनुराधा नक्षत्र के अधिष्ठाता मित्र देव हैं। वैदिक ग्रंथों में मित्र को मित्रता, सहयोग और विश्वास का देवता बताया गया है। इसलिए यह नक्षत्र संबंधों को मजबूत बनाने और लोगों को एक साथ जोड़ने की क्षमता का प्रतिनिधित्व करता है।","ज्येष्ठा नक्षत्र के अधिष्ठाता इंद्र हैं, जिन्हें देवताओं का राजा कहा जाता है। ज्येष्ठा का अर्थ श्रेष्ठ या बड़ा होता है। इसलिए यह नक्षत्र नेतृत्व, अधिकार, जिम्मेदारी और प्रतिष्ठा का प्रतीक माना जाता है।","मूल नक्षत्र की अधिष्ठात्री देवी निर्ऋति हैं। पौराणिक कथाओं में निर्ऋति को विनाश और अराजकता की देवी बताया गया है। मूल का अर्थ जड़ होता है। इसलिए यह नक्षत्र किसी भी विषय की जड़ तक पहुँचने और गहरे रहस्यों को समझने की क्षमता प्रदान करता है।","पूर्वाषाढ़ा नक्षत्र के अधिष्ठाता अपः अर्थात जल देवता हैं। जल को जीवन का आधार माना जाता है। पौराणिक मान्यताओं के अनुसार, जल में शुद्ध करने की अद्भुत क्षमता होती है। इसलिए यह नक्षत्र शुद्धता, भावनाओं और आंतरिक शक्ति का प्रतीक है।","उत्तराषाढ़ा नक्षत्र के अधिष्ठाता विश्वदेव हैं। विश्वदेव दस दिव्य शक्तियों का समूह हैं, जो सत्य, धर्म और सदाचार का प्रतिनिधित्व करते हैं। इसलिए यह नक्षत्र स्थायी सफलता, नैतिकता और सामाजिक सम्मान का प्रतीक माना जाता है।","श्रवण नक्षत्र के अधिष्ठाता भगवान विष्णु हैं। इसकी सबसे प्रसिद्ध कथा वामन अवतार से जुड़ी हुई है। भगवान विष्णु ने वामन का रूप धारण करके राजा बलि से तीन पग भूमि माँगी और तीनों लोकों को नाप लिया। इसलिए यह नक्षत्र ज्ञान, श्रवण शक्ति और सीखने की क्षमता का प्रतिनिधित्व करता है।","धनिष्ठा नक्षत्र के अधिष्ठाता अष्ट वसु हैं। पौराणिक कथाओं में अष्ट वसुओं को प्रकृति की आठ शक्तियों का प्रतिनिधि माना गया है। इसलिए यह नक्षत्र धन, समृद्धि, संगीत और सामाजिक प्रतिष्ठा से जुड़ा हुआ है।","शतभिषा नक्षत्र के अधिष्ठाता वरुण देव हैं। शतभिषा का अर्थ सौ चिकित्सक होता है। वरुण को जल और रहस्यों का देवता माना जाता है। इसलिए यह नक्षत्र चिकित्सा, शोध और गूढ़ ज्ञान का प्रतिनिधित्व करता है।","पूर्वाभाद्रपद नक्षत्र के अधिष्ठाता अजैकपाद हैं, जिन्हें भगवान रुद्र का एक स्वरूप माना जाता है। यह नक्षत्र तपस्या, त्याग और आध्यात्मिक जागरण से जुड़ा हुआ है।","उत्तराभाद्रपद नक्षत्र के अधिष्ठाता अहिर्बुध्न्य हैं, जिन्हें समुद्र की गहराइयों में रहने वाला दिव्य नाग माना जाता है। यह नक्षत्र आध्यात्मिक गहराई, स्थिरता और रहस्यमयी ज्ञान का प्रतिनिधित्व करता है।","रेवती नक्षत्र की कथा राजा रैवत और उनकी पुत्री रेवती से जुड़ी हुई है। राजा रैवत अपनी पुत्री के लिए योग्य वर की खोज में ब्रह्मलोक पहुँचे। जब वे वापस लौटे, तब तक पृथ्वी पर कई युग बीत चुके थे। बाद में रेवती का विवाह बलराम से हुआ। इसलिए रेवती नक्षत्र को सुरक्षा, समृद्धि, यात्रा और संरक्षण का प्रतीक माना जाता है।"
+];
+
 const TARA_NAMES = ["जन्म","सम्पत","विपत","क्षेम","प्रत्यरि","साधक","वध","मित्र","परम मित्र"];
+// 'neutral' | 'good' | 'bad'
 const TARA_STATUS = ["neutral","good","bad","good","bad","good","bad","good","good"];
 const TARA_MEANING = [
   "स्वयं की स्थिति — यह तारा शुभ या अशुभ नहीं, सामान्य माना जाता है।",
@@ -271,6 +319,7 @@ function fillTaraRef(){
   ).join('');
 }
 
+// ---------- Simplified lunar longitude (Meeus low-precision periodic series) ----------
 function normDeg(d){ d = d % 360; if(d<0) d+=360; return d; }
 
 function moonEclipticLongitude(date){
@@ -347,6 +396,7 @@ function isoToLocalNoonDate(iso){
 function getJanmaIdxOrAlert(){
   let jSel = document.getElementById('janmaNak').value;
   if(jSel===''){
+    // fall back: try deriving it from DOB right now, in case the earlier auto-fill didn't fire
     autoCalcJanmaNak();
     jSel = document.getElementById('janmaNak').value;
   }
@@ -380,6 +430,7 @@ document.getElementById('toggleBirthCalc').addEventListener('click', ()=>{
   document.getElementById('birthCalcBlock').classList.toggle('open');
 });
 
+// dd/mm/yyyy auto-slash formatting
 function formatDDMMYYYY(el){
   let digits = el.value.replace(/\D/g,'').slice(0,8);
   let out = digits;
@@ -398,7 +449,7 @@ function parseDDMMYYYY(str){
 function autoCalcJanmaNak(){
   const bd = document.getElementById('bDate').value;
   const parsed = parseDDMMYYYY(bd);
-  if(!parsed) return;
+  if(!parsed) return; // wait till a full valid date is typed
   const bt = document.getElementById('bTime').value || '12:00';
   const [hh,mm] = bt.split(':').map(Number);
   const localDate = new Date(Date.UTC(parsed.yyyy, parsed.mm-1, parsed.dd, hh, mm, 0));
@@ -414,6 +465,9 @@ bDateEl.addEventListener('keyup', autoCalcJanmaNak);
 document.getElementById('bTime').addEventListener('change', autoCalcJanmaNak);
 document.getElementById('bLat').addEventListener('change', autoCalcJanmaNak);
 document.getElementById('bLon').addEventListener('change', autoCalcJanmaNak);
+
+// pre-filled default DOB should also auto-fill Janma Nakshatra right away
+autoCalcJanmaNak();
 
 document.getElementById('useToday').addEventListener('click', ()=>{
   const t = new Date();
@@ -462,9 +516,13 @@ document.getElementById('btnNavtaraTable').addEventListener('click', function(){
 function refreshJatak(){
   const janmaIdx = getJanmaIdxOrAlert();
   if(janmaIdx===null) return false;
+  const katha = NAK_KATHA[janmaIdx];
   document.getElementById('jatakContent').innerHTML =
     `<div class="lord">जन्म नक्षत्र: ${NAKSHATRAS[janmaIdx]} · स्वामी ग्रह: ${NAK_LORD[janmaIdx]}</div>` +
-    `<div>${JATAK_DETAIL[janmaIdx]}</div>`;
+    `<div>${JATAK_DETAIL[janmaIdx]}</div>` +
+    (katha
+      ? `<div class="katha-block"><div class="katha-title">पौराणिक कथा</div><div>${katha}</div></div>`
+      : `<div class="katha-block katha-missing">इस नक्षत्र की पौराणिक कथा अभी जोड़ी नहीं गई है।</div>`);
 }
 document.getElementById('btnJatak').addEventListener('click', function(){
   toggleSection(document.getElementById('secJatak'), this, refreshJatak);
@@ -501,67 +559,76 @@ document.getElementById('btnCal').addEventListener('click', function(){
   toggleSection(document.getElementById('secCal'), this, refreshCal);
 });
 
+// Tara reference
 document.getElementById('btnTaraRef').addEventListener('click', function(){
   toggleSection(document.getElementById('secTaraRef'), this, null);
 });
 
+// Remedies: Janma Tara devata/mantra + a pick-one option among the 3 Parama Mitra nakshatras
+let selectedParamaMitraIdx = null;
+function refreshRemedy(){
+  const janmaIdx = getJanmaIdxOrAlert();
+  if(janmaIdx===null) return false;
+
+  const paramaMitraNaks = [];
+  for(let i=0;i<27;i++){
+    if(taraNumberFromIndices(janmaIdx, i)===9) paramaMitraNaks.push(i);
+  }
+  if(selectedParamaMitraIdx===null || !paramaMitraNaks.includes(selectedParamaMitraIdx)){
+    selectedParamaMitraIdx = paramaMitraNaks[0];
+  }
+
+  let html = `<div class="r-group">
+    <div class="r-title">1. जन्म तारा के देवता व मंत्र</div>
+    <div class="r-sub">रोज़ाना 108 बार जाप करें</div>
+    <div class="remedy-card">
+      <div class="r-nak">${NAKSHATRAS[janmaIdx]} नक्षत्र</div>
+      <div class="r-devata">देवता: ${NAK_DEVATA[janmaIdx]}</div>
+      <div class="r-mantra">${NAK_MANTRA[janmaIdx]}</div>
+      <div class="r-count">108 बार / प्रतिदिन</div>
+    </div>
+  </div>`;
+
+  html += `<div class="r-group">
+    <div class="r-title">2. परम मित्र तारा के देवता व मंत्र</div>
+    <div class="r-sub">इन तीनों नक्षत्रों में से कोई एक मंत्र चुनकर रोज़ाना 108 बार जाप करें</div>`;
+  paramaMitraNaks.forEach(idx=>{
+    const sel = idx===selectedParamaMitraIdx;
+    html += `<div class="remedy-card remedy-option ${sel?'selected':''}" data-idx="${idx}">
+      <div class="r-radio"><span class="dot-outer"><span class="dot-inner"></span></span><span class="r-nak">${NAKSHATRAS[idx]} नक्षत्र</span></div>
+      <div class="r-devata">देवता: ${NAK_DEVATA[idx]}</div>
+      <div class="r-mantra">${NAK_MANTRA[idx]}</div>
+      <div class="r-count">108 बार / प्रतिदिन</div>
+    </div>`;
+  });
+  html += `<div class="remedy-note">चुना हुआ मंत्र ऊपर सुनहरे बिंदु से दिखेगा — किसी भी कार्ड पर क्लिक करके बदल सकते हैं।</div></div>`;
+
+  document.getElementById('remedyContent').innerHTML = html;
+
+  document.querySelectorAll('#remedyContent .remedy-option').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      selectedParamaMitraIdx = parseInt(card.getAttribute('data-idx'),10);
+      refreshRemedy();
+    });
+  });
+}
+document.getElementById('btnRemedy').addEventListener('click', function(){
+  toggleSection(document.getElementById('secRemedy'), this, refreshRemedy);
+});
+
+// Keep already-open sections (and the main result, if shown) live-synced
+// whenever the Janma Nakshatra or target date changes.
 document.getElementById('janmaNak').addEventListener('change', ()=>{
+  selectedParamaMitraIdx = null;
   if(document.getElementById('resultPanel').style.display==='block') computeResult();
   if(document.getElementById('secNavtaraTable').classList.contains('open')) refreshNavtaraTable();
   if(document.getElementById('secJatak').classList.contains('open')) refreshJatak();
   if(document.getElementById('secCal').classList.contains('open')) refreshCal();
+  if(document.getElementById('secRemedy').classList.contains('open')) refreshRemedy();
 });
 document.getElementById('targetDate').addEventListener('change', ()=>{
   if(document.getElementById('resultPanel').style.display==='block') computeResult();
 });
-</script>
-
-<script src="birth-profile.js"></script>
-<script src="hub-nav.js"></script>
-<script>
-  window.addEventListener("DOMContentLoaded", function () {
-    if (window.BirthProfile) {
-      BirthProfile.init();
-
-      // Attach Saved Profile Selector at the top of input panel
-      if (BirthProfile.attachProfileSelector) {
-        BirthProfile.attachProfileSelector("inputPanelWrapper");
-      }
-
-      // Check if profile was loaded, sync nakshatra and calculate result
-      function syncFromProfile() {
-        var p = BirthProfile.get();
-        if (p) {
-          if (p.day && p.month && p.year) {
-            document.getElementById('bDate').value = 
-              String(p.day).padStart(2, '0') + '/' + String(p.month).padStart(2, '0') + '/' + p.year;
-          }
-          if (p.hour !== undefined && p.minute !== undefined) {
-            var h24 = p.hour;
-            if (p.ampm === 'PM' && h24 < 12) h24 += 12;
-            if (p.ampm === 'AM' && h24 === 12) h24 = 0;
-            document.getElementById('bTime').value = 
-              String(h24).padStart(2, '0') + ':' + String(p.minute).padStart(2, '0');
-          }
-          if (p.lat) document.getElementById('bLat').value = p.lat;
-          if (p.lon) document.getElementById('bLon').value = p.lon;
-          
-          autoCalcJanmaNak();
-          computeResult();
-        }
-      }
-
-      syncFromProfile();
-
-      // Listen to profile changes from picker
-      var picker = document.getElementById("cc-app-profile-picker");
-      if (picker) {
-        picker.addEventListener("change", function () {
-          setTimeout(syncFromProfile, 50);
-        });
-      }
-    }
-  });
 </script>
 </body>
 </html>
