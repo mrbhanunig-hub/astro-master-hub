@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Astro Vastu Ashtakavarga</title>
+<link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f2f4fa;--ink:#1a2040;--mut:#5b6385;--card:#fff;--line:#d5daea;--acc:#b85f00;--hi:#e8ecfa;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12152b;--ink:#e8ebf8;--mut:#9aa3c7;--card:#1b1f3b;--line:#2d3358;--acc:#f0a53a;--hi:#262b52}}
+:root[data-theme="dark"]{--bg:#12152b;--ink:#e8ebf8;--mut:#9aa3c7;--card:#1b1f3b;--line:#2d3358;--acc:#f0a53a;--hi:#262b52}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 'Mukta',system-ui,sans-serif}
+main{max-width:980px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:2rem;font-weight:800;margin:0 0 4px;letter-spacing:-.01em}
+h2{font-size:1.15rem;font-weight:800;margin:28px 0 8px}
+p.sub{margin:0 0 18px;color:var(--mut)}
+.box{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}
+form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end}
+label{display:flex;flex-direction:column;font-size:.85rem;color:var(--mut);gap:4px}
+input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+button{font:inherit;font-weight:600;background:var(--acc);color:#fff;border:0;border-radius:6px;padding:10px 16px;cursor:pointer}
+:root[data-theme="dark"] button{color:#12152b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button{color:#12152b}}
+.sc{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:640px;text-align:center}
+th,td{padding:7px 6px;border:1px solid var(--line);font-variant-numeric:tabular-nums}
+th{font-weight:600;background:var(--hi)}
+td:first-child,th:first-child{text-align:left;white-space:nowrap}
+.lg{background:color-mix(in srgb,var(--acc) 22%,transparent)}
+.sav td{font-weight:800}
+.tot{font-weight:800;background:var(--hi)}
+.note{color:var(--mut);font-size:.85rem;margin-top:8px}
+#out{display:none}
+details.acc{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-top:12px}
+details.acc>summary{cursor:pointer;padding:14px 16px;font-weight:800;font-size:1.05rem;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px}
+details.acc>summary::-webkit-details-marker{display:none}
+details.acc>summary::after{content:'+';color:var(--acc);font-size:1.4rem;line-height:1}
+details.acc[open]>summary::after{content:'\2212'}
+details.acc>summary:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:10px}
+details.acc>.in{padding:0 16px 16px;overflow-x:auto}
+h3{font-size:1rem;font-weight:800;margin:18px 0 8px}
+h3:first-child{margin-top:4px}
+:root button.sec{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.who{font-weight:800;font-size:1.15rem;margin:22px 0 0}
+.lang{display:flex;gap:6px;justify-content:flex-end;margin-bottom:6px}
+.lang button{padding:6px 12px}
+:root button.sec.on{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+</style>
+</head>
+<body>
+<main>
+<div class="lang"><button type="button" id="le" class="sec">English</button><button type="button" id="lh" class="sec">हिन्दी</button></div>
+<h1 data-i="h1"></h1>
+<p class="sub" data-i="sub"></p>
+<div class="box">
+<div id="savedProfileWrap" style="display:none;margin-bottom:14px;">
+<label style="display:flex;flex-direction:column;font-size:.85rem;color:var(--mut);gap:4px;">Saved Birth Profile <span style="color:var(--mut);font-weight:400;">(Astro Master Hub)</span></label>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
+<select id="savedProfileSelect" style="flex:1;min-width:180px;"></select>
+<button type="button" id="manageProfilesBtn" class="sec" style="white-space:nowrap;">👤 प्रोफाइल मैनेज करें</button>
+</div>
+<p class="note" id="profileAppliedNote" style="display:none;margin-top:6px;"></p>
+</div>
+<form id="f">
+<label><span data-i="name"></span><input type="text" id="nm" maxlength="60" autocomplete="name" placeholder="Name"></label>
+<label><span data-i="bdate"></span><input type="text" id="d" inputmode="numeric" placeholder="dd/mm/yyyy" maxlength="10" pattern="\d{1,2}[/.-]\d{1,2}[/.-]\d{4}" title="dd/mm/yyyy" required></label>
+<label><span data-i="btime"></span><input type="time" id="t" required></label>
+<label><span data-i="co"></span><select id="co"></select></label>
+<label><span data-i="st"></span><select id="st"></select></label>
+<label><span data-i="ci"></span><select id="ci"></select></label>
+<label><span data-i="tz"></span><input type="number" id="z" step="0.25"></label>
+<label><span data-i="la"></span><input type="number" id="la" step="0.0001"></label>
+<label><span data-i="lo"></span><input type="number" id="lo" step="0.0001"></label>
+<button type="submit" data-i="gen"></button>
+<button type="button" id="rs" class="sec" data-i="rst"></button>
+</form>
+<p class="note" data-i="fnote"></p>
+</div>
+
+<div id="out">
+<p class="who" id="who"></p>
+<details class="acc"><summary data-i="s1"></summary><div class="in"><table id="pos"></table>
+<p class="note" data-i="pnote"></p></div></details>
+<details class="acc"><summary data-i="s2"></summary><div class="in"><p class="note" id="chk" style="margin:0 0 8px"></p><table id="bav"></table></div></details>
+<details class="acc"><summary data-i="s3"></summary><div class="in"><table id="tri"></table></div></details>
+<details class="acc"><summary data-i="s4"></summary><div class="in"><h3 data-i="h3a"></h3><table id="vd"></table>
+<p class="note" data-i="vnote"></p>
+<h3 data-i="h3b"></h3><table id="vr"></table></div></details>
+</div>
+</main>
+<!-- Astro Master Hub: shared saved-birth-profile engine (same folder as birth-profile.html) -->
+<script src="birth-profile.js"></script>
+<script>
+const RN=[['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'],['मेष','वृषभ','मिथुन','कर्क','सिंह','कन्या','तुला','वृश्चिक','धनु','मकर','कुंभ','मीन']];let R=RN[0];
+const PL=[['Sun','Moon','Mars','Merc','Jup','Ven','Sat','ASC'],['सूर्य','चंद्र','मंगल','बुध','गुरु','शुक्र','शनि','लग्न']];let P=PL[0];
+// T[target][contributor: सू,चं,मं,बु,गु,शु,श,ल] = शुभ स्थान (योगदानकर्ता से गिनकर)
+const T=[
+[[1,2,4,7,8,9,10,11],[3,6,10,11],[1,2,4,7,8,9,10,11],[3,5,6,9,10,11,12],[5,6,9,11],[6,7,12],[1,2,4,7,8,9,10,11],[3,4,6,10,11,12]],
+[[3,6,7,8,10,11],[1,3,6,7,10,11],[2,3,5,6,9,10,11],[1,3,4,5,7,8,10,11],[1,4,7,8,10,11,12],[3,4,5,7,9,10,11],[3,5,6,11],[3,6,10,11]],
+[[3,5,6,10,11],[3,6,11],[1,2,4,7,8,10,11],[3,5,6,11],[6,10,11,12],[6,8,11,12],[1,4,7,8,9,10,11],[1,3,6,10,11]],
+[[5,6,9,11,12],[2,4,6,8,10,11],[1,2,4,7,8,9,10,11],[1,3,5,6,9,10,11,12],[6,8,11,12],[1,2,3,4,5,8,9,11],[1,2,4,7,8,9,10,11],[1,2,4,6,8,10,11]],
+[[1,2,3,4,7,8,9,10,11],[2,5,7,9,11],[1,2,4,7,8,10,11],[1,2,4,5,6,9,10,11],[1,2,3,4,7,8,10,11],[2,5,6,9,10,11],[3,5,6,12],[1,2,4,5,6,7,9,10,11]],
+[[8,11,12],[1,2,3,4,5,8,9,11,12],[3,5,6,9,11,12],[3,5,6,9,11],[5,8,9,10,11],[1,2,3,4,5,8,9,10,11],[3,4,5,8,9,10,11],[1,2,3,4,5,8,9,11]],
+[[1,2,4,7,8,10,11],[3,6,11],[3,5,6,10,11,12],[6,8,9,10,11,12],[5,6,11,12],[6,11,12],[3,5,6,11],[1,3,4,6,10,11]],
+[[3,4,6,10,11,12],[3,6,10,11,12],[1,3,6,10,11],[1,2,4,6,8,10,11],[1,2,4,5,6,7,9,10,11],[1,2,3,4,5,8,9],[1,3,4,6,10,11],[3,6,10,11]]
+];
+const rad=Math.PI/180,nm=x=>((x%360)+360)%360,S=x=>Math.sin(x*rad),C=x=>Math.cos(x*rad);
+function jd(y,m,d,h){if(m<=2){y--;m+=12}const A=Math.floor(y/100),B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d+B-1524.5+h/24}
+const EL={
+mo:d=>[125.1228-.0529538083*d,5.1454,318.0634+.1643573223*d,60.2666,.0549,115.3654+13.0649929509*d],
+me:d=>[48.3313+3.24587e-5*d,7.0047+5e-8*d,29.1241+1.01444e-5*d,.387098,.205635+5.59e-10*d,168.6562+4.0923344368*d],
+ve:d=>[76.6799+2.4659e-5*d,3.3946+2.75e-8*d,54.891+1.38374e-5*d,.72333,.006773-1.302e-9*d,48.0052+1.6021302244*d],
+ma:d=>[49.5574+2.11081e-5*d,1.8497-1.78e-8*d,286.5016+2.92961e-5*d,1.523688,.093405+2.516e-9*d,18.6021+.5240207766*d],
+ju:d=>[100.4542+2.76854e-5*d,1.303-1.557e-7*d,273.8777+1.64505e-5*d,5.20256,.048498+4.469e-9*d,19.895+.0830853001*d],
+sa:d=>[113.6634+2.3898e-5*d,2.4886-1.081e-7*d,339.3939+2.97661e-5*d,9.55475,.055546-9.499e-9*d,316.967+.0334442282*d]};
+function kep(q){let[N,i,w,a,e,M]=q;M=nm(M);let E=M+e/rad*S(M)*(1+e*C(M));
+for(let k=0;k<8;k++)E-=(E-e/rad*S(E)-M)/(1-e*C(E));
+const x=a*(C(E)-e),y=a*Math.sqrt(1-e*e)*S(E),v=nm(Math.atan2(y,x)/rad),r=Math.hypot(x,y),u=v+w;
+return{x:r*(C(N)*C(u)-S(N)*S(u)*C(i)),y:r*(S(N)*C(u)+C(N)*S(u)*C(i)),M}}
+function calc(J){const d=J-2451543.5,L={};
+const ws=282.9404+4.70935e-5*d,s=kep([0,0,ws,1,.016709-1.151e-9*d,356.047+.9856002585*d]);
+L[0]=nm(Math.atan2(s.y,s.x)/rad);
+const em=EL.mo(d),mo=kep(em);let ml=nm(Math.atan2(mo.y,mo.x)/rad);
+const Mm=mo.M,Ms=s.M,Lm=Mm+em[2]+em[0],Ls=Ms+ws,D=Lm-Ls,F=Lm-em[0];
+ml+=-1.274*S(Mm-2*D)+.658*S(2*D)-.186*S(Ms)-.059*S(2*Mm-2*D)-.057*S(Mm-2*D+Ms)+.053*S(Mm+2*D)+.046*S(2*D-Ms)+.041*S(Mm-Ms)-.035*S(D)-.031*S(Mm+Ms)-.015*S(2*F-2*D)+.011*S(Mm-4*D);
+L[1]=nm(ml);
+const g=n=>{const p=kep(EL[n](d));return{p,l:nm(Math.atan2(p.y+s.y,p.x+s.x)/rad)}};
+const ma=g('ma'),me=g('me'),ju=g('ju'),ve=g('ve'),sa=g('sa'),Mj=ju.p.M,Mt=sa.p.M;
+L[2]=ma.l;L[3]=me.l;L[5]=ve.l;
+L[4]=nm(ju.l-.332*S(2*Mj-5*Mt-67.6)-.056*S(2*Mj-2*Mt+21)+.042*S(3*Mj-5*Mt+21)-.036*S(Mj-2*Mt)+.022*C(Mj-Mt)+.023*S(2*Mj-3*Mt+52)-.016*S(Mj-5*Mt-69));
+L[6]=nm(sa.l+.812*S(2*Mj-5*Mt-67.6)-.229*C(2*Mj-4*Mt-2)+.119*S(Mj-2*Mt-3)+.046*S(2*Mj-6*Mt-69)+.014*S(Mj-3*Mt+32));
+L[8]=nm(em[0]);return L}
+function asc(J,lat,lon){const T=(J-2451545)/36525,g=nm(280.46061837+360.98564736629*(J-2451545)+.000387933*T*T),ra=nm(g+lon),e=23.4393-.0130042*T;
+return nm(Math.atan2(C(ra),-(S(ra)*C(e)+Math.tan(lat*rad)*S(e)))/rad)}
+let rs=[],lon=[];
+const $=id=>document.getElementById(id);
+const dm=x=>{const v=x%30,d=Math.floor(v),m=Math.round((v-d)*60);return d+'° '+String(m).padStart(2,'0')+'′'};
+function showPos(){
+let h='<tr><th>'+tx('planet')+'</th><th>'+tx('degree')+'</th><th>'+tx('rashi')+'</th></tr>';
+for(let i=0;i<8;i++){h+='<tr><td>'+P[i]+'</td><td>'+dm(lon[i])+'</td><td><select data-i="'+i+'">'+R.map((r,k)=>'<option value="'+k+'"'+(k===rs[i]?' selected':'')+'>'+r+'</option>').join('')+'</select></td></tr>'}
+const ra=Math.floor(lon[8]/30),ke=Math.floor(nm(lon[8]+180)/30);
+h+='<tr><td>'+tx('rahu')+'</td><td>'+dm(lon[8])+'</td><td>'+R[ra]+'</td></tr><tr><td>'+tx('ketu')+'</td><td>'+dm(nm(lon[8]+180))+'</td><td>'+R[ke]+'</td></tr>';
+$('pos').innerHTML=h}
+const ABL=[['Ar','Ta','Ge','Cn','Le','Vi','Li','Sc','Sg','Cp','Aq','Pi'],['मे','वृ','मि','कर्','सिं','कन्','तु','वृश्','ध','म','कुं','मी']];let AB=ABL[0];
+function showBav(){
+const lg=rs[7],ord=[...Array(12)].map((_,i)=>(lg+i)%12),B=[],pt=Array(12).fill(0);
+for(let t=0;t<8;t++){const b=Array(12).fill(0);for(let c=0;c<8;c++)for(const h of T[t][c])b[(rs[c]+h-1)%12]++;B.push(b);if(t<7)b.forEach((v,i)=>pt[i]+=v)}
+const sum=a=>a.reduce((x,v)=>x+v,0);
+let h='<tr><th>'+tx('planet')+'</th><th>'+tx('rashi')+'</th>'+ord.map(r=>'<th>'+AB[r]+'<br><small>'+(r+1)+'</small></th>').join('')+'<th>'+tx('tot')+'</th></tr>';
+B.forEach((b,t)=>{h+='<tr><td>'+P[t]+'</td><td>'+(rs[t]+1)+'</td>'+ord.map(r=>'<td>'+b[r]+'</td>').join('')+'<td class="tot">'+sum(b)+'</td></tr>'});
+const gt=pt.map((v,i)=>v+B[7][i]);
+h+='<tr class="sav"><td>'+tx('ptot')+'</td><td></td>'+ord.map(r=>'<td>'+pt[r]+'</td>').join('')+'<td class="tot">'+sum(pt)+'</td></tr>';
+h+='<tr class="sav"><td>'+tx('gtot')+'</td><td></td>'+ord.map(r=>{const p=Math.max(0,Math.min(1,(gt[r]-20)/24))*55;return'<td style="background:color-mix(in srgb,var(--acc) '+p.toFixed(0)+'%,transparent)">'+gt[r]+'</td>'}).join('')+'<td class="tot">'+sum(gt)+'</td></tr>';
+$('bav').innerHTML=h;
+$('chk').textContent=tx('chk1')+R[lg]+tx('chk2')+sum(gt)+tx('chk3')+sum(pt)+(sum(pt)===337?tx('ok'):tx('chkw'))+')';
+let q='<tr><th>'+tx('planet')+'</th>'+ord.map(r=>'<th>'+AB[r]+'<br><small>'+(r+1)+'</small></th>').join('')+'<th>'+tx('tot')+'</th></tr>';
+for(let t=0;t<7;t++){const b=B[t].slice();for(const g of [[0,4,8],[1,5,9],[2,6,10],[3,7,11]]){const m=Math.min(...g.map(i=>b[i]));g.forEach(i=>b[i]-=m)}
+q+='<tr><td>'+P[t]+'</td>'+ord.map(r=>'<td>'+b[r]+'</td>').join('')+'<td class="tot">'+sum(b)+'</td></tr>'}
+$('tri').innerHTML=q;showVastu(B)}
+let L='en';const I={"h1": ["Astro Vastu Ashtakavarga", "एस्ट्रो वास्तु अष्टकवर्ग"], "sub": ["Enter birth details to get the Sarvashtakavarga, Trikone Shodhan and Astro Vastu directions. Lahiri ayanamsa.", "जन्म विवरण भरें और सर्वाष्टकवर्ग, त्रिकोण शोधन तथा एस्ट्रो वास्तु दिशाएँ पाएँ। लाहिरी अयनांश।"], "name": ["Name", "नाम"], "nph": ["Name", "नाम"], "bdate": ["Birth date", "जन्म तिथि"], "btime": ["Birth time", "जन्म समय"], "co": ["Country", "देश"], "st": ["State", "राज्य"], "ci": ["City", "शहर"], "tz": ["Time zone (UTC hrs)", "समय क्षेत्र (UTC घंटे)"], "la": ["Latitude (N +)", "अक्षांश (उत्तर +)"], "lo": ["Longitude (E +)", "देशांतर (पूर्व +)"], "gen": ["Generate", "बनाएँ"], "rst": ["Reset", "रीसेट"], "fnote": ["City choice fills latitude, longitude and time zone. For a place not listed, pick the nearest city and edit these three fields. Use the time zone in force at birth (for example, IST is 5.5).", "शहर चुनने पर अक्षांश, देशांतर और समय क्षेत्र अपने आप भर जाते हैं। सूची में न हो तो नज़दीकी शहर चुनकर इन तीन खानों को बदलें। जन्म के समय का समय क्षेत्र लिखें (जैसे IST = 5.5)।"], "s1": ["Planet Positions", "ग्रह स्थिति"], "s2": ["Natal Sarvashtak Chart", "जन्म सर्वाष्टक चार्ट"], "s3": ["Trikone Shodhan", "त्रिकोण शोधन"], "s4": ["Astro Vastu Room Direction", "एस्ट्रो वास्तु कक्ष दिशा"], "pnote": ["Positions come from a simplified calculation (a few degrees of difference is possible). Near a sign boundary, correct the sign in the dropdown and the tables update at once.", "ग्रह स्थिति सरल गणना से निकाली गई है (कुछ अंश का अंतर संभव)। राशि की सीमा के पास हो तो ड्रॉपडाउन से राशि सुधारें, तालिकाएँ तुरंत बदल जाएँगी।"], "h3a": ["Direction chart", "दिशा चार्ट"], "h3b": ["Room-wise direction", "कक्ष अनुसार दिशा"], "vnote": ["Each planet's own Bhinnashtakvarga is added by rashi: East = 1, 5, 9 · South = 2, 6, 10 · West = 3, 7, 11 · North = 4, 8, 12 (Aries = 1). The highest total is the best direction, lower totals are less favourable.", "प्रत्येक ग्रह के अपने भिन्नाष्टकवर्ग के अंक राशि अनुसार जोड़े गए हैं: पूर्व = 1, 5, 9 · दक्षिण = 2, 6, 10 · पश्चिम = 3, 7, 11 · उत्तर = 4, 8, 12 (मेष = 1)। सबसे अधिक योग वाली दिशा सर्वोत्तम है, कम योग वाली दिशा कम अच्छी।"], "planet": ["Planet", "ग्रह"], "degree": ["Degree", "अंश"], "rashi": ["Rashi", "राशि"], "tot": ["Tot", "योग"], "ptot": ["Planet Total", "ग्रह योग"], "gtot": ["Grand Total", "कुल योग"], "rahu": ["Rahu (mean)", "राहु (मध्यम)"], "ketu": ["Ketu", "केतु"], "room": ["Room", "कक्ष"], "best": ["Best", "सर्वोत्तम"], "ord": ["Order (best › least)", "क्रम (अधिक › कम)"], "badd": ["Enter birth date as dd/mm/yyyy", "जन्म तिथि dd/mm/yyyy में लिखें"], "chk1": ["D1 Rashi · ", "D1 राशि · "], "chk2": [" ascendant · SAV grand total ", " लग्न · SAV कुल योग "], "chk3": [" (planets ", " (ग्रह योग "], "ok": [", OK", ", सही"], "chkw": [", check", ", जाँचें"]};
+const tx=k=>I[k][L==='hi'?1:0];
+function applyLang(){const l=L==='hi'?1:0;document.documentElement.lang=L;document.querySelectorAll('[data-i]').forEach(e=>e.textContent=I[e.dataset.i][l]);$('nm').placeholder=I.nph[l];$('le').classList.toggle('on',!l);$('lh').classList.toggle('on',!!l);$('le').setAttribute('aria-pressed',String(!l));$('lh').setAttribute('aria-pressed',String(!!l));R=RN[l];P=PL[l];AB=ABL[l];if(rs.length){showPos();showBav()}}
+const DIR=[['East','पूर्व',[1,5,9]],['South','दक्षिण',[2,6,10]],['West','पश्चिम',[3,7,11]],['North','उत्तर',[4,8,12]]];
+const PN=[['Sun','सूर्य'],['Moon','चंद्र'],['Mars','मंगल'],['Mercury','बुध'],['Jupiter','गुरु'],['Venus','शुक्र'],['Saturn','शनि']];
+const VP=[[0,[['Pooja Ghar','पूजा घर'],['Entrance','प्रवेश द्वार'],['Drawing Room','ड्रॉइंग रूम']]],[2,[['Kitchen','रसोई']]],[4,[['Tijori','तिजोरी'],['Locker','लॉकर'],['Wealth place','धन का स्थान']]],[3,[['Library','पुस्तकालय'],['Books','किताबें'],['Office','ऑफिस']]],[5,[['Master Bedroom','मास्टर बेडरूम']]],[1,[['Water source','जल स्रोत'],['Water tank','पानी की टंकी']]],[6,[['Store Room','स्टोर रूम'],['Servant Room','नौकर कक्ष']]]];
+function showVastu(B){
+const l=L==='hi'?1:0,dn=k=>DIR[k][l],pn=t=>PN[t][l];
+const tot=t=>DIR.map(d=>d[2].reduce((a,r)=>a+B[t][r-1],0));
+let h='<tr><th>'+tx('planet')+'</th>'+DIR.map(d=>'<th>'+d[l]+'</th>').join('')+'<th>'+tx('best')+'</th></tr>';
+const info={};
+VP.forEach(([t])=>{const v=tot(t),mx=Math.max(...v);
+const ord=v.map((x,k)=>k).sort((a,b)=>v[b]-v[a]);
+info[t]={best:v.map((x,k)=>x===mx?dn(k):'').filter(Boolean).join(' ; '),ord:ord.map((k,i)=>(i&&v[ord[i-1]]===v[k]?' = ':(i?' › ':''))+DIR[k][l]+' ('+v[k]+')').join('')};
+h+='<tr><td>'+pn(t)+'</td>'+v.map(x=>'<td'+(x===mx?' class="lg"':'')+'>'+x+'</td>').join('')+'<td class="tot">'+info[t].best+'</td></tr>'});
+$('vd').innerHTML=h;
+let r='<tr><th>'+tx('room')+'</th><th>'+tx('planet')+'</th><th>'+tx('best')+'</th><th>'+tx('ord')+'</th></tr>';
+VP.forEach(([t,items])=>items.forEach(it=>{r+='<tr><td>'+it[l]+'</td><td>'+pn(t)+'</td><td class="tot">'+info[t].best+'</td><td>'+info[t].ord+'</td></tr>'}));
+$('vr').innerHTML=r}
+const LOC={
+India:{'Uttar Pradesh':'Kanpur,26.45,80.33;Lucknow,26.85,80.95;Varanasi,25.32,82.97;Agra,27.18,78.01;Prayagraj,25.43,81.85;Meerut,28.98,77.71;Noida,28.54,77.39;Ghaziabad,28.67,77.45;Gorakhpur,26.76,83.37;Bareilly,28.37,79.43;Jhansi,25.45,78.57;Mathura,27.49,77.67',
+'Delhi':'New Delhi,28.61,77.21',
+'Maharashtra':'Mumbai,19.08,72.88;Pune,18.52,73.86;Nagpur,21.15,79.09;Nashik,20.00,73.79;Aurangabad,19.88,75.34',
+'Gujarat':'Ahmedabad,23.02,72.57;Surat,21.17,72.83;Vadodara,22.31,73.18;Rajkot,22.30,70.80',
+'Rajasthan':'Jaipur,26.91,75.79;Jodhpur,26.24,73.02;Udaipur,24.59,73.71;Kota,25.18,75.83;Ajmer,26.45,74.64;Bikaner,28.02,73.31',
+'Madhya Pradesh':'Bhopal,23.26,77.41;Indore,22.72,75.86;Gwalior,26.22,78.18;Jabalpur,23.18,79.94;Ujjain,23.18,75.78',
+'Bihar':'Patna,25.59,85.14;Gaya,24.80,85.00;Bhagalpur,25.24,86.97;Muzaffarpur,26.12,85.39',
+'Jharkhand':'Ranchi,23.34,85.31;Jamshedpur,22.80,86.20;Dhanbad,23.80,86.44',
+'West Bengal':'Kolkata,22.57,88.36;Howrah,22.59,88.31;Siliguri,26.73,88.40;Durgapur,23.55,87.32',
+'Odisha':'Bhubaneswar,20.30,85.82;Cuttack,20.46,85.88;Puri,19.81,85.83',
+'Chhattisgarh':'Raipur,21.25,81.63;Bilaspur,22.08,82.14',
+'Uttarakhand':'Dehradun,30.32,78.03;Haridwar,29.95,78.16;Nainital,29.38,79.46',
+'Himachal Pradesh':'Shimla,31.10,77.17',
+'Punjab':'Ludhiana,30.90,75.86;Amritsar,31.63,74.87',
+'Chandigarh':'Chandigarh,30.73,76.78',
+'Haryana':'Gurugram,28.46,77.03;Faridabad,28.41,77.31;Panipat,29.39,76.97;Ambala,30.38,76.78',
+'Jammu and Kashmir':'Srinagar,34.08,74.80;Jammu,32.73,74.87',
+'Karnataka':'Bengaluru,12.97,77.59;Mysuru,12.30,76.64;Mangaluru,12.91,74.86;Hubballi,15.36,75.12',
+'Tamil Nadu':'Chennai,13.08,80.27;Coimbatore,11.02,76.96;Madurai,9.93,78.12;Tiruchirappalli,10.79,78.70',
+'Kerala':'Thiruvananthapuram,8.52,76.94;Kochi,9.93,76.27;Kozhikode,11.26,75.78',
+'Andhra Pradesh':'Visakhapatnam,17.69,83.22;Vijayawada,16.51,80.65;Tirupati,13.63,79.42',
+'Telangana':'Hyderabad,17.39,78.49;Warangal,17.97,79.59',
+'Assam':'Guwahati,26.14,91.74;Dibrugarh,27.48,94.91',
+'Goa':'Panaji,15.50,73.83'},
+'Nepal':{'Bagmati':'Kathmandu,27.72,85.32,5.75','Gandaki':'Pokhara,28.21,83.99,5.75'},
+'Pakistan':{'Sindh':'Karachi,24.86,67.01,5','Punjab':'Lahore,31.55,74.34,5'},
+'Bangladesh':{'Dhaka':'Dhaka,23.81,90.41,6'},
+'Sri Lanka':{'Western':'Colombo,6.93,79.86,5.5'},
+'United Arab Emirates':{'Dubai':'Dubai,25.20,55.27,4'},
+'Singapore':{'Singapore':'Singapore,1.35,103.82,8'},
+'United Kingdom':{'England':'London,51.51,-0.13,0'},
+'United States':{'New York':'New York,40.71,-74.01,-5','California':'Los Angeles,34.05,-118.24,-8','Illinois':'Chicago,41.88,-87.63,-6','Texas':'Houston,29.76,-95.37,-6'},
+'Canada':{'Ontario':'Toronto,43.65,-79.38,-5'},
+'Australia':{'New South Wales':'Sydney,-33.87,151.21,10'}};
+const sel=(id,a)=>{$(id).innerHTML=a.map(x=>'<option>'+x+'</option>').join('')};
+function fillS(){sel('st',Object.keys(LOC[$('co').value]));fillC()}
+function fillC(){sel('ci',LOC[$('co').value][$('st').value].split(';').map(x=>x.split(',')[0]));setLoc()}
+function setLoc(){const c=LOC[$('co').value][$('st').value].split(';').find(x=>x.split(',')[0]===$('ci').value).split(',');$('la').value=c[1];$('lo').value=c[2];$('z').value=c[3]||5.5}
+sel('co',Object.keys(LOC));fillS();$('st').value='Uttar Pradesh';fillC();$('ci').value='Kanpur';setLoc();
+function resetAll(){$('nm').value='';$('d').value='';$('t').value='';$('co').value='India';fillS();$('st').value='Uttar Pradesh';fillC();$('ci').value='Kanpur';setLoc();rs=[];lon=[];$('out').style.display='none';document.querySelectorAll('details.acc').forEach(x=>x.open=false);window.scrollTo(0,0);
+if(window.BirthProfile){$('savedProfileSelect').value='';const note=$('profileAppliedNote');note.style.display='none';note.textContent=''}}
+$('rs').addEventListener('click',resetAll);
+$('co').addEventListener('change',fillS);$('st').addEventListener('change',fillC);$('ci').addEventListener('change',setLoc);
+$('le').onclick=()=>{L='en';applyLang()};$('lh').onclick=()=>{L='hi';applyLang()};applyLang();
+$('f').addEventListener('submit',e=>{e.preventDefault();
+const[d,m,y]=$('d').value.trim().split(/[\/.-]/).map(Number),[hh,mm]=$('t').value.split(':').map(Number);
+if(!(d>=1&&d<=31&&m>=1&&m<=12&&y>=1000)){alert(tx('badd'));return}
+const z=+$('z').value,la=+$('la').value,lo=+$('lo').value;
+const J=jd(y,m,d,hh+mm/60-z),ay=23.853+(J-2451545)/365.25*.013969,L=calc(J);
+lon=[];for(let i=0;i<7;i++)lon[i]=nm(L[i]-ay);
+lon[7]=nm(asc(J,la,lo)-ay);lon[8]=nm(L[8]-ay);
+rs=lon.slice(0,8).map(x=>Math.floor(x/30));
+$('who').textContent=($('nm').value.trim()?$('nm').value.trim()+' · ':'')+$('d').value.trim()+', '+$('t').value+' · '+$('ci').value+', '+$('st').value+', '+$('co').value;$('out').style.display='block';showPos();showBav()});
+$('pos').addEventListener('change',e=>{const i=+e.target.dataset.i;if(!isNaN(i)){rs[i]=+e.target.value;showBav()}});
+
+// ---------------------------- Astro Master Hub: Saved Birth Profile bridge ----------------------------
+function placeLabelForProfile(p){
+  if (p.city) return p.city + (p.state ? ", " + p.state : "") + (p.country && p.country!=="India" ? ", " + p.country : "");
+  return p.country || "";
+}
+function profileTo24Hour(p){
+  let h = parseInt(p.hour,10) % 12;
+  if (String(p.ampm||"AM").toUpperCase()==="PM") h += 12;
+  return h;
+}
+function populateSavedProfileSelect(){
+  if (!window.BirthProfile) return;
+  const wrap = $("savedProfileWrap"), sel = $("savedProfileSelect");
+  const list = BirthProfile.getAll();
+  wrap.style.display = "block";
+  const prevValue = sel.value;
+  sel.innerHTML = '<option value="">— सेव्ड प्रोफाइल चुनें —</option>';
+  list.forEach(function(p){
+    const icon = p.gender==="Female" ? "स्त्री" : (p.gender==="Other" ? "अन्य" : "पुरुष");
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = p.name + " (" + icon + ", " + String(p.day).padStart(2,"0") + "/" + String(p.month).padStart(2,"0") + "/" + p.year + (p.city ? " - " + p.city : "") + ")";
+    sel.appendChild(opt);
+  });
+  if (prevValue && list.some(function(p){ return p.id===prevValue; })){ sel.value = prevValue; }
+}
+function applyBirthProfileToForm(profile){
+  if (!profile) return;
+  $("nm").value = profile.name || "";
+  $("d").value = String(profile.day).padStart(2,"0") + "/" + String(profile.month).padStart(2,"0") + "/" + profile.year;
+  const h24 = profileTo24Hour(profile);
+  $("t").value = String(h24).padStart(2,"0") + ":" + String(profile.minute).padStart(2,"0");
+  $("la").value = profile.lat;
+  $("lo").value = profile.lon;
+  $("z").value = profile.tz;
+  const note = $("profileAppliedNote");
+  note.style.display = "block";
+  note.textContent = "\"" + profile.name + "\" का जन्म-विवरण भर दिया गया — " + placeLabelForProfile(profile) +
+    " (Lat " + profile.lat + ", Lon " + profile.lon + ", UTC " + profile.tz + ")। अब Generate अपने आप चल रहा है...";
+  $('f').dispatchEvent(new Event('submit', {cancelable:true}));
+}
+if (window.BirthProfile){
+  populateSavedProfileSelect();
+  $("savedProfileSelect").addEventListener("change", function(){
+    const selectedId = this.value;
+    if (!selectedId) return;
+    const profile = BirthProfile.getAll().filter(function(p){ return p.id===selectedId; })[0];
+    if (profile){ BirthProfile.setActive(profile.id); applyBirthProfileToForm(profile); }
+  });
+  $("savedProfileSelect").addEventListener("mousedown", populateSavedProfileSelect);
+  window.addEventListener("focus", populateSavedProfileSelect);
+  $("manageProfilesBtn").addEventListener("click", function(){
+    BirthProfile.init();
+    const fab = document.getElementById("cc-profile-fab");
+    if (fab) fab.click();
+  });
+  const activeProfile = BirthProfile.get();
+  if (activeProfile){
+    $("savedProfileSelect").value = activeProfile.id;
+    applyBirthProfileToForm(activeProfile);
+  }
+}
+</script>
+</body>
+</html>
