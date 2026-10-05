@@ -152,7 +152,7 @@ const T = {
     shubh:"(शुभ)", ashubh:"(अशुभ)", samanya:"(सामान्य)",
     vGreat1:"आज का दिन इस कार्य के लिए बहुत शुभ है",
     vGreat2:"आज का दिन इस कार्य के लिए शुभ है",
-    vBad:"आज का दिन इस कार्य के लिए अनुकूल नहीं है",
+    vBad:"आज का दिन उक्त कार्य के लिए बहुत उपयुक्त नहीं है",
     vOk:"आज का दिन इस कार्य के लिए साधारण है",
     day:"दिन", night:"रात्रि", hora:"होरा",
     rangNote1:"आज गोचर आपकी अपनी राशि के तत्व में है — अपने तत्व का रंग शुभ है।",
@@ -183,7 +183,7 @@ const T = {
     shubh:"(Auspicious)", ashubh:"(Inauspicious)", samanya:"(Neutral)",
     vGreat1:"Today is a very auspicious day for this task",
     vGreat2:"Today is an auspicious day for this task",
-    vBad:"Today is not favourable for this task",
+    vBad:"Today is not very suitable for this task",
     vOk:"Today is an ordinary day for this task",
     day:"Day", night:"Night", hora:"Hora",
     rangNote1:"Today's transit is in your own element — your own element's color is auspicious.",
@@ -674,7 +674,9 @@ function calculate(){
   const colorInfo=TATVA_COLOR[LANG][rangTatva];
 
   let verdict,vClass;
-  if(bestScore>=5){verdict=t.vGreat1;vClass='v-great';}
+  const negTara=[2,4,6].includes(taraNum); // विपत, प्रत्यरि, वध (सूर्योदय के समय का तारा)
+  if(negTara){verdict=t.vBad;vClass='v-bad';}
+  else if(bestScore>=5){verdict=t.vGreat1;vClass='v-great';}
   else if(bestScore>=4){verdict=t.vGreat2;vClass='v-great';}
   else if(bestScore<=2){verdict=t.vBad;vClass='v-bad';}
   else{verdict=t.vOk;vClass='v-ok';}
