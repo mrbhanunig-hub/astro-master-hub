@@ -81,6 +81,14 @@
   <div class="sub" id="tDesc">जन्म विवरण एवं कार्य की तारीख भरें</div>
 
   <div class="card">
+    <div class="field" id="savedProfileWrap" style="margin-bottom:16px; display:none;">
+      <label style="font-weight:600;">Saved Birth Profile <span style="color:#9ca3af; font-weight:400;">(Astro Master Hub)</span></label>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:4px;">
+        <select id="savedProfileSelect" style="flex:1; min-width:180px;"></select>
+        <button type="button" id="manageProfilesBtn" style="height:41px; white-space:nowrap; padding:0 14px; border-radius:8px; border:1px solid var(--line); background:#fff; cursor:pointer;">👤 प्रोफाइल मैनेज करें</button>
+      </div>
+      <div class="note" id="profileAppliedNote" style="display:none; margin-top:6px;"></div>
+    </div>
     <label id="lDob">जन्म तिथि (DOB)</label>
     <input type="text" id="dob" placeholder="dd/mm/yyyy" inputmode="numeric" maxlength="10" oninput="autoSlash(this)">
 
@@ -116,6 +124,8 @@
   </div>
 </div>
 
+<!-- Astro Master Hub: shared saved-birth-profile engine (same folder as birth-profile.html) -->
+<script src="birth-profile.js"></script>
 <script>
 let LANG='hi';
 
@@ -533,7 +543,57 @@ function resetForm(){
   document.getElementById('targetDate').value = todayStr();
   document.getElementById('output').classList.add('hidden');
   document.getElementById('output').innerHTML='';
+  if (window.BirthProfile){
+    document.getElementById('savedProfileSelect').value = '';
+    const note = document.getElementById('profileAppliedNote');
+    note.style.display='none'; note.textContent='';
+  }
   window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ---------------------------- Astro Master Hub: Saved Birth Profile bridge ----------------------------
+function placeLabelForProfile(p){
+  if (p.city) return p.city + (p.state ? ", " + p.state : "") + (p.country && p.country!=="India" ? ", " + p.country : "");
+  return p.country || "";
+}
+function profileTo24Hour(p){
+  let h = parseInt(p.hour,10) % 12;
+  if (String(p.ampm||"AM").toUpperCase()==="PM") h += 12;
+  return h;
+}
+function populateSavedProfileSelect(){
+  if (!window.BirthProfile) return;
+  const wrap = document.getElementById("savedProfileWrap");
+  const sel = document.getElementById("savedProfileSelect");
+  const list = BirthProfile.getAll();
+  wrap.style.display = "block";
+  const prevValue = sel.value;
+  sel.innerHTML = '<option value="">— सेव्ड प्रोफाइल चुनें —</option>';
+  list.forEach(function(p){
+    const icon = p.gender==="Female" ? "स्त्री" : (p.gender==="Other" ? "अन्य" : "पुरुष");
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = p.name + " (" + icon + ", " + String(p.day).padStart(2,"0") + "/" + String(p.month).padStart(2,"0") + "/" + p.year + (p.city ? " - " + p.city : "") + ")";
+    sel.appendChild(opt);
+  });
+  if (prevValue && list.some(function(p){ return p.id===prevValue; })){ sel.value = prevValue; }
+}
+function applyBirthProfileToForm(profile){
+  if (!profile) return;
+  document.getElementById("dob").value = String(profile.day).padStart(2,"0") + "/" + String(profile.month).padStart(2,"0") + "/" + profile.year;
+  const h24 = profileTo24Hour(profile);
+  document.getElementById("tob").value = String(h24).padStart(2,"0") + ":" + String(profile.minute).padStart(2,"0");
+  document.getElementById("birthCity").value = "other";
+  toggleBOther();
+  document.getElementById("bLat").value = profile.lat;
+  document.getElementById("bLon").value = profile.lon;
+  document.getElementById("birthTz").value = profile.tz;
+  document.getElementById("birthDst").checked = false;
+  const note = document.getElementById("profileAppliedNote");
+  note.style.display = "block";
+  note.textContent = "\"" + profile.name + "\" का जन्म-विवरण भर दिया गया — " + placeLabelForProfile(profile) +
+    " (Lat " + profile.lat + ", Lon " + profile.lon + ", UTC " + profile.tz + ")। अब नीचे मुहूर्त अपने आप दिखाया जा रहा है — कार्य/तारीख बदलकर दोबारा देख सकते हैं।";
+  try { calculate(); } catch(e) { /* defaults may still need user confirmation */ }
 }
 
 function fmtHour(h){
@@ -694,6 +754,29 @@ function renderOutput({verdict, vClass, taraName, taraStatus, topBlocks, fmtHour
 }
 document.getElementById('targetDate').value = todayStr();
 applyText();
+
+// ---- Astro Master Hub: saved birth profile bridge ----
+if (window.BirthProfile){
+  populateSavedProfileSelect();
+  document.getElementById("savedProfileSelect").addEventListener("change", function(){
+    const selectedId = this.value;
+    if (!selectedId) return;
+    const profile = BirthProfile.getAll().filter(function(p){ return p.id===selectedId; })[0];
+    if (profile){ BirthProfile.setActive(profile.id); applyBirthProfileToForm(profile); }
+  });
+  document.getElementById("savedProfileSelect").addEventListener("mousedown", populateSavedProfileSelect);
+  window.addEventListener("focus", populateSavedProfileSelect);
+  document.getElementById("manageProfilesBtn").addEventListener("click", function(){
+    BirthProfile.init();
+    const fab = document.getElementById("cc-profile-fab");
+    if (fab) fab.click();
+  });
+  const activeProfile = BirthProfile.get();
+  if (activeProfile){
+    document.getElementById("savedProfileSelect").value = activeProfile.id;
+    applyBirthProfileToForm(activeProfile);
+  }
+}
 </script>
 </body>
 </html>

@@ -165,6 +165,16 @@
   <!-- INPUT CARD -->
   <div class="card">
     <h2>जन्म विवरण <span class="tag">INPUT</span></h2>
+
+    <div class="field" id="savedProfileWrap" style="margin-bottom:16px; display:none;">
+      <label>Saved Birth Profile <span style="color:#9ca3af; font-weight:400;">(Astro Master Hub)</span></label>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <select id="savedProfileSelect" style="flex:1; min-width:180px;"></select>
+        <button class="btn btn-ghost" id="manageProfilesBtn" type="button" style="height:41px; white-space:nowrap;">👤 प्रोफाइल मैनेज करें</button>
+      </div>
+      <div class="hint-note" id="profileAppliedNote" style="display:none; margin-top:8px; margin-bottom:0;"></div>
+    </div>
+
     <div class="grid3">
       <div class="field">
         <label>Name (वैकल्पिक)</label>
@@ -293,6 +303,10 @@
 
   <p class="footer-note">Ayanamsa: Lahiri (Chitra Paksha) · Calculations run entirely in your browser · Rahu/Ketu: Mean Node</p>
 </div>
+
+<!-- Astro Master Hub: shared saved-birth-profile engine (optional — only present
+     when this file sits inside the hub folder alongside birth-profile.js). -->
+<script src="birth-profile.js"></script>
 
 <script>
 
@@ -2735,6 +2749,68 @@ function resolveSelectedPlace(){
   return {lat:c.lat, lon:c.lon, tz:c.tz};
 }
 
+// ---------------------------- Astro Master Hub: Saved Birth Profile bridge ----------------------------
+// Reads profiles saved by birth-profile.js (shared across every app in the
+// hub, via localStorage). Entirely optional: if birth-profile.js is not
+// sitting next to this file, window.BirthProfile is undefined and the whole
+// picker stays hidden — nothing else in the app is affected.
+function placeLabelForProfile(p){
+  if (p.city) return p.city + (p.state ? ", " + p.state : "") + (p.country && p.country!=="India" ? ", " + p.country : "");
+  return p.country || "";
+}
+
+function populateSavedProfileSelect(){
+  if (!window.BirthProfile) return;
+  const wrap = document.getElementById("savedProfileWrap");
+  const sel = document.getElementById("savedProfileSelect");
+  const list = BirthProfile.getAll();
+  wrap.style.display = "block";
+  const prevValue = sel.value;
+  sel.innerHTML = '<option value="">— सेव्ड प्रोफाइल चुनें —</option>';
+  list.forEach(function(p){
+    const icon = p.gender==="Female" ? "स्त्री" : (p.gender==="Other" ? "अन्य" : "पुरुष");
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = p.name + " (" + icon + ", " + String(p.day).padStart(2,"0") + "/" + String(p.month).padStart(2,"0") + "/" + p.year + (p.city ? " - " + p.city : "") + ")";
+    sel.appendChild(opt);
+  });
+  if (prevValue && list.some(function(p){ return p.id===prevValue; })){ sel.value = prevValue; }
+}
+
+// Fills BNN's own form fields from a Master-Hub profile record and recalculates.
+// Location is always applied via the Manual lat/lon/UTC fields — this avoids
+// any mismatch between the hub's place database and BNN's own, and guarantees
+// the exact same coordinates the profile was saved with.
+function applyBirthProfileToForm(profile){
+  if (!profile) return;
+
+  document.getElementById("personName").value = profile.name || "";
+
+  document.getElementById("dobDay").value = profile.day;
+  document.getElementById("dobMonth").value = profile.month;
+  document.getElementById("dobYear").value = profile.year;
+
+  document.getElementById("tobHour").value = profile.hour;
+  document.getElementById("tobMinute").value = profile.minute;
+  document.getElementById("tobAmPm").value = profile.ampm || "AM";
+
+  setGender(profile.gender === "Female" ? "Female" : "Male");
+
+  const countrySel = document.getElementById("countrySelect");
+  countrySel.value = MANUAL_OPTION;
+  onCountryChange();
+  document.getElementById("lat").value = profile.lat;
+  document.getElementById("lon").value = profile.lon;
+  document.getElementById("manualTz").value = profile.tz;
+
+  const note = document.getElementById("profileAppliedNote");
+  note.style.display = "block";
+  note.textContent = "\"" + profile.name + "\" का डाटा भर दिया गया — " + placeLabelForProfile(profile) +
+    " (Lat " + profile.lat + ", Lon " + profile.lon + ", UTC " + profile.tz + ")। अब नीचे Calculate अपने आप चल रहा है...";
+
+  onCalculate();
+}
+
 function populatePlanetSelects(){
   ["customA","customB"].forEach(function(id){
     const sel = document.getElementById(id);
@@ -2975,6 +3051,13 @@ function resetForm(){
   document.getElementById("pairsGrid").innerHTML = "";
   document.getElementById("con4").innerHTML = '<div class="placeholder">Select a pair above to view details here</div>';
   document.getElementById("timingResult").innerHTML = '<div class="placeholder">ऊपर से घटना और आयु चुनकर "समय गणना करें" दबाएँ</div>';
+
+  if (window.BirthProfile){
+    document.getElementById("savedProfileSelect").value = "";
+    const note = document.getElementById("profileAppliedNote");
+    note.style.display = "none";
+    note.textContent = "";
+  }
 }
 
 // ---------------------------- Init ----------------------------
@@ -3006,6 +3089,38 @@ window.addEventListener("DOMContentLoaded", function(){
       h.classList.toggle("open", isHidden);
     });
   });
+
+  // ---- Astro Master Hub: saved birth profile bridge ----
+  if (window.BirthProfile){
+    populateSavedProfileSelect();
+
+    document.getElementById("savedProfileSelect").addEventListener("change", function(){
+      const selectedId = this.value;
+      if (!selectedId) return;
+      const profile = BirthProfile.getAll().filter(function(p){ return p.id===selectedId; })[0];
+      if (profile){ BirthProfile.setActive(profile.id); applyBirthProfileToForm(profile); }
+    });
+
+    // Always re-read from localStorage right before the dropdown opens, so
+    // a profile added/edited via the floating "प्रोफाइल मैनेज करें" panel
+    // (or any other app in the hub) shows up without needing a page reload.
+    document.getElementById("savedProfileSelect").addEventListener("mousedown", populateSavedProfileSelect);
+    window.addEventListener("focus", populateSavedProfileSelect);
+
+    document.getElementById("manageProfilesBtn").addEventListener("click", function(){
+      BirthProfile.init(); // idempotent — creates the floating profile manager once
+      const fab = document.getElementById("cc-profile-fab");
+      if (fab) fab.click();
+    });
+
+    // Auto-load the hub's currently-active profile on first open, same as
+    // every other app in the hub.
+    const activeProfile = BirthProfile.get();
+    if (activeProfile){
+      document.getElementById("savedProfileSelect").value = activeProfile.id;
+      applyBirthProfileToForm(activeProfile);
+    }
+  }
 });
 
 </script>
