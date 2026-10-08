@@ -124,8 +124,15 @@
   <h1>Fortuna Point</h1>
   <div class="subtitle">KP astrology — Asc + Moon − Sun, from birth details</div>
 
-  <!-- Profile selector will attach here inside inputCardWrapper -->
-  <div class="card" id="inputCardWrapper">
+  <div class="card">
+    <div id="savedProfileWrap" style="display:none;margin-bottom:6px;">
+      <label>Saved Birth Profile <span style="color:#a898bf;">(Astro Master Hub)</span></label>
+      <div class="row">
+        <div><select id="savedProfileSelect"></select></div>
+      </div>
+      <button type="button" class="reset" id="manageProfilesBtn" style="margin-top:8px;">👤 Manage Profiles</button>
+      <div class="note" id="profileAppliedNote" style="display:none;"></div>
+    </div>
     <label>Date of birth</label>
     <input id="dateInput" placeholder="DD/MM/YYYY" />
 
@@ -138,14 +145,9 @@
     </div>
 
     <label>Place</label>
-    <div class="row" style="margin-bottom:8px;">
-      <select id="countrySelect"></select>
-      <select id="stateSelect"></select>
-    </div>
     <select id="citySelect"></select>
-    <input id="customCityInput" placeholder="Type city name manually" style="display:none; margin-top:8px;" />
 
-    <div class="row" style="margin-top:10px;">
+    <div class="row">
       <div><label>Latitude</label><input id="latInput" /></div>
       <div><label>Longitude</label><input id="lonInput" /></div>
       <div><label>Timezone (hrs)</label><input id="tzInput" /></div>
@@ -170,7 +172,7 @@
 
     <div class="note">
       Ayanamsa: KP New. If a reference software (e.g. Nakshatra Gold) gives a slightly different sign/nakshatra
-      for the same birth data, calibrate this against it, same as your other KP apps.
+      for the same birth data, send a screenshot and I'll calibrate this against it, same as your other KP apps.
     </div>
   </div>
 
@@ -201,6 +203,8 @@
   </div>
 </div>
 
+<!-- Astro Master Hub: shared saved-birth-profile engine (same folder as birth-profile.html) -->
+<script src="birth-profile.js"></script>
 <script>
 /* ---------- Core math ---------- */
 const D2R = Math.PI / 180;
@@ -238,6 +242,7 @@ function moonLongitude(T) {
   const A2 = norm360(53.09 + 479264.29 * T) * D2R;
   const E = 1 - 0.002516 * T - 0.0000074 * T * T;
 
+  // Meeus 1998, Table 47.A (D, M, M', F, L-coefficient in millionths of a degree)
   const TERMS = [
     [0,0,1,0,6288774],[2,0,-1,0,1274027],[2,0,0,0,658314],[0,0,2,0,213618],
     [0,1,0,0,-185116],[0,0,0,2,-114332],[2,0,-2,0,58793],[2,-1,-1,0,57066],
@@ -287,8 +292,10 @@ function ascendant(jd, T, lat, lon) {
   return norm360(Math.atan2(y, x) * R2D + 180);
 }
 
+/* KP New Ayanamsa — calibrated against 5 kpvani.com reference charts
+   (1966, 1967, 1983, 2000, 2003), least-squares fit for best overall match. */
 function kpNewAyanamsa(jd) {
-  const JD2000 = 2451544.5;
+  const JD2000 = 2451544.5; // 1 Jan 2000, 00:00 UT
   const base = 24.14934;
   const ratePerYear = 0.0208482;
   const years = (jd - JD2000) / 365.25;
@@ -356,6 +363,7 @@ function kpDetail(siderealLong) {
 
 /* ---------- Date formatting ---------- */
 function jdToCivil(jd) {
+  // jd is UT Julian Day; returns {y,m,d,hour} in UT
   const jdAdj = jd + 0.5;
   const Z = Math.floor(jdAdj);
   const F = jdAdj - Z;
@@ -435,7 +443,7 @@ function findWindow(fn, jdStart, stepDays, maxDays, lo, hi) {
 }
 
 function nakshatraBounds(nakIdx) {
-  const span = 800 / 60;
+  const span = 800 / 60; // 13.3333 deg
   return { lo: nakIdx * span, hi: (nakIdx + 1) * span };
 }
 
@@ -458,16 +466,26 @@ function findWindowMulti(fn, jdStart, stepDays, maxDays, spans) {
   return best || { enterJd: null, exitJd: null, nakshatra: null };
 }
 
+
+const CITIES = {
+  "Kanpur, UP": { lat: 26.4667, lon: 80.6833, tz: 5.5 },
+  "New Delhi": { lat: 28.6139, lon: 77.2090, tz: 5.5 },
+  "Mumbai": { lat: 19.0760, lon: 72.8777, tz: 5.5 },
+  "Lucknow": { lat: 26.8467, lon: 80.9462, tz: 5.5 },
+  "Kolkata": { lat: 22.5726, lon: 88.3639, tz: 5.5 },
+  "Chennai": { lat: 13.0827, lon: 80.2707, tz: 5.5 },
+  "Bengaluru": { lat: 12.9716, lon: 77.5946, tz: 5.5 },
+  "Jaipur": { lat: 26.9124, lon: 75.7873, tz: 5.5 },
+  "Custom (enter manually)": null
+};
+
 /* ---------- UI wiring ---------- */
 const dateInput = document.getElementById("dateInput");
 const hourInput = document.getElementById("hourInput");
 const minuteInput = document.getElementById("minuteInput");
 const ampmBtn = document.getElementById("ampmBtn");
 const nowBtn = document.getElementById("nowBtn");
-const countrySelect = document.getElementById("countrySelect");
-const stateSelect = document.getElementById("stateSelect");
 const citySelect = document.getElementById("citySelect");
-const customCityInput = document.getElementById("customCityInput");
 const latInput = document.getElementById("latInput");
 const lonInput = document.getElementById("lonInput");
 const tzInput = document.getElementById("tzInput");
@@ -513,6 +531,13 @@ document.getElementById("mAscNext").addEventListener("click", () => {
   renderMuhurat();
 });
 
+Object.keys(CITIES).forEach(name => {
+  const opt = document.createElement("option");
+  opt.value = name;
+  opt.textContent = name;
+  citySelect.appendChild(opt);
+});
+
 function pad2(n) { return String(n).padStart(2, "0"); }
 
 function setNow() {
@@ -525,21 +550,36 @@ function setNow() {
   ampmBtn.textContent = h24 >= 12 ? "PM" : "AM";
 }
 
-function resetAll() {
-  if (window.BirthProfile && BirthProfile.bindLocations) {
-    BirthProfile.bindLocations(countrySelect, stateSelect, citySelect, latInput, lonInput, tzInput, customCityInput);
+function applyCity(name) {
+  citySelect.value = name;
+  const c = CITIES[name];
+  if (c) {
+    latInput.value = c.lat;
+    lonInput.value = c.lon;
+    tzInput.value = c.tz;
   }
+}
+
+function resetAll() {
+  applyCity("Kanpur, UP");
   setNow();
   resultCard.classList.add("hidden");
   document.getElementById("muhuratCard").classList.add("hidden");
   errorBox.classList.add("hidden");
   muhuratState = null;
+  if (window.BirthProfile){
+    document.getElementById("savedProfileSelect").value = "";
+    const note = document.getElementById("profileAppliedNote");
+    note.style.display = "none";
+    note.textContent = "";
+  }
 }
 
 ampmBtn.addEventListener("click", () => {
   ampmBtn.textContent = ampmBtn.textContent === "AM" ? "PM" : "AM";
 });
 nowBtn.addEventListener("click", setNow);
+citySelect.addEventListener("change", () => applyCity(citySelect.value));
 document.getElementById("resetBtn").addEventListener("click", resetAll);
 
 dateInput.addEventListener("input", () => {
@@ -588,6 +628,8 @@ document.getElementById("calcBtn").addEventListener("click", () => {
 
   resultCard.classList.remove("hidden");
 
+  /* Fortuna Muhurat: search forward from now for Sun / Moon / Ascendant transiting
+     ANY of the 3 nakshatras ruled by Fortuna's Nakshatra Lord */
   const spans = planetNakshatraSpans(detail.nakLord);
   const now = new Date();
   const nowJdUT = julianDay(now.getFullYear(), now.getMonth() + 1, now.getDate(),
@@ -616,31 +658,69 @@ function showError(msg) {
   errorBox.textContent = msg;
   errorBox.classList.remove("hidden");
 }
-</script>
 
-<script src="birth-profile.js"></script>
-<script src="hub-nav.js"></script>
-<script>
-  window.addEventListener("DOMContentLoaded", function () {
-    if (window.BirthProfile) {
-      if (BirthProfile.bindLocations) {
-        BirthProfile.bindLocations(countrySelect, stateSelect, citySelect, latInput, lonInput, tzInput, customCityInput);
-      }
-      
-      BirthProfile.init();
+resetAll();
 
-      if (BirthProfile.attachProfileSelector) {
-        BirthProfile.attachProfileSelector("inputCardWrapper");
-      }
-
-      // Check if profile was selected, otherwise fallback to current time
-      if (!dateInput.value) {
-        setNow();
-      }
-    } else {
-      setNow();
-    }
+// ---------------------------- Astro Master Hub: Saved Birth Profile bridge ----------------------------
+function placeLabelForProfile(p){
+  if (p.city) return p.city + (p.state ? ", " + p.state : "") + (p.country && p.country!=="India" ? ", " + p.country : "");
+  return p.country || "";
+}
+function populateSavedProfileSelect(){
+  if (!window.BirthProfile) return;
+  const wrap = document.getElementById("savedProfileWrap");
+  const sel = document.getElementById("savedProfileSelect");
+  const list = BirthProfile.getAll();
+  wrap.style.display = "block";
+  const prevValue = sel.value;
+  sel.innerHTML = '<option value="">— Select saved profile —</option>';
+  list.forEach(function(p){
+    const icon = p.gender==="Female" ? "F" : (p.gender==="Other" ? "O" : "M");
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.textContent = p.name + " (" + icon + ", " + String(p.day).padStart(2,"0") + "/" + String(p.month).padStart(2,"0") + "/" + p.year + (p.city ? " - " + p.city : "") + ")";
+    sel.appendChild(opt);
   });
+  if (prevValue && list.some(function(p){ return p.id===prevValue; })){ sel.value = prevValue; }
+}
+function applyBirthProfileToForm(profile){
+  if (!profile) return;
+  dateInput.value = String(profile.day).padStart(2,"0") + "/" + String(profile.month).padStart(2,"0") + "/" + profile.year;
+  let h12 = parseInt(profile.hour,10) % 12; if (h12 === 0) h12 = 12;
+  hourInput.value = String(h12);
+  minuteInput.value = String(profile.minute).padStart(2,"0");
+  ampmBtn.textContent = String(profile.ampm||"AM").toUpperCase()==="PM" ? "PM" : "AM";
+  citySelect.value = "Custom (enter manually)";
+  latInput.value = profile.lat;
+  lonInput.value = profile.lon;
+  tzInput.value = profile.tz;
+  const note = document.getElementById("profileAppliedNote");
+  note.style.display = "block";
+  note.textContent = "\"" + profile.name + "\" applied — " + placeLabelForProfile(profile) +
+    " (Lat " + profile.lat + ", Lon " + profile.lon + ", UTC " + profile.tz + "). Calculating now...";
+  document.getElementById("calcBtn").click();
+}
+if (window.BirthProfile){
+  populateSavedProfileSelect();
+  document.getElementById("savedProfileSelect").addEventListener("change", function(){
+    const selectedId = this.value;
+    if (!selectedId) return;
+    const profile = BirthProfile.getAll().filter(function(p){ return p.id===selectedId; })[0];
+    if (profile){ BirthProfile.setActive(profile.id); applyBirthProfileToForm(profile); }
+  });
+  document.getElementById("savedProfileSelect").addEventListener("mousedown", populateSavedProfileSelect);
+  window.addEventListener("focus", populateSavedProfileSelect);
+  document.getElementById("manageProfilesBtn").addEventListener("click", function(){
+    BirthProfile.init();
+    const fab = document.getElementById("cc-profile-fab");
+    if (fab) fab.click();
+  });
+  const activeProfile = BirthProfile.get();
+  if (activeProfile){
+    document.getElementById("savedProfileSelect").value = activeProfile.id;
+    applyBirthProfileToForm(activeProfile);
+  }
+}
 </script>
 </body>
 </html>
