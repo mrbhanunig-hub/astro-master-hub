@@ -117,15 +117,35 @@
     <input type="text" id="subName" placeholder="अपना नाम लिखें">
     <label>आपका Email</label>
     <input type="text" id="subEmail" placeholder="example@gmail.com">
-    <label>किस समय Email चाहिए? (IST)</label>
+    <label>किस समय Email चाहिए? (कोई भी समय चुनें - IST)</label>
     <select id="subTime">
-      <option value="05:00">सुबह 5:00 बजे</option>
-      <option value="06:00">सुबह 6:00 बजे</option>
-      <option value="07:00" selected>सुबह 7:00 बजे</option>
-      <option value="08:00">सुबह 8:00 बजे</option>
-      <option value="09:00">सुबह 9:00 बजे</option>
+      <option value="00:00">रात 12:00 बजे (00:00)</option>
+      <option value="01:00">रात 1:00 बजे (01:00)</option>
+      <option value="02:00">रात 2:00 बजे (02:00)</option>
+      <option value="03:00">रात 3:00 बजे (03:00)</option>
+      <option value="04:00">रात 4:00 बजे (04:00)</option>
+      <option value="05:00">सुबह 5:00 बजे (05:00)</option>
+      <option value="06:00">सुबह 6:00 बजे (06:00)</option>
+      <option value="07:00" selected>सुबह 7:00 बजे (07:00)</option>
+      <option value="08:00">सुबह 8:00 बजे (08:00)</option>
+      <option value="09:00">सुबह 9:00 बजे (09:00)</option>
+      <option value="10:00">सुबह 10:00 बजे (10:00)</option>
+      <option value="11:00">सुबह 11:00 बजे (11:00)</option>
+      <option value="12:00">दोपहर 12:00 बजे (12:00)</option>
+      <option value="13:00">दोपहर 1:00 बजे (13:00)</option>
+      <option value="14:00">दोपहर 2:00 बजे (14:00)</option>
+      <option value="15:00">दोपहर 3:00 बजे (15:00)</option>
+      <option value="16:00">शाम 4:00 बजे (16:00)</option>
+      <option value="17:00">शाम 5:00 बजे (17:00)</option>
+      <option value="18:00">शाम 6:00 बजे (18:00)</option>
+      <option value="19:00">शाम 7:00 बजे (19:00)</option>
+      <option value="20:00">रात 8:00 बजे (20:00)</option>
+      <option value="21:00">रात 9:00 बजे (21:00)</option>
+      <option value="22:00">रात 10:00 बजे (22:00)</option>
+      <option value="23:00">रात 11:00 बजे (23:00)</option>
     </select>
-    <button class="primary" onclick="subscribeDaily()">दैनिक ईमेल शुरू करें (मुफ्त)</button>
+    <button class="primary" onclick="subscribeDaily(false)">दैनिक ईमेल शुरू / समय अपडेट करें</button>
+    <button class="secondary" onclick="subscribeDaily(true)">📧 अभी टेस्ट ईमेल भेजें (Send Now)</button>
     <div id="subMsg" class="note" style="text-align:center;font-weight:600;margin-top:8px;"></div>
   </div>
 
@@ -713,7 +733,7 @@ function renderOutput({verdict, vClass, taraName, taraStatus, topBlocks, fmtHour
 }
 const SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw7D9EFLkLHCcqgJ_7Q2CHLaCN48XAOWw0t0E4DE5xYiI2MALBRPSTlz8MlsGagMd90/exec";
 
-async function subscribeDaily() {
+async function subscribeDaily(sendNow) {
   const name = document.getElementById('subName').value.trim();
   const email = document.getElementById('subEmail').value.trim();
   const sendTime = document.getElementById('subTime').value;
@@ -734,7 +754,7 @@ async function subscribeDaily() {
     return;
   }
   msg.style.color = "#6b5b3a";
-  msg.textContent = "रजिस्टर हो रहा है...";
+  msg.textContent = sendNow ? "टेस्ट ईमेल भेजा जा रहा है..." : "समय सेव / रजिस्टर हो रहा है...";
   try {
     await fetch(SHEET_WEBAPP_URL, {
       method: "POST",
@@ -745,11 +765,14 @@ async function subscribeDaily() {
         birthCityIdx: Number(bCity),
         workCityIdx: wCity === 'other' ? 0 : Number(wCity),
         sendTime,
-        lang: LANG
+        lang: LANG,
+        sendNow: !!sendNow
       })
     });
     msg.style.color = "#2e7d32";
-    msg.textContent = "✅ सफल! अब रोज़ चुने हुए समय पर आपका दैनिक नक्षत्र फल ईमेल पर आएगा।";
+    msg.textContent = sendNow
+      ? "✅ टेस्ट ईमेल भेज दिया गया है! कृपया अपना Inbox चेक करें।"
+      : "✅ सफल! आपका समय (" + sendTime + ") सेव हो गया है।";
   } catch (e) {
     msg.style.color = "#c62828";
     msg.textContent = "❌ कुछ त्रुटि हुई, कृपया फिर प्रयास करें।";
